@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Fetched corpora and built indices. `mathgraph setup` regenerates all of it,
+# and mathgraph-data/mathlib4 + mathgraph-data/blueprints/* are themselves git
+# checkouts, so committing them records broken gitlinks rather than content.
+# The calibration corpus is pinned: every threshold in cli.py is fitted
+# against these 439 pairs, so the numbers in the README are not checkable
+# without it. Git will not descend into an excluded directory, hence the
+# component-by-component re-inclusion.
+mathgraph-data/*
+!mathgraph-data/artifacts/
+mathgraph-data/artifacts/*
+!mathgraph-data/artifacts/blueprint_pairs.jsonl
