@@ -53,8 +53,11 @@ run_cmd liftTermElabM do
     let modName := env.header.moduleNames[modIdx.toNat]!
     -- Pretty-print without the width-based line breaking: the matchers read
     -- the type as a single string and inserted newlines only add noise.
+    -- `Options` is a structure as of Lean 4.33, not an abbreviation for
+    -- `KVMap`, so the KVMap setters are no longer reachable by dot-notation.
+    -- `Options.set` is generic over `KVMap.Value` and covers both.
     let fmt ← withOptions (fun o =>
-        (o.setNat `format.width 10000).setBool `pp.unicode.fun true) do
+        (o.set `format.width (10000 : Nat)).set `pp.unicode.fun true) do
       ppExpr info.type
     let typeStr := (toString fmt).replace "\n" " "
     let obj := Json.mkObj [
