@@ -196,7 +196,7 @@ class TreeReranker:
             self._cache[rid] = t
         return t
 
-    def rank(self, text, title, math_segments, topk=5, gate=0.5):
+    def rank(self, text, title, math_segments, topk=5, gate=0.45):
         qw = self.al.query_weights(text, title=title)
         res = self.al._score(qw, self.depth)
         if len(res) == 3 or res[0].size == 0:

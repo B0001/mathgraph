@@ -36,7 +36,6 @@ LaTeX paper ──▶ latex   ────────────────�
 | `names.py` | name tokenization; reconstruction of `@[to_additive]`-generated declarations |
 | `index.py` | inverted index, IDF, and the learned English→mathlib translation table |
 | `align.py` | three-valued scorer: `matched` / `ambiguous` / `unmatched` |
-| `rerank.py` | listwise linear reranker (trained; **no measurable lift** — see below). **Missing from this tree**: `align.py` still imports `featurize` from it, so the `Aligner.reranker` path would `ImportError` if anything set it. Nothing does. |
 | `dense.py` | dual encoder trained contrastively on the docstring corpus |
 | `bench_dense.py` | scores the dense and hybrid retrievers on the same two arms |
 | `harvest.py` | mines paper-prose/declaration pairs from public blueprint projects |
@@ -175,13 +174,15 @@ approximately where it sits. The failure is not in the plumbing:
 - the first stage reaches the gold declaration **97%** of the time
 - but places it at **median rank ~250** of 242,550
 
-So it is a ranking problem, not a retrieval problem — and the linear reranker
-in `rerank.py`, trained listwise on ~7,000 groups, produced **no measurable
-lift** once a training-population bug was fixed. Token-overlap features do not
-contain enough to rank with. It was meant to be kept in the repository because
-the negative result is worth more than a deleted file — but `mathgraph/rerank.py`
-is not actually present in this tree, so the claim above is currently false and
-the dead import at `align.py` is the only trace of it left.
+So it is a ranking problem, not a retrieval problem — and a linear reranker
+trained listwise on ~7,000 groups produced **no measurable lift** once a
+training-population bug was fixed. Token-overlap features do not contain
+enough to rank with. That reranker is *not* in this repository: it was
+described here as retained, but the module never existed in the tree, and the
+only trace was a dead `from .rerank import featurize` inside a branch nothing
+could reach. Both have been removed rather than left to imply a component that
+is not there. The negative result is recorded here, which is the part that
+was actually worth keeping.
 
 ### Length normalisation was backwards
 
@@ -320,10 +321,15 @@ cannot separate them — r@1/r@5/r@10 is flat at 38.3/55.3/61.7 across `lam`
 from 0.3 to 2.0 and `gate` from 0.0 to 0.7, because the gate switches the
 term off on almost every non-PFR project. Anything that looks best there is
 noise, and the values that look best on PFR are exactly the ones this
-protocol forbids reading. `lam=0.9` stands. The one change: `bench` was
-passing `gate=0.5` while `query` used the declared default of 0.45, so the
-shipped benchmark was measuring a configuration the shipped code never ran.
-Both now use 0.45, which is what the tables above report.
+protocol forbids reading. `lam=0.9` stands.
+
+Two consistency fixes rather than retunings. `bench` was passing `gate=0.5`
+while `query` used the declared default of 0.45, so the shipped benchmark was
+measuring a configuration the shipped code never ran. And `TreeReranker`
+defaulted to 0.5 while `StructReranker` used 0.45, so the two rerankers
+disagreed on the same constant for no stated reason. Everything now uses 0.45. The tree row is unaffected either way: 21.1 / 33.1 / 40.6 at both
+gate values, which is its own small evidence that this gate is not where the
+signal lives.
 
 ### The library benchmark
 

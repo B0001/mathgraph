@@ -91,8 +91,6 @@ class Aligner:
         self.mod_weight = mod_weight
         self.prefix_weight = prefix_weight
         self.title_boost = title_boost
-        self.reranker = None
-        self.rerank_depth = 120
 
         # Declaration length, measured as the IDF mass of its own name tokens,
         # pivoted BM25-style: divide by (1-p) + p*len/avg_len, so p=0 ignores
@@ -231,22 +229,12 @@ class Aligner:
 
     def align(self, text: str, topk: int = 5, title: str = "") -> Alignment:
         qw = self.query_weights(text, title=title)
-        depth = (self.rerank_depth if self.reranker is not None
-                 else max(topk, MARGIN_TAIL))
-        res = self._score(qw, depth)
+        res = self._score(qw, max(topk, MARGIN_TAIL))
         if len(res) == 3:
             return Alignment(text, UNMATCHED, 0.0, 0.0, [])
         ids, scores, mass, rawtop = res
         if ids.size == 0:
             return Alignment(text, UNMATCHED, 0.0, 0.0, [])
-
-        if self.reranker is not None:
-            from .rerank import featurize
-            X = featurize(self, self.direct_tokens(text), qw, ids, scores)
-            rs = self.reranker.score(X)
-            order = np.argsort(-rs)[:topk]
-            ids, rawtop = ids[order], rawtop[order]
-            scores = 1.0 / (1.0 + np.exp(-np.clip(rs[order], -30, 30)))
 
         # Separation is measured against the whole tail, not against rank 2
         # alone. Rank-1-vs-rank-2 cannot tell "one close rival" from "nine
