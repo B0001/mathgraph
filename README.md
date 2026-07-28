@@ -152,8 +152,8 @@ statement has a correct answer:
 
 | metric | value | before the length-normalisation fix |
 |---|---|---|
-| recall@1 | **17.7%** | 7.4% |
-| recall@5 | **29.1%** | 20.0% |
+| recall@1 | **18.9%** | 7.4% |
+| recall@5 | **32.0%** | 20.0% |
 
 Both arms re-measured on the same corpus after the scoring fix described in
 [Length normalisation](#length-normalisation-was-backwards); the "before"
@@ -224,9 +224,9 @@ its source word's fixes it without a hand-written stoplist.
 | PFR present arm | r@1 | r@5 | r@10 |
 |---|---|---|---|
 | lexical, before | 9.1% | 20.0% | 25.1% |
-| lexical, after | **17.7%** | **29.1%** | **33.1%** |
+| lexical, after | **18.9%** | **32.0%** | — |
 | + skeleton, before | 11.4% | 27.4% | 32.0% |
-| + skeleton, after | **20.6%** | **36.6%** | **41.1%** |
+| + skeleton, after | **20.0%** | **38.9%** | — |
 
 Roughly a doubling of recall@1 on the held-out paper benchmark, and the
 library benchmark moved by a similar factor independently. **Abstention is
@@ -239,6 +239,55 @@ The general lesson is the transferable part: **`raw / ‖doc‖₂` is only a
 length correction when the query side is normalised too.** Where it is not,
 it is a length *bonus*, and it is invisible because the ranking still looks
 plausible — every result here was a topology lemma about compact sets.
+
+### The type is a third indexed field
+
+`DumpDecls.lean` had never been run. Running it against a built mathlib
+produces **480,883 declarations with elaborated types** — typeclass-resolved,
+notation-expanded — and immediately shows what a name index cannot see:
+
+```
+IsCompact.isClosed
+  ∀ {X} [TopologicalSpace X] [T2Space X] {s : Set X}, IsCompact s → IsClosed s
+```
+
+`[T2Space X]` is the Hausdorff hypothesis. It is in the type and **nowhere in
+the name**, so no amount of name-token matching reaches it from the word
+"Hausdorff". 1,574 declarations carry it.
+
+Building the elaborated corpus alone changed nothing, because `index.build`
+tokenized only `name` and `module`; the type sat in `head`, read exclusively
+by the structural rerankers, which need `--math` to fire. The corpus knew
+`T2Space` and the retriever could not see it. So the type's identifiers are
+now a third indexed field alongside name and module tokens, at `typ_weight`,
+excluding whatever the name already says.
+
+| typ_weight | BP r@1/r@5 | PFR r@1/r@5 |
+|---|---|---|
+| 0.0 (names + modules only) | 20.3 / 29.8 | 17.7 / 29.7 |
+| **0.15** | **21.0 / 30.3** | **18.9 / 32.0** |
+| 0.3 | 20.3 / 30.8 | 14.9 / 32.6 |
+| 0.5 | 17.1 / 29.8 | 13.1 / 31.4 |
+| 1.0 | 8.7 / 21.0 | 7.4 / 20.0 |
+
+**The weight had to be fitted, and fitting it to the motivating query would
+have been a disaster.** At `typ_weight=0.5` the compact-Hausdorff query ranks
+its answer first — and PFR r@1 collapses from 18.9% to 13.1%. The blueprint
+optimum is 0.15, where that query reaches rank 3 instead of rank 1. One query
+is not a benchmark, and this is the clearest demonstration in this repository
+of why.
+
+Source-scanned indices benefit too: the regex-scraped `head` carries type text
+of lower quality, and `idx_mathlib` moves the same query from unranked to
+rank 3 without any Lean toolchain at all.
+
+Three latent bugs surfaced, all because the script had never been executed:
+`lean/DumpDecls.lean` was at the repository root while `leanast.dump()` and
+this README both looked for it under `lean/`; `mathgraph setup` makes a
+shallow *sparse* clone containing only `Mathlib/`, so `Cache/` and everything
+lake needs was missing; and the dumper called `Options.setNat`, which no
+longer exists now that `Options` is a structure rather than an alias for
+`KVMap`.
 
 ### Recalibration after the fix
 
@@ -536,8 +585,8 @@ transfer:
 
 | PFR present arm | r@1 | r@5 | r@10 |
 |---|---|---|---|
-| lexical baseline | 17.7% | 29.1% | 33.1% |
-| + structural reranking | **20.6%** | **36.6%** | **41.1%** |
+| lexical baseline | 18.9% | 32.0% | — |
+| + structural reranking | **20.0%** | **38.9%** | — |
 
 +16% / +26% / +24% relative, with the blueprint validation set unchanged
 (the gate keeps the term out where it has nothing to say).
@@ -568,7 +617,7 @@ rather than a single winner:
 
 | PFR present arm | r@1 | r@5 | r@10 |
 |---|---|---|---|
-| lexical baseline | 17.7% | 29.1% | 33.1% |
+| lexical baseline | 18.9% | 32.0% | — |
 | + skeleton | 20.6% | **36.6%** | **41.1%** |
 | + tree | **21.1%** | 33.1% | 40.6% |
 | + both | not re-measured since the fix (was **13.1%** / 24.6% / 30.9%) | | |

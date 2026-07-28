@@ -74,10 +74,10 @@ class Aligner:
     """Scores informal text against the mathlib name-token index."""
 
     def __init__(self, art: dict, max_df_frac: float = 0.03,
-                 tau_cov: float = 0.2347, delta_margin: float = 0.2722,
+                 tau_cov: float = 0.2474, delta_margin: float = 0.2671,
                  expand_k: int = 8, expand_alpha: float = 0.85,
                  len_pivot: float = 0.75, mod_weight: float = 0.35,
-                 prefix_weight: float = 0.7,
+                 typ_weight: float = 0.15, prefix_weight: float = 0.7,
                  title_boost: float = 1.6):
         self.rows = art["rows"]
         self.idf = art["idf"]
@@ -89,6 +89,7 @@ class Aligner:
         self.expand_k = expand_k
         self.expand_alpha = expand_alpha
         self.mod_weight = mod_weight
+        self.typ_weight = typ_weight
         self.prefix_weight = prefix_weight
         self.title_boost = title_boost
 
@@ -113,6 +114,12 @@ class Aligner:
                      for t, v in art["postings"].items()}
         self.modpost = {t: np.asarray(v, dtype=np.int32)
                         for t, v in art.get("mod_postings", {}).items()}
+        # Third field: identifiers from the declaration's own type. A name
+        # index cannot answer "Hausdorff" for `IsCompact.isClosed`, because
+        # the hypothesis is `[T2Space X]` in the type and appears nowhere in
+        # the name. Absent on indices built before this field existed.
+        self.typpost = {t: np.asarray(v, dtype=np.int32)
+                        for t, v in art.get("typ_postings", {}).items()}
         # token -> stem, so a query word can hit a token that is a plural or
         # a participle of itself without going through the PMI table
         self.by_stem: dict[str, list[str]] = {}
@@ -135,7 +142,7 @@ class Aligner:
             if tok not in self.idf:
                 return
             if not (len(self.post.get(tok, ())) <= self.max_df
-                    or tok in self.modpost):
+                    or tok in self.modpost or tok in self.typpost):
                 return
             # An expansion is a hypothesis about what mathlib calls this word;
             # it cannot be stronger evidence than the word actually written.
@@ -196,6 +203,11 @@ class Aligner:
             if self.mod_weight and marr is not None and 0 < marr.size <= self.max_df * 6:
                 idx_parts.append(marr)
                 wt_parts.append(np.full(marr.size, contrib * self.mod_weight,
+                                        dtype=np.float32))
+            tarr = self.typpost.get(tok)
+            if self.typ_weight and tarr is not None and 0 < tarr.size <= self.max_df * 6:
+                idx_parts.append(tarr)
+                wt_parts.append(np.full(tarr.size, contrib * self.typ_weight,
                                         dtype=np.float32))
         if not idx_parts or mass <= 0:
             return np.empty(0, dtype=np.int32), np.empty(0, dtype=np.float32), 0.0

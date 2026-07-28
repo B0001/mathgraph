@@ -22,7 +22,12 @@ DEFAULT_DATA = os.environ.get("MATHGRAPH_DATA", "./mathgraph-data")
 
 # Retrieval parameters fitted on the blueprint validation corpus, with PFR
 # held out. See README "Structural matching" for the derivation.
-LEX = dict(len_pivot=0.75, mod_weight=0.1,
+# typ_weight is deliberately small. Swept on the blueprint corpus with PFR
+# held out, r@1 peaks at 0.15 and falls off hard above it; the single query
+# that motivated the whole elaborated-types path wants 0.5, which is exactly
+# where PFR r@1 collapses from 18.9% to 13.1%. Fitting to that one query
+# would have cost a fifth of the benchmark.
+LEX = dict(len_pivot=0.75, mod_weight=0.1, typ_weight=0.15,
            prefix_weight=0.85, title_boost=2.5)
 # Abstention thresholds for `graph`, fitted on the 439 non-PFR blueprint pairs
 # against a genuine negative arm (the same statements against a mathlib-only
@@ -33,7 +38,7 @@ LEX = dict(len_pivot=0.75, mod_weight=0.1,
 # History: 0.35/0.08 answered 1 of 439 with 1 false match; rank-1-vs-2
 # refitted answered 13 with 10 correct and none false; this answers 17 with
 # 12 correct and none false.
-GRAPH_THRESHOLDS = dict(tau_cov=0.2347, delta_margin=0.2722)
+GRAPH_THRESHOLDS = dict(tau_cov=0.2474, delta_margin=0.2671)
 # Verifier thresholds calibrated on non-PFR blueprint projects.
 # Re-checked after the length-normalisation fix by asking, for each profile,
 # whether any threshold accepts strictly more correct proposals at no worse

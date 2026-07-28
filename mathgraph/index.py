@@ -86,6 +86,38 @@ def stem(w: str) -> str:
     return w
 
 
+_LEAN_ID = re.compile(r"[A-Za-z][A-Za-z0-9_']*")
+_UNIV = re.compile(r"u_?\d+")
+# Lean syntax and binder noise, plus the sorts, which appear in nearly every
+# type and so carry no discriminating signal.
+_TYPE_SKIP = frozenset("""
+inst Type Sort Prop theorem lemma def abbrev structure class instance axiom
+example where fun let have match with deriving extends protected private
+noncomputable partial unsafe mutual do then else if at using by exact intro
+""".split())
+
+
+def type_tokens(head: str) -> list[str]:
+    """Identifiers appearing in a declaration's *type*.
+
+    The name says `IsCompact.isClosed`; the type says
+    `... [T2Space X] ... IsCompact s -> IsClosed s`. The Hausdorff hypothesis
+    exists only in the second, so a name-token index cannot reach it from the
+    word "Hausdorff" at all. This is the third indexed field that fixes that.
+
+    Works on elaborated types (`mathgraph elaborate`) and, less well, on the
+    regex-scraped declaration heads the source scanner produces.
+    """
+    body = head.split(":=", 1)[0]
+    out: list[str] = []
+    for m in _LEAN_ID.finditer(body):
+        w = m.group(0)
+        if len(w) == 1 or w in _TYPE_SKIP or _UNIV.fullmatch(w):
+            continue
+        out.extend(split_name(w))
+    return out
+
+
 def doc_words(text: str) -> list[str]:
     text = re.sub(r"`[^`]*`", " ", text)          # drop inline Lean code
     text = re.sub(r"\$[^$]*\$", " ", text)        # drop inline math
@@ -147,6 +179,7 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
         # as a separate, discounted field rather than as name tokens
         r["mod_tokens"] = [t for t in split_name(r["module"])
                            if t not in ("mathlib", "basic", "defs", "lemmas")]
+        r["typ_tokens"] = type_tokens(r.get("head") or "")
 
     rng = random.Random(seed)
     holdout: list[dict] = []
@@ -169,18 +202,23 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
     # --- vocabulary / postings -------------------------------------------
     df: Counter = Counter()
     for r in rows:
-        df.update(set(r["tokens"]) | set(r["mod_tokens"]))
+        df.update(set(r["tokens"]) | set(r["mod_tokens"]) | set(r["typ_tokens"]))
     N = len(rows)
     idf = {t: math.log(1.0 + N / (1 + c)) for t, c in df.items()}
 
     postings: dict[str, list[int]] = defaultdict(list)
     mod_postings: dict[str, list[int]] = defaultdict(list)
+    typ_postings: dict[str, list[int]] = defaultdict(list)
     for i, r in enumerate(rows):
         toks = set(r["tokens"])
         for t in toks:
             postings[t].append(i)
         for t in set(r["mod_tokens"]) - toks:
             mod_postings[t].append(i)
+        # only what the name does not already say -- a token in both fields
+        # would otherwise be counted twice for the same declaration
+        for t in set(r["typ_tokens"]) - toks:
+            typ_postings[t].append(i)
 
     # --- English -> token translation, PMI over docstrings ----------------
     pair: Counter = Counter()
@@ -228,6 +266,7 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
         "idf": idf,
         "postings": dict(postings),
         "mod_postings": dict(mod_postings),
+        "typ_postings": dict(typ_postings),
         "trans": dict(trans),
         "meta": {
             "n_decls": len(rows),
