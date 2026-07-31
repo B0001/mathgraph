@@ -344,7 +344,8 @@ which fixes both at once and, importantly, fixes (2) **without** an
 equivalence relation over names: a lone duplicate is one of nine competitors,
 so it moves the mean by about a ninth instead of collapsing the statistic. On
 a `[1.0, 1.0, 0.1×8]` score vector the old margin reads 0.0 and the new one
-reads 0.80; on a genuine nine-way tie the new one still reads 0.01.
+reads 0.80; on a genuine nine-way tie the new one reads 0.0, which is the
+correct refusal — the statistic rescues a lone duplicate, not a real tie.
 
 Collapsing duplicates explicitly was measured as an alternative and is
 **not** worth it: an apostrophe-strip rescues 9 correct retrievals but is

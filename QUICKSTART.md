@@ -89,6 +89,27 @@ this was measured — mathlib changes daily. That is worth knowing and is
 partly why the benchmark ships frozen in `bench_release/`, which does not
 depend on a live checkout.
 
+## Tests
+
+```bash
+python -m unittest discover tests              # pure logic, ~2ms
+MATHGRAPH_DATA=./mathgraph-data \
+  python -m unittest discover tests            # + calibration, ~100s
+```
+
+Stdlib `unittest`, no test dependency to install. The corpus-dependent tests
+skip themselves when there is no corpus, so the first form works on a fresh
+clone.
+
+They pin *behaviour*, not the constants — asserting `typ_weight == 0.15` would
+only restate the source. What they hold down is the properties those constants
+were fitted for: that `coverage` is a fraction, that the absent arm yields zero
+false matches, that `nonexistent` is exact including `to_additive`-generated
+names, and that the verifier profiles are strictly nested. If you change a
+scorer, the benchmark test is meant to fail — that is the signal to refit
+`GRAPH_THRESHOLDS` and `VERIFY_PROFILES` in the same commit, not to widen the
+tolerance.
+
 ## Optional: real elaborated types
 
 Everything above scrapes types out of Lean source with regexes, because it
