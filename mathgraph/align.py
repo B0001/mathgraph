@@ -194,21 +194,35 @@ class Aligner:
         mass = 0.0
         for tok, weight in qw.items():
             contrib = weight * self.idf[tok]
+            # The largest share of this token any single declaration can earn.
+            # Postings are disjoint by construction -- index.build files a
+            # declaration under mod_postings/typ_postings only for tokens its
+            # own name does not already carry -- so the ceiling is just the
+            # largest field weight in play, and `mass` stays an upper bound on
+            # `raw`. That bound is what makes coverage a fraction. Counting
+            # only the name field let a token living solely in the type or
+            # module index inflate the numerator and not the denominator, which
+            # is reachable rather than theoretical: the two-token query
+            # {equiv, bg} scored coverage 2.315 on Equiv.equivCongr_refl_left.
+            ceiling = 0.0
             arr = self.post.get(tok)
             if arr is not None and arr.size:
-                mass += contrib
+                ceiling = 1.0
                 idx_parts.append(arr)
                 wt_parts.append(np.full(arr.size, contrib, dtype=np.float32))
             marr = self.modpost.get(tok)
             if self.mod_weight and marr is not None and 0 < marr.size <= self.max_df * 6:
+                ceiling = max(ceiling, self.mod_weight)
                 idx_parts.append(marr)
                 wt_parts.append(np.full(marr.size, contrib * self.mod_weight,
                                         dtype=np.float32))
             tarr = self.typpost.get(tok)
             if self.typ_weight and tarr is not None and 0 < tarr.size <= self.max_df * 6:
+                ceiling = max(ceiling, self.typ_weight)
                 idx_parts.append(tarr)
                 wt_parts.append(np.full(tarr.size, contrib * self.typ_weight,
                                         dtype=np.float32))
+            mass += contrib * ceiling
         if not idx_parts or mass <= 0:
             return np.empty(0, dtype=np.int32), np.empty(0, dtype=np.float32), 0.0
 

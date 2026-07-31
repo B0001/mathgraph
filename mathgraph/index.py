@@ -26,7 +26,8 @@ import random
 import re
 from collections import Counter, defaultdict
 
-from .names import split_name, to_additive_name, parse_to_additive_attr
+from .names import (split_name, to_additive_name, parse_to_additive_attr,
+                    additive_tokens)
 
 STOP = set("""a an the of to in for on with and or is are be by that this it its as at from
 we if then such let there exists all any some not no non into over under between each
@@ -154,7 +155,12 @@ def expand_to_additive(rows: list[dict]) -> list[dict]:
         d = dict(r)
         d["name"] = new
         d["provenance"] = prov
+        # No source text exists for a generated twin, and inventing one would
+        # make the provenance a lie. But the *type* is recoverable: it is the
+        # original's with the multiplicative structures renamed, which is enough
+        # for the third index field and leaves `head` honestly empty.
         d["head"] = ""
+        d["typ_tokens"] = additive_tokens(type_tokens(r.get("head") or ""))
         extra.append(d)
     return rows + extra
 
@@ -179,7 +185,10 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
         # as a separate, discounted field rather than as name tokens
         r["mod_tokens"] = [t for t in split_name(r["module"])
                            if t not in ("mathlib", "basic", "defs", "lemmas")]
-        r["typ_tokens"] = type_tokens(r.get("head") or "")
+        # to_additive twins arrive from expand_to_additive with theirs already
+        # translated; everything else derives from its own type text
+        if "typ_tokens" not in r:
+            r["typ_tokens"] = type_tokens(r.get("head") or "")
 
     rng = random.Random(seed)
     holdout: list[dict] = []

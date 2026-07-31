@@ -380,6 +380,85 @@ disagreed on the same constant for no stated reason. Everything now uses 0.45. T
 gate values, which is its own small evidence that this gate is not where the
 signal lives.
 
+### Auditing the third field: two fixes, one load-bearing accident
+
+Adding a third index field put three things in the scoring path worth checking.
+All three were measured; only two were wrong, and the interesting result is the
+one that was not.
+
+**`coverage` was not a fraction.** `_score` accumulated the denominator
+`mass` only for query tokens with *name* postings, while module and type
+postings still contributed to the numerator. So a token living solely in the
+type field — exactly what the third field was added to serve — inflated
+`coverage` without bounding it. This is reachable, not theoretical: the
+two-token query `{equiv, bg}` scored **coverage 2.315** on
+`Equiv.equivCongr_refl_left`. `coverage` is the abstention statistic
+(`tau_cov=0.2474`), so the fitted threshold was reading a quantity that is not
+a fraction. Fixed by charging each token the largest field weight it can
+actually earn, which restores `mass` as an upper bound on `raw`.
+
+The honest part: at the shipped `typ_weight=0.15` this changed **nothing
+measurable**. Zero verdict flips across all 618 paper queries (439 blueprint
+pairs + 179 PFR blocks), mean inflation 0.0009, and the abstention operating
+point is identical before and after — 14 answered / 9 correct / **0 false
+matches** of 439, refitting to the same thresholds either way. It only starts
+moving verdicts around `typ_weight ≳ 1.0`, and at 2.0 it moves 143 of them and
+real queries reach coverage 1.34. It was a latent defect whose severity scales
+with a tunable constant, and the sweep above ran that constant to 1.0. Ranking
+was never affected — order comes from `raw/lennorm`, which never touches
+`mass`.
+
+**`to_additive` twins had no type field at all.** `expand_to_additive` sets
+`head = ""`, so all **10,875** generated declarations in `idx_full` carried
+zero type tokens against 99.9% of source declarations — the third field was
+structurally unable to fire for any additive lemma, in a tool benchmarked on
+additive combinatorics. The type is recoverable without inventing source text:
+it is the original's with the multiplicative structures renamed, applied at
+token granularity through mathlib's own naming dictionary
+(`names.additive_tokens`), leaving `head` honestly empty so provenance stays
+truthful.
+
+| | BP r@1/r@5 | PFR r@1/r@5 | PFR +structural |
+|---|---|---|---|
+| empty type field (shipped) | 21.0 / 30.3 | 18.9 / 32.0 | 20.0 / 38.9 |
+| twins get type tokens | **21.2 / 30.5** | 18.9 / 32.0 | **20.6** / 38.9 |
+
+Eight numbers, none worse, four better — but every delta is about **one
+statement**, which is inside the noise floor this repository has already
+established for these corpora. The case for it is that it removes a structural
+asymmetry, not that it improves the benchmark, and it needed no threshold
+refitted. It takes effect only on rebuild; existing indices are unaffected,
+which is why `bench` is unchanged.
+
+**`max_df` is bypassed, and closing it makes things worse.** `query_weights`
+admits a token if it appears in *any* field, so 27 tokens whose name document
+frequency far exceeds `max_df` (7,278) are readmitted through the module or
+type index — and `_score` then adds their full name postings at full weight.
+These are precisely the population the filter exists to exclude: `of`
+(name_df 40,069), `theory` (37,581), `is` (33,041), `set` (12,771). Several
+were newly readmitted by the type field.
+
+Gating each field on its own document frequency — what a per-field frequency
+filter should mean — costs real accuracy:
+
+| | PFR r@1/r@5 | PFR +structural |
+|---|---|---|
+| shipped (wholesale bypass) | **18.9 / 32.0** | **20.0 / 38.9** |
+| `max_df` per field | 17.1 / 30.3 | 20.0 / 35.4 |
+
+So this is a **load-bearing accident, not a bug**, and it is left alone. The
+reason it helps is that `add`, `mul`, `le`, `eq`, `set` and `is` are core
+mathlib vocabulary rather than stopwords; a flat 3%-of-corpus cutoff is simply
+miscalibrated for the name field, and the bypass has been silently
+compensating. The honest description of the shipped behaviour is that `max_df`
+applies only to tokens absent from the module and type indices. Worth
+revisiting deliberately, as a `max_df` question rather than a gating one.
+
+One more thing the audit turned up and did not fix: `type_tokens` truncates at
+`":="`, which is essential on regex-scraped heads (86% contain one, and the
+rest of the string is a definition body) but wrong on elaborated types, where
+**5.5%** contain a `":="` inside the type itself and lose every token after it.
+
 ### The library benchmark
 
 `evaluate.py` runs the docstring version with a proper negative arm:
