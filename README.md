@@ -90,8 +90,30 @@ corrupts exactly the signal this tool exists to produce.
 
 `names.py` implements the multiplicative→additive name translation and
 recovers **10,876** of them. Each carries `provenance: to_additive:inferred`
-or `:explicit`, so a match never rests on a name that was not verified to
-exist. **2,816** remain untranslatable and are reported as a known gap.
+or `:explicit`, so a match can always be traced to how the name got here.
+**2,816** remain untranslatable and are reported as a known gap.
+
+**The reconstruction is a guess, and its error rate is now measured.** Checked
+against a real elaborated environment — the ground truth, since `to_additive`
+runs at elaboration time — **29.1%** of the inferred names (2,861 of 9,847) do
+not exist, along with 11.9% of the explicit ones (117 of 981). Roughly 3,000
+of the 10,876 are inventions: `Filter.le_zero_iff`, `Filter.NeBot.le_zero_iff`
+and `Filter.EventuallyEq.mulIndicator_zero` are not declarations. The
+dictionary in `names.py` is applied unconditionally, and mathlib's real naming
+has exceptions it does not encode.
+
+This has a direct consequence for the verifier, and it is the opposite of what
+this section used to claim. `nonexistent` is exact in one direction only: a
+name genuinely absent from the index always returns it. It is **not** exact in
+the other — asking about one of those ~3,000 invented names returns a
+calibrated `verified`/`rejected` verdict for a declaration that does not
+exist. Treat `nonexistent` as sound, and its absence as merely probable.
+
+The fix is available but not yet wired up: `mathgraph elaborate` already
+produces the ground truth, so a reconstructed name could be filtered against
+it whenever an elaborated corpus is present, and flagged as unvalidated when
+one is not. That is the right shape, since it degrades honestly on the laptop
+path that has no Lean toolchain.
 
 ### 2. The English→mathlib dictionary is learned, not written
 
@@ -380,6 +402,59 @@ defaulted to 0.5 while `StructReranker` used 0.45, so the two rerankers
 disagreed on the same constant for no stated reason. Everything now uses 0.45. The tree row is unaffected either way: 21.1 / 33.1 / 40.6 at both
 gate values, which is its own small evidence that this gate is not where the
 signal lives.
+
+### The elaborated corpus cannot be evaluated on paper text
+
+`bench` runs against `idx_full`, which is regex-scraped, so `idx_elaborated` —
+the 464,208-declaration corpus the whole elaborated path was built for — had
+never been measured on paper prose. Attempting it establishes that it cannot
+be, which is worth more than the attempt.
+
+`idx_elaborated` is mathlib-only, and blueprint `\lean{}` annotations almost
+always name the *project's own* declarations rather than mathlib's. Of 618
+paper statements (439 blueprint pairs + 179 PFR blocks), the number whose gold
+answer exists in a mathlib-only corpus is **6**. Every recall figure over that
+set moves in steps of 17 percentage points. There is no measurement here, and
+reporting one would be dishonest. Evaluating the elaborated path on paper text
+requires elaborating the blueprint projects too, which means building each of
+them — hours and roughly 15 GB apiece.
+
+So the claim that elaborated types help on the real task remains **unproven,
+and is not currently provable with these corpora.** The ranking gains reported
+for the third field were measured on scraped indices, and they stand; they are
+simply not evidence about this corpus.
+
+Two things did come out of looking.
+
+**It is not "mathlib with better types".** `mathgraph elaborate` runs
+`import Mathlib` and dumps the environment, which is a much larger and
+different thing than Mathlib:
+
+| | declarations |
+|---|---|
+| Mathlib | 339,368 |
+| Lean core + Init + Std | 114,954 |
+| Aesop, Batteries, ProofWidgets, Qq, … | 9,886 |
+
+27% of the corpus is not Mathlib at all, and **8.1% (37,416) is compiler
+boilerplate** — 14,653 `noConfusion`, 7,161 `.rec`, 5,758 `.mk.inj`, 5,672
+`sizeOf_spec` — which are not mathematical statements in any sense. This is
+the likeliest explanation for the elaborated corpus underperforming its
+promise, and it is fixable by filtering rather than by tuning.
+
+**It breaks the zero-false-match claim.** At `GRAPH_THRESHOLDS`, `idx_mathlib`
+produces 0 false matches on the 612-statement absent arm and `idx_elaborated`
+produces 1 — a con-nf statement that reduces to almost nothing after math
+stripping (`"( ( ^ -1 )^ = ( ^ )^ -1 ), and ( ^ ) is permutative"`) matching
+`Array.permute!`, a **Lean core** declaration reachable only because the
+corpus contains far more than Mathlib. The thresholds were fitted on
+source-scanned indices and do not transfer to this one.
+
+For the record, the documented compact-Hausdorff behaviour reproduces on
+`idx_mathlib` exactly as written — rank 3 for "a compact subset of a Hausdorff
+space is closed" — but on `idx_elaborated` the same query gives rank **4**,
+not the rank 3 the README claimed. Several natural rephrasings reach rank 1 on
+both, which is a fair reminder of how little one query establishes.
 
 ### Auditing the third field: two fixes, one load-bearing accident
 

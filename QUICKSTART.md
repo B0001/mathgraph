@@ -58,10 +58,17 @@ uv run mathgraph verify "the sum of two continuous functions is continuous" \
 ```
 
 Exit code is 0 for `verified`, 1 otherwise, so it drops into a shell
-pipeline. `nonexistent` is an exact verdict — the name is not in the library,
-including the ~10k declarations `@[to_additive]` generates and never writes
-to source. `rejected` and `verified` are calibrated, not exact, and the
+pipeline. `rejected` and `verified` are calibrated, not exact, and the
 `reasons` field says which threshold decided it.
+
+`nonexistent` is sound but not complete. When you get it, the name really is
+absent. Not getting it means less than it looks: the index includes ~10k
+declarations reconstructed for `@[to_additive]`, which generates them at
+elaboration time and never writes them to source, and **29% of the inferred
+reconstructions name something mathlib never generated** — measured against a
+real elaborated environment. So a calibrated verdict on an unfamiliar additive
+name is not evidence the name exists. Check `provenance` on the match:
+`source` was scanned from a real file, `to_additive:*` is a guess.
 
 **Extract a paper's dependency graph.** Exact, no inference: `\label`,
 `\ref`, and `\uses` are authored edges.
@@ -104,8 +111,8 @@ clone.
 They pin *behaviour*, not the constants — asserting `typ_weight == 0.15` would
 only restate the source. What they hold down is the properties those constants
 were fitted for: that `coverage` is a fraction, that the absent arm yields zero
-false matches, that `nonexistent` is exact including `to_additive`-generated
-names, and that the verifier profiles are strictly nested. If you change a
+false matches, that `nonexistent` is sound and that `to_additive`-reconstructed
+names stay reachable, and that the verifier profiles are strictly nested. If you change a
 scorer, the benchmark test is meant to fail — that is the signal to refit
 `GRAPH_THRESHOLDS` and `VERIFY_PROFILES` in the same commit, not to widen the
 tolerance.

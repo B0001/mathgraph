@@ -98,7 +98,7 @@ noncomputable partial unsafe mutual do then else if at using by exact intro
 """.split())
 
 
-def type_tokens(head: str) -> list[str]:
+def type_tokens(head: str, elaborated: bool = False) -> list[str]:
     """Identifiers appearing in a declaration's *type*.
 
     The name says `IsCompact.isClosed`; the type says
@@ -108,8 +108,17 @@ def type_tokens(head: str) -> list[str]:
 
     Works on elaborated types (`mathgraph elaborate`) and, less well, on the
     regex-scraped declaration heads the source scanner produces.
+
+    `elaborated` decides what `:=` means, and it means opposite things in the
+    two. A scraped head runs `name : type := body`, where the body is an
+    implementation rather than part of the statement, so everything from the
+    first `:=` is cut -- 86% of scraped heads carry one. An elaborated type has
+    no body at all: every `:=` in one belongs to a structure instance inside
+    the type (`{ toConfig := toConfig, ... }`) or to a `have`/`let` binding, so
+    cutting there throws away real type text. 5.5% of elaborated declarations
+    contain one.
     """
-    body = head.split(":=", 1)[0]
+    body = head if elaborated else head.split(":=", 1)[0]
     out: list[str] = []
     for m in _LEAN_ID.finditer(body):
         w = m.group(0)
@@ -188,7 +197,9 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
         # to_additive twins arrive from expand_to_additive with theirs already
         # translated; everything else derives from its own type text
         if "typ_tokens" not in r:
-            r["typ_tokens"] = type_tokens(r.get("head") or "")
+            r["typ_tokens"] = type_tokens(
+                r.get("head") or "",
+                elaborated=r.get("provenance") == "elaborated")
 
     rng = random.Random(seed)
     holdout: list[dict] = []

@@ -212,11 +212,18 @@ class Abstention(unittest.TestCase):
 
 
 @needs("idx_full")
-class NonexistentIsExact(unittest.TestCase):
-    """`rejected` and `verified` are calibrated; `nonexistent` is not -- it is
-    an exact verdict about whether the name is in the library at all. That
-    exactness is the reason the ~10k to_additive declarations are reconstructed
-    rather than ignored."""
+class NonexistentIsSound(unittest.TestCase):
+    """`rejected` and `verified` are calibrated; `nonexistent` is a claim about
+    whether the name is in the index at all.
+
+    It is sound but NOT complete, and the tests below pin exactly that much. A
+    name absent from the index always reports nonexistent. The converse does
+    not hold: the ~10k to_additive declarations are *reconstructed* by applying
+    a naming dictionary, and 29.1% of the inferred ones name something mathlib
+    never generated (measured against a real elaborated environment). So
+    "not nonexistent" means reachable, not real -- do not strengthen these
+    tests into an existence claim the data does not support.
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -233,9 +240,13 @@ class NonexistentIsExact(unittest.TestCase):
                           "Continuous.add")
         self.assertNotEqual(v.status, NONEXISTENT)
 
-    def test_to_additive_generated_names_exist(self):
+    def test_to_additive_reconstructions_stay_reachable(self):
         """These appear in no source file. If the reconstruction regresses they
-        become invisible and the tool starts calling real lemmas nonexistent."""
+        become invisible and the tool starts calling real lemmas nonexistent.
+
+        Reachability only -- see the class docstring. Roughly 3,000 of these
+        names are inventions, and this test deliberately does not assert they
+        exist."""
         gen = [r["name"] for r in self.rows
                if r.get("provenance", "").startswith("to_additive")][:25]
         self.assertTrue(gen, "no to_additive declarations in this index")
@@ -243,6 +254,31 @@ class NonexistentIsExact(unittest.TestCase):
             self.assertNotEqual(
                 self.V.verify("an additive statement", name).status,
                 NONEXISTENT, f"{name} was reconstructed but reads nonexistent")
+
+    def test_provenance_is_reported_and_distinguishes_scanned_from_guessed(self):
+        """The only signal a caller has for how much to trust a match, now that
+        `nonexistent` is known to be incomplete.
+
+        Both kinds are drawn from the index rather than hardcoded, because
+        guessing wrong is easy: `Continuous.add` reads as a plain source lemma
+        and is in fact to_additive-generated from `Continuous.mul`.
+        """
+        want = {}
+        for r in self.rows:
+            p = r.get("provenance", "source")
+            key = "source" if p == "source" else "generated"
+            want.setdefault(key, r["name"])
+            if len(want) == 2:
+                break
+        self.assertEqual(set(want), {"source", "generated"})
+        for key, name in want.items():
+            got = self.V.verify("an arbitrary statement", name).to_json()
+            self.assertNotEqual(got["status"], NONEXISTENT)
+            if key == "source":
+                self.assertEqual(got["provenance"], "source")
+            else:
+                self.assertTrue(got["provenance"].startswith("to_additive"),
+                                f"{name} reported {got['provenance']}")
 
 
 @needs("idx_blueprint")
