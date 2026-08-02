@@ -128,6 +128,155 @@ def type_tokens(head: str, elaborated: bool = False) -> list[str]:
     return out
 
 
+# --- binder roles ----------------------------------------------------------
+# A type is not a bag. `[T2Space X]` is the mathematical hypothesis a paper
+# states in words; `{α : Type u_1}` is scaffolding. One flat weight over every
+# identifier in the type has to compromise between the two, and the measured
+# collapse of the flat field above typ_weight=0.15 is that compromise. These
+# roles exist so the two can be weighted apart -- see the sweep in the report.
+ROLES = ("inst", "impl", "expl", "hyp", "concl")
+
+# Which role wins when a token occurs in several. Postings must stay disjoint
+# per declaration or `mass` in align._score stops bounding `raw` and coverage
+# stops being a fraction. Ordered rarest-first: an identifier that appears in
+# an instance binder anywhere is filed there.
+_ROLE_PRIORITY = ("inst", "concl", "hyp", "expl", "impl")
+
+_CLOSE = {")": "(", "]": "[", "}": "{", "⟩": "⟨", "⦄": "⦃"}
+_OPEN = {v: k for k, v in _CLOSE.items()}
+_BRACKET_ROLE = {"[": "inst", "{": "impl", "⦃": "impl", "(": "expl"}
+_FORALL = "∀Π"
+# `→` only counts as a function arrow when whitespace follows. Mathlib spells
+# a dozen bundled-morphism arrows as `→` plus a modifier (`→₀`, `→+*`, `→L[R]`,
+# `→ₗ[R]`), and those are part of a type, not a top-level implication.
+_ARROW = re.compile(r"→(?=\s)|->(?=\s)")
+
+
+def _top_level(s: str):
+    """Yield (position, char) for every character at bracket depth zero."""
+    depth = 0
+    for i, c in enumerate(s):
+        if c in _OPEN:
+            depth += 1
+        elif c in _CLOSE:
+            depth = max(0, depth - 1)
+        elif depth == 0:
+            yield i, c
+
+
+def _split_top(s: str, pat: re.Pattern) -> list[str]:
+    """Split on regex matches that sit at bracket depth zero."""
+    keep = {i for i, _ in _top_level(s)}
+    parts, last = [], 0
+    for m in pat.finditer(s):
+        if m.start() in keep:
+            parts.append(s[last:m.start()])
+            last = m.end()
+    parts.append(s[last:])
+    return parts
+
+
+def _find_top(s: str, ch: str, start: int = 0) -> int:
+    for i, c in _top_level(s):
+        if i >= start and c == ch:
+            return i
+    return -1
+
+
+def _emit(text: str, role: str, out: dict) -> None:
+    for m in _LEAN_ID.finditer(text):
+        w = m.group(0)
+        if len(w) == 1 or w in _TYPE_SKIP or _UNIV.fullmatch(w):
+            continue
+        out[role].extend(split_name(w))
+
+
+def _emit_binders(region: str, out: dict, bare_role: str = "expl") -> None:
+    """Bracketed binder groups in `region`, filed by bracket shape.
+
+    The binder *names* are dropped: `[inst_2 : AddCommMonoid M]` is about
+    `AddCommMonoid`, and `inst_2` is a pretty-printer serial number. An
+    anonymous group (`[IsDomain R]`) has no name half and is kept whole.
+    """
+    depth, start, opener = 0, 0, ""
+    for i, c in enumerate(region):
+        if c in _OPEN:
+            if depth == 0:
+                _emit(region[start:i], bare_role, out)   # `∀ i,` style binders
+                opener, start = c, i + 1
+            depth += 1
+        elif c in _CLOSE:
+            depth -= 1
+            if depth == 0:
+                inner = region[start:i]
+                colon = _find_top(inner, ":")
+                if colon >= 0:
+                    inner = inner[colon + 1:]
+                _emit(inner, _BRACKET_ROLE.get(opener, bare_role), out)
+                start = i + 1
+    _emit(region[start:], bare_role, out)
+
+
+def _walk(s: str, out: dict, tail_role: str) -> None:
+    """Statement region: leading `∀`/`Π` binder groups, then arrow structure."""
+    t = s.lstrip()
+    if t[:1] in _FORALL:
+        comma = _find_top(t, ",")
+        if comma >= 0:
+            _emit_binders(t[1:comma], out)
+            _walk(t[comma + 1:], out, tail_role)
+            return
+    parts = _split_top(t, _ARROW)
+    if len(parts) > 1:
+        for p in parts[:-1]:
+            _walk(p, out, "hyp")
+        _walk(parts[-1], out, tail_role)
+        return
+    _emit(t, tail_role, out)
+
+
+def type_roles(head: str, elaborated: bool = False) -> dict[str, list[str]]:
+    """`type_tokens` split by the position each identifier occupies.
+
+    Handles both shapes the corpus contains. An elaborated type puts every
+    binder after a `∀` (`theorem f : ∀ {α} [T2Space α] (s : Set α), P → Q`);
+    a regex-scraped head puts them before the type colon
+    (`theorem f [T2Space α] (s : Set α) : P → Q`). Both reduce to: a binder
+    region left of the first top-level `:`, and a statement region right of it
+    whose last top-level `→` separates hypotheses from the conclusion.
+
+    Scraped heads under-report `inst` and there is no fix for it here: mathlib
+    hoists shared instances into file-level `variable [Group G]` lines that the
+    scanner never sees, so the instance is simply absent from the head.
+    """
+    body = head if elaborated else head.split(":=", 1)[0]
+    out: dict[str, list[str]] = {r: [] for r in ROLES}
+    # Bare text in the binder region is the declaration's own name and
+    # modifiers, which the name field already indexes; only its bracket groups
+    # are type. `""` is a bin for that, dropped on the way out.
+    out[""] = []
+    colon = _find_top(body, ":")
+    # No colon: a `def` with no ascribed type. The binders are still there;
+    # the statement is not.
+    _emit_binders(body if colon < 0 else body[:colon], out, bare_role="")
+    if colon >= 0:
+        _walk(body[colon + 1:], out, "concl")
+    del out[""]
+    return out
+
+
+def role_tokens(head: str, elaborated: bool = False) -> dict[str, list[str]]:
+    """`type_roles` reduced to one role per token, by _ROLE_PRIORITY."""
+    roles = type_roles(head, elaborated=elaborated)
+    seen: set[str] = set()
+    out: dict[str, list[str]] = {}
+    for r in _ROLE_PRIORITY:
+        toks = sorted(set(roles[r]) - seen)
+        seen.update(toks)
+        out[r] = toks
+    return out
+
+
 def doc_words(text: str) -> list[str]:
     text = re.sub(r"`[^`]*`", " ", text)          # drop inline Lean code
     text = re.sub(r"\$[^$]*\$", " ", text)        # drop inline math
