@@ -199,22 +199,59 @@ def _emit_binders(region: str, out: dict, bare_role: str = "expl") -> None:
     anonymous group (`[IsDomain R]`) has no name half and is kept whole.
     """
     depth, start, opener = 0, 0, ""
+    universe = False
     for i, c in enumerate(region):
         if c in _OPEN:
             if depth == 0:
                 _emit(region[start:i], bare_role, out)   # `∀ i,` style binders
+                # `Category.{v_1, u_1}` is a universe argument list, not an
+                # implicit binder. It is spelled with the same braces and the
+                # dot is the only thing that distinguishes it; without this,
+                # every `v_1` in the elaborated corpus is filed as a type.
+                universe = c == "{" and region[:i].rstrip().endswith(".")
                 opener, start = c, i + 1
             depth += 1
         elif c in _CLOSE:
             depth -= 1
             if depth == 0:
-                inner = region[start:i]
-                colon = _find_top(inner, ":")
-                if colon >= 0:
-                    inner = inner[colon + 1:]
-                _emit(inner, _BRACKET_ROLE.get(opener, bare_role), out)
+                if not universe:
+                    _emit(_binder_type(region[start:i], opener),
+                          _BRACKET_ROLE.get(opener, bare_role), out)
                 start = i + 1
     _emit(region[start:], bare_role, out)
+
+
+def _binder_type(inner: str, opener: str) -> str:
+    """The type half of one binder group's contents.
+
+    `[inst_2 : AddCommMonoid M]` is about `AddCommMonoid`; `inst_2` is a
+    pretty-printer serial number. A group with no colon is a type only when
+    instance brackets make it one -- `[IsDomain R]` is anonymous and kept
+    whole, but `(l r tl zl tr t)` and `{α}` are bare binder *names* with no
+    ascription and carry no type text at all.
+    """
+    colon = _find_top(inner, ":")
+    if colon >= 0:
+        return inner[colon + 1:]
+    return inner if opener in ("[", "⦃") else ""
+
+
+# A `→`-separated telescope element that is one whole bracket group is a
+# binder, not a hypothesis: elaborated `def`s print as
+# `{S : Type} → [inst : CommRing S] → Ideal S` where a theorem would print
+# `∀ {S : Type} [inst : CommRing S], ...`. Instance brackets always mean a
+# binder; round/curly ones only when they ascribe a type, so that a genuine
+# parenthesised hypothesis `(a = b) → c` is left alone.
+_BINDER_GROUP = re.compile(r"[\[{(⦃]")
+
+
+def _is_binder_group(t: str) -> bool:
+    if not _BINDER_GROUP.match(t) or _find_top(t, ",") >= 0:
+        return False
+    closed = [i for i, _ in _top_level(t)]
+    if closed and max(closed) > 0:                 # text outside the brackets
+        return False
+    return t[0] in ("[", "⦃") or _find_top(t[1:-1], ":") >= 0
 
 
 def _walk(s: str, out: dict, tail_role: str) -> None:
@@ -229,7 +266,11 @@ def _walk(s: str, out: dict, tail_role: str) -> None:
     parts = _split_top(t, _ARROW)
     if len(parts) > 1:
         for p in parts[:-1]:
-            _walk(p, out, "hyp")
+            q = p.strip()
+            if _is_binder_group(q):
+                _emit_binders(q, out)
+            else:
+                _walk(p, out, "hyp")
         _walk(parts[-1], out, tail_role)
         return
     _emit(t, tail_role, out)
