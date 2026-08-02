@@ -175,16 +175,17 @@ def cmd_scan(args):
 
 
 def cmd_index(args):
-    from .index import build
-    print(json.dumps(build(args.raw, args.out, args.holdout, args.pmi_holdout),
-                     indent=2))
+    from .index import build, find_ground_truth
+    art = os.path.join(os.path.abspath(args.data_dir), "artifacts")
+    print(json.dumps(build(args.raw, args.out, args.holdout, args.pmi_holdout,
+                           truth=find_ground_truth(art)), indent=2))
 
 
 def cmd_elaborate(args):
     """Optional upgrade path: replace regex-scraped types with real
     elaborated ones. Requires a built mathlib and a Lean toolchain."""
     from .leanast import dump, to_index_rows, merge_docs
-    from .index import build
+    from .index import build, find_ground_truth
     art = os.path.join(os.path.abspath(args.data_dir), "artifacts")
     mathlib = args.mathlib or os.path.join(os.path.abspath(args.data_dir),
                                            "mathlib4")
@@ -196,8 +197,14 @@ def cmd_elaborate(args):
         n = merge_docs(rows, src, rows + ".tmp")
         os.replace(rows + ".tmp", rows)
     out = os.path.join(art, "idx_elaborated")
-    print(json.dumps({"rows": n, "index": build(rows, out)}, indent=2))
+    # `rows` is the environment dump itself, so it is its own ground truth:
+    # every to_additive twin in it is already a real declaration and the
+    # reconstruction has nothing left to add.
+    print(json.dumps({"rows": n,
+                      "index": build(rows, out, truth=find_ground_truth(art))},
+                     indent=2))
     print("use with:  mathgraph query --corpus idx_elaborated ...")
+    print("the scraped indices can now be rebuilt against it: mathgraph setup")
 
 
 def cmd_setup(args):

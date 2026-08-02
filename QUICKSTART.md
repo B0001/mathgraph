@@ -61,14 +61,28 @@ Exit code is 0 for `verified`, 1 otherwise, so it drops into a shell
 pipeline. `rejected` and `verified` are calibrated, not exact, and the
 `reasons` field says which threshold decided it.
 
-`nonexistent` is sound but not complete. When you get it, the name really is
-absent. Not getting it means less than it looks: the index includes ~10k
-declarations reconstructed for `@[to_additive]`, which generates them at
-elaboration time and never writes them to source, and **29% of the inferred
-reconstructions name something mathlib never generated** — measured against a
-real elaborated environment. So a calibrated verdict on an unfamiliar additive
-name is not evidence the name exists. Check `provenance` on the match:
-`source` was scanned from a real file, `to_additive:*` is a guess.
+`nonexistent` is sound; whether it is also complete depends on how you built
+the index. When you get it, the name really is absent. Not getting it means
+less than it looks by default: the index includes ~10k declarations
+reconstructed for `@[to_additive]`, which generates them at elaboration time
+and never writes them to source, and **29% of the inferred reconstructions
+name something mathlib never generated**.
+
+Running `mathgraph elaborate` once fixes this. It produces a real elaborated
+environment, and every later `mathgraph setup` rebuild checks the
+reconstructions against it and drops the ~3,000 inventions. Without it nothing
+is checked and every reconstruction is kept.
+
+Check `provenance` on the match — it tells you which world you are in:
+
+| provenance | trust |
+|---|---|
+| `source` | scanned from a real file |
+| `to_additive:*:validated` | reconstructed, confirmed against a real environment |
+| `to_additive:*:unvalidated` | reconstructed, unchecked — a guess |
+
+A calibrated verdict on a `:unvalidated` additive name is not evidence the
+name exists.
 
 **Extract a paper's dependency graph.** Exact, no inference: `\label`,
 `\ref`, and `\uses` are authored edges.

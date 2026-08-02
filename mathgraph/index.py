@@ -13,6 +13,14 @@ Three artefacts come out of this:
 a paper; they write "sum", "addition", "additive". The docstrings are a
 parallel corpus between those two vocabularies and it is already sitting in
 the repository.
+
+The `to_additive` names in (1) are reconstructed by applying a naming
+dictionary, and about 29% of the inferred ones name something mathlib never
+generated. `GroundTruth` below is the optional cure: when an elaborated
+environment is available (`mathgraph elaborate`), the reconstructions are
+checked against it and the inventions are dropped. When one is not -- the
+laptop path, with no Lean toolchain -- everything is kept and the provenance
+says `:unvalidated` rather than implying a check that did not happen.
 """
 
 from __future__ import annotations
@@ -143,10 +151,74 @@ def doc_words(text: str) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def expand_to_additive(rows: list[dict]) -> list[dict]:
-    """Add the declarations `@[to_additive]` generates at elaboration time."""
+class GroundTruth:
+    """The declarations a real Lean environment actually contains.
+
+    `@[to_additive]` runs at elaboration time, so an elaborated environment is
+    not evidence about the generated names -- it *is* them. That makes it an
+    exact filter on the reconstruction, but only over the modules it covers:
+    a PFR or blueprint declaration is absent from a mathlib environment because
+    mathlib does not contain it, not because it does not exist.
+
+    So coverage is decided per module. Inside a covered module absence is
+    conclusive and an unrecognised reconstruction is dropped; outside one
+    nothing is claimed and the reconstruction is kept, marked `:unvalidated`.
+    """
+
+    def __init__(self, names: set[str], modules: set[str]):
+        self.names = names
+        self.modules = modules
+
+    @classmethod
+    def from_jsonl(cls, path: str) -> "GroundTruth":
+        names, modules = set(), set()
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    d = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                names.add(d["name"])
+                modules.add(d.get("module", ""))
+        return cls(names, modules)
+
+    def covers(self, row: dict) -> bool:
+        return row.get("module", "") in self.modules
+
+    def __contains__(self, name: str) -> bool:
+        return name in self.names
+
+    def __len__(self) -> int:
+        return len(self.names)
+
+
+def find_ground_truth(art_dir: str) -> "GroundTruth | None":
+    """The elaborated dump `mathgraph elaborate` leaves behind, if there is one."""
+    p = os.path.join(art_dir, "mathlib_elab.jsonl")
+    return GroundTruth.from_jsonl(p) if os.path.exists(p) else None
+
+
+def expand_to_additive(rows: list[dict],
+                       truth: "GroundTruth | None" = None,
+                       ) -> tuple[list[dict], dict]:
+    """Add the declarations `@[to_additive]` generates at elaboration time.
+
+    Returns (rows_plus_twins, stats). Every generated row's provenance carries
+    a third component saying whether the name was checked:
+
+        to_additive:inferred:validated     reconstructed, and the elaborated
+        to_additive:explicit:validated     environment confirms it exists
+        to_additive:inferred:unvalidated   reconstructed, nothing checked it
+        to_additive:explicit:unvalidated
+
+    Names the environment contradicts are dropped rather than kept and marked.
+    A marked invention is still retrievable, still verifiable, and still names
+    nothing -- the mark only helps a caller who reads provenance, whereas
+    dropping helps every caller including the `nonexistent` verdict.
+    """
     have = {r["name"] for r in rows}
-    extra = []
+    extra: list[dict] = []
+    stats: Counter = Counter()
     for r in rows:
         has, explicit = parse_to_additive_attr(r.get("attrs", ""))
         if not has:
@@ -154,16 +226,27 @@ def expand_to_additive(rows: list[dict]) -> list[dict]:
         if explicit:
             new = explicit if "." in explicit else (
                 f"{r['namespace']}.{explicit}" if r["namespace"] else explicit)
-            prov = "to_additive:explicit"
+            kind = "explicit"
         else:
             new = to_additive_name(r["name"])
-            prov = "to_additive:inferred"
-        if not new or new in have:
+            kind = "inferred"
+        if not new:
+            stats[f"{kind}:untranslatable"] += 1
             continue
+        if new in have:
+            continue
+        if truth is not None and truth.covers(r):
+            if new not in truth:
+                stats[f"{kind}:dropped"] += 1
+                continue
+            checked = "validated"
+        else:
+            checked = "unvalidated"
+        stats[f"{kind}:{checked}"] += 1
         have.add(new)
         d = dict(r)
         d["name"] = new
-        d["provenance"] = prov
+        d["provenance"] = f"to_additive:{kind}:{checked}"
         # No source text exists for a generated twin, and inventing one would
         # make the provenance a lie. But the *type* is recoverable: it is the
         # original's with the multiplicative structures renamed, which is enough
@@ -171,21 +254,27 @@ def expand_to_additive(rows: list[dict]) -> list[dict]:
         d["head"] = ""
         d["typ_tokens"] = additive_tokens(type_tokens(r.get("head") or ""))
         extra.append(d)
-    return rows + extra
+    return rows + extra, dict(stats)
 
 
 def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
-          pmi_holdout_frac: float = 0.0, seed: int = 0) -> dict:
+          pmi_holdout_frac: float = 0.0, seed: int = 0,
+          truth: "GroundTruth | None" = None) -> dict:
     """holdout_frac: declarations removed from the index entirely. Queries
     derived from them must be abstained on -- they are the negative controls.
 
     pmi_holdout_frac: declarations kept in the index but whose docstrings are
     withheld from the translation table. Queries derived from them are the
     positive controls, uncontaminated by having trained on their own answer.
+
+    truth: an elaborated environment to check the `to_additive` reconstruction
+    against. Optional by design -- without a Lean toolchain there is none, and
+    the index is then built with every reconstruction kept and marked
+    `:unvalidated`.
     """
     os.makedirs(out_dir, exist_ok=True)
     rows = [json.loads(l) for l in open(raw_path, encoding="utf-8")]
-    rows = expand_to_additive(rows)
+    rows, ta_stats = expand_to_additive(rows, truth)
 
     for r in rows:
         r["tokens"] = split_name(r["name"])
@@ -295,6 +384,9 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
             "n_tokens": len(idf),
             "n_trans_words": len(trans),
             "provenance": dict(Counter(r.get("provenance", "source") for r in rows)),
+            # what the reconstruction did, and whether anything checked it
+            "to_additive": ta_stats,
+            "ground_truth_decls": len(truth) if truth is not None else 0,
         },
     }
     with gzip.open(os.path.join(out_dir, "index.pkl.gz"), "wb") as fh:

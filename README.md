@@ -102,18 +102,45 @@ and `Filter.EventuallyEq.mulIndicator_zero` are not declarations. The
 dictionary in `names.py` is applied unconditionally, and mathlib's real naming
 has exceptions it does not encode.
 
-This has a direct consequence for the verifier, and it is the opposite of what
-this section used to claim. `nonexistent` is exact in one direction only: a
-name genuinely absent from the index always returns it. It is **not** exact in
-the other — asking about one of those ~3,000 invented names returns a
-calibrated `verified`/`rejected` verdict for a declaration that does not
-exist. Treat `nonexistent` as sound, and its absence as merely probable.
+**The ground truth is now wired in, and it is optional by construction.** If
+`mathgraph elaborate` has been run, `index.build` checks every reconstruction
+against the elaborated environment and drops the ones it contradicts. If it
+has not — the laptop path, with no Lean toolchain — every reconstruction is
+kept and says so. The provenance carries the answer as a third component:
 
-The fix is available but not yet wired up: `mathgraph elaborate` already
-produces the ground truth, so a reconstructed name could be filtered against
-it whenever an elaborated corpus is present, and flagged as unvalidated when
-one is not. That is the right shape, since it degrades honestly on the laptop
-path that has no Lean toolchain.
+| provenance | meaning |
+|---|---|
+| `to_additive:inferred:validated` | reconstructed, and the environment confirms it exists |
+| `to_additive:inferred:unvalidated` | reconstructed, nothing checked it |
+| `to_additive:explicit:validated` / `:unvalidated` | same, for an explicitly named twin |
+
+Absence is only read as evidence inside a module the environment covers. A PFR
+or blueprint declaration is missing from a mathlib environment because mathlib
+does not contain it, not because it does not exist, so outside those modules
+the reconstruction stands and is marked `:unvalidated`. Rebuilding the shipped
+corpora against a 464,208-declaration environment drops **3,012** names
+(2,863 inferred + 149 explicit) and validates 7,850.
+
+This is what it does to `nonexistent`, which is the verdict that motivated the
+work. On a validated mathlib-only index every surviving reconstruction is
+confirmed, so `nonexistent` is exact in **both** directions. On `idx_full` and
+`idx_blueprint` it is not: 48 and 78 reconstructions respectively sit in PFR
+and blueprint modules the mathlib environment does not cover, and those remain
+unvalidated. Without an elaborated corpus nothing is validated and the old
+caveat stands in full — `nonexistent` is sound, and its absence merely
+probable. Read `provenance`; it is the only signal that distinguishes the
+three cases.
+
+Retrieval barely moves, and the direction it moves is worth stating precisely.
+`bench` is unchanged on the lexical arm (18.9/32.0) and gains one statement on
+`+structural` r@1 (20.0 → 20.6). On the 439 blueprint pairs the abstention arm
+goes from 14 answered / 9 correct to 16 answered / 11 correct, with zero false
+matches in both. But both new answers crossed `tau_cov=0.2474` on **coverage**
+(0.238 → 0.257 and 0.243 → 0.269) while their margins did not move, so the
+gain is an IDF side-effect of a corpus 3,012 declarations smaller, not better
+matching. Two statements sitting within 0.02 of a fitted threshold is not a
+robust improvement, and `GRAPH_THRESHOLDS` was fitted before this filter
+existed. Refitting it against a validated corpus is the open item.
 
 ### 2. The English→mathlib dictionary is learned, not written
 

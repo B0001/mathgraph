@@ -75,7 +75,7 @@ def clone_blueprints(root: str) -> str:
 
 def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
     from .leanscan import write_index
-    from .index import build
+    from .index import build, find_ground_truth
     from .harvest import harvest
 
     art = os.path.join(root, "artifacts")
@@ -122,23 +122,32 @@ def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
                     fh.write(open(p, encoding="utf-8").read())
         return out
 
+    # Present only if `mathgraph elaborate` has been run. Without it every
+    # to_additive reconstruction is kept and marked `:unvalidated`; with it
+    # the ~29% that name nothing are dropped.
+    truth = find_ground_truth(art)
+    if truth is not None:
+        _log(f"to_additive ground truth: {len(truth)} elaborated declarations")
+    else:
+        _log("no elaborated corpus: to_additive names will be unvalidated")
+
     idx_mathlib = os.path.join(art, "idx_mathlib")
     if not os.path.exists(os.path.join(idx_mathlib, "index.pkl.gz")):
         _log("building index: mathlib only (absent-arm reference corpus)")
-        meta["idx_mathlib"] = build(mathlib_raw, idx_mathlib)
+        meta["idx_mathlib"] = build(mathlib_raw, idx_mathlib, truth=truth)
 
     idx_full = os.path.join(art, "idx_full")
     if not os.path.exists(os.path.join(idx_full, "index.pkl.gz")):
         _log("building index: mathlib + PFR (present-arm reference corpus)")
         combined = _combine([mathlib_raw, pfr_raw], os.path.join(art, "_full.jsonl"))
-        meta["idx_full"] = build(combined, idx_full)
+        meta["idx_full"] = build(combined, idx_full, truth=truth)
         os.unlink(combined)
 
     idx_bp = os.path.join(art, "idx_blueprint")
     if not os.path.exists(os.path.join(idx_bp, "index.pkl.gz")):
         _log("building index: mathlib + blueprints (validation corpus)")
         combined = _combine([mathlib_raw, decls_path], os.path.join(art, "_bp.jsonl"))
-        meta["idx_blueprint"] = build(combined, idx_bp)
+        meta["idx_blueprint"] = build(combined, idx_bp, truth=truth)
         os.unlink(combined)
 
     return meta

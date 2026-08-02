@@ -16,8 +16,8 @@ import numpy as np
 
 from mathgraph.align import Aligner, MARGIN_TAIL
 from mathgraph.graph import build_graph
-from mathgraph.index import (STOP, doc_words, expand_to_additive, stem,
-                             type_tokens)
+from mathgraph.index import (STOP, GroundTruth, doc_words, expand_to_additive,
+                             stem, type_tokens)
 from mathgraph.latex import extract_math, parse
 from mathgraph.names import (additive_tokens, parse_to_additive_attr,
                              split_name, to_additive_name)
@@ -111,21 +111,24 @@ class ExpandToAdditive(unittest.TestCase):
         base.update(kw)
         return base
 
+    def _expand(self, rows, truth=None):
+        out, _ = expand_to_additive(rows, truth)
+        return out
+
     def test_generates_the_twin(self):
-        out = expand_to_additive([self._row()])
-        names = {r["name"] for r in out}
+        names = {r["name"] for r in self._expand([self._row()])}
         self.assertIn("add_comm", names)
 
     def test_twin_is_flagged_by_provenance(self):
         """A match must always be traceable to how the declaration got here."""
-        twin = [r for r in expand_to_additive([self._row()])
+        twin = [r for r in self._expand([self._row()])
                 if r["name"] == "add_comm"][0]
         self.assertTrue(twin["provenance"].startswith("to_additive"))
 
     def test_twin_has_no_source_text(self):
         """No source exists for a generated declaration; inventing one would
         make the provenance a lie."""
-        twin = [r for r in expand_to_additive([self._row()])
+        twin = [r for r in self._expand([self._row()])
                 if r["name"] == "add_comm"][0]
         self.assertEqual(twin["head"], "")
 
@@ -133,20 +136,76 @@ class ExpandToAdditive(unittest.TestCase):
         """Regression guard. Twins used to carry no type tokens at all, which
         made the third index field structurally unable to fire for any additive
         lemma -- 10,875 declarations in idx_full."""
-        twin = [r for r in expand_to_additive([self._row()])
+        twin = [r for r in self._expand([self._row()])
                 if r["name"] == "add_comm"][0]
         self.assertTrue(twin["typ_tokens"], "twin must carry type tokens")
         self.assertIn("add", twin["typ_tokens"])
         self.assertNotIn("mul", twin["typ_tokens"])
 
     def test_explicit_name_is_honoured(self):
-        out = expand_to_additive([self._row(attrs="@[to_additive vadd_thing]")])
+        out = self._expand([self._row(attrs="@[to_additive vadd_thing]")])
         self.assertIn("vadd_thing", {r["name"] for r in out})
 
     def test_existing_names_are_not_duplicated(self):
         rows = [self._row(), self._row(name="add_comm", attrs="")]
-        out = expand_to_additive(rows)
+        out = self._expand(rows)
         self.assertEqual(sum(1 for r in out if r["name"] == "add_comm"), 1)
+
+
+class ToAdditiveValidation(unittest.TestCase):
+    """The reconstruction is ~29% wrong, so an elaborated environment is
+    allowed to overrule it. What is pinned here is that the check is optional
+    and that its absence is never silent."""
+
+    def _row(self, **kw):
+        base = dict(name="mul_comm", namespace="", module="Mathlib.Algebra",
+                    kind="theorem", attrs="@[to_additive]",
+                    head="theorem mul_comm : forall {M} [CommMonoid M], ...")
+        base.update(kw)
+        return base
+
+    def _truth(self, names, modules=("Mathlib.Algebra",)):
+        return GroundTruth(set(names), set(modules))
+
+    def test_without_truth_nothing_is_dropped_and_it_says_so(self):
+        """The laptop path. No toolchain means no check, and the provenance
+        must not imply one happened."""
+        out, stats = expand_to_additive([self._row()])
+        twin = [r for r in out if r["name"] == "add_comm"][0]
+        self.assertEqual(twin["provenance"], "to_additive:inferred:unvalidated")
+        self.assertEqual(stats.get("inferred:dropped", 0), 0)
+
+    def test_a_confirmed_name_is_marked_validated(self):
+        out, stats = expand_to_additive([self._row()],
+                                        self._truth(["add_comm"]))
+        twin = [r for r in out if r["name"] == "add_comm"][0]
+        self.assertEqual(twin["provenance"], "to_additive:inferred:validated")
+        self.assertEqual(stats.get("inferred:validated"), 1)
+
+    def test_an_invented_name_is_dropped(self):
+        """`Filter.le_zero_iff` is one of ~3,000 the dictionary invents. Inside
+        a covered module, absence from the environment is conclusive."""
+        out, stats = expand_to_additive([self._row()], self._truth([]))
+        self.assertNotIn("add_comm", {r["name"] for r in out})
+        self.assertEqual(stats.get("inferred:dropped"), 1)
+
+    def test_coverage_is_per_module_so_absence_is_not_overread(self):
+        """A PFR declaration is missing from a mathlib environment because
+        mathlib does not contain it, not because it does not exist. Outside a
+        covered module the reconstruction stands, unvalidated."""
+        row = self._row(module="PFR.Main")
+        out, _ = expand_to_additive([row], self._truth([], ["Mathlib.Algebra"]))
+        twin = [r for r in out if r["name"] == "add_comm"][0]
+        self.assertEqual(twin["provenance"], "to_additive:inferred:unvalidated")
+
+    def test_provenance_stays_prefix_compatible(self):
+        """Every consumer tests `startswith("to_additive")`; the third
+        component must not break them."""
+        for truth in (None, self._truth(["add_comm"]), self._truth([])):
+            out, _ = expand_to_additive([self._row()], truth)
+            for r in out:
+                if r["name"] != "mul_comm":
+                    self.assertTrue(r["provenance"].startswith("to_additive"))
 
 
 class TypeTokens(unittest.TestCase):

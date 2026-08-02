@@ -216,13 +216,20 @@ class NonexistentIsSound(unittest.TestCase):
     """`rejected` and `verified` are calibrated; `nonexistent` is a claim about
     whether the name is in the index at all.
 
-    It is sound but NOT complete, and the tests below pin exactly that much. A
-    name absent from the index always reports nonexistent. The converse does
-    not hold: the ~10k to_additive declarations are *reconstructed* by applying
-    a naming dictionary, and 29.1% of the inferred ones name something mathlib
-    never generated (measured against a real elaborated environment). So
-    "not nonexistent" means reachable, not real -- do not strengthen these
-    tests into an existence claim the data does not support.
+    It is sound, and the tests below pin exactly that. A name absent from the
+    index always reports nonexistent. Whether the converse holds depends on how
+    the index was built, so these tests deliberately do not assume it: the ~10k
+    to_additive declarations are *reconstructed* by applying a naming
+    dictionary, and 29.1% of the inferred ones name something mathlib never
+    generated. `index.build` drops those when an elaborated environment is
+    available, which makes nonexistent exact in both directions on a validated
+    mathlib-only index -- but the index under test here may have been built
+    without one, and idx_full keeps unvalidated reconstructions in PFR modules
+    the environment does not cover either way.
+
+    So "not nonexistent" means reachable, not real. Do not strengthen these
+    tests into an existence claim; assert on `provenance` instead, which is
+    where the distinction actually lives.
     """
 
     @classmethod
