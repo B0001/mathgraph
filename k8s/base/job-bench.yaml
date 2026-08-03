@@ -1,0 +1,83 @@
+# Reproduces the PFR benchmark against the corpus in the PVC.
+#
+# Requires mathgraph-setup to have completed. Kubernetes has no cross-Job
+# ordering primitive, so this is enforced by an initContainer that blocks until
+# the artifacts exist rather than by hoping the apply order holds.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mathgraph-bench
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 10800
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # Fail loudly and immediately if setup has not run, instead of letting
+        # the benchmark start and die on a missing-artifact error several
+        # minutes in. Same image, so no extra pull.
+        - name: wait-for-corpus
+          image: mathgraph:0.1.0
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c"]
+          args:
+            - |
+              if [ ! -d /data/artifacts ]; then
+                echo "corpus not initialized: /data/artifacts is missing" >&2
+                echo "run the mathgraph-setup Job first" >&2
+                exit 1
+              fi
+              echo "corpus present"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 200m, memory: 128Mi }
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
+      containers:
+        - name: bench
+          image: mathgraph:0.1.0
+          imagePullPolicy: IfNotPresent
+          args: ["bench"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              # numpy-bound and single-process (BLAS pinned to 1 thread in the
+              # image), so a second core would idle.
+              cpu: "1"
+              memory: 4Gi
+            limits:
+              cpu: "1"
+              memory: 8Gi
+          volumeMounts:
+            - name: data
+              # Writable, not readOnly: `bench` writes results back under
+              # the data dir's artifacts/.
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mathgraph-data
+        - name: tmp
+          emptyDir: {}

@@ -1,0 +1,17 @@
+# JSON 6902 -- applies to both Jobs; see the dev overlay for why.
+# Container 0 only, so the bench Job's initContainer keeps its own tiny sizing.
+- op: replace
+  path: /spec/backoffLimit
+  value: 3
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/memory
+  value: 8Gi
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/memory
+  value: 8Gi
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/cpu
+  value: "2"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/cpu
+  value: "2"

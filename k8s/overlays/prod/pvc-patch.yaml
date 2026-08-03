@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mathgraph-data
+spec:
+  resources:
+    requests:
+      # Headroom for the corpus growing between refreshes. Note that most
+      # storage classes allow expanding a PVC but never shrinking it, so this
+      # number is effectively one-way.
+      storage: 60Gi

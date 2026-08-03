@@ -1,0 +1,31 @@
+# Keep the build context small. This file is load-bearing: mathgraph-data/ is
+# ~8GB of cloned Lean repos, and without excluding it every `docker build`
+# would upload all of it to the daemon before running a single instruction.
+
+mathgraph-data
+
+.git
+.gitignore
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+*.egg-info
+**/*.egg-info
+
+# Test/lint caches
+.pytest_cache
+.ruff_cache
+
+# Not runtime inputs.
+tests
+lean
+*.jsonl
+QUICKSTART.md
+LICENSE.md
+.claude
+
+# Editor/OS noise
+.DS_Store
+.idea
+.vscode

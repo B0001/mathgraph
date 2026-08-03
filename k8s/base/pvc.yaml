@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mathgraph-data
+spec:
+  accessModes:
+    # ReadWriteOnce. The setup Job writes this once; the compute Jobs read it
+    # afterwards, never concurrently with setup. If you later want several
+    # compute Jobs reading in parallel across nodes, this must become
+    # ReadWriteMany on an RWX-capable storage class -- with RWO, the second pod
+    # scheduled to a different node stays Pending.
+    - ReadWriteOnce
+  resources:
+    requests:
+      # The local corpus measures ~8.1GB (mathlib4 plus six blueprint repos),
+      # and `setup` also builds indices on top of it. 30Gi leaves headroom for
+      # a re-clone landing beside the old copy; it is not a tight fit.
+      storage: 30Gi
