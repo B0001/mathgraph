@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - pvc.yaml
+  - job-setup.yaml
+  - job-bench.yaml
+
+labels:
+  - pairs:
+      app.kubernetes.io/name: mathgraph
+      app.kubernetes.io/part-of: mathgraph
+    # Never true for a Job: the controller owns an immutable
+    # batch.kubernetes.io/controller-uid selector.
+    includeSelectors: false
+
+images:
+  - name: mathgraph
+    newTag: 0.1.0

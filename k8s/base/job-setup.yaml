@@ -1,0 +1,64 @@
+# Run this ONCE before any compute Job -- they all fail fast with
+# "run: mathgraph setup --data-dir ..." if the artifacts are missing
+# (mathgraph/cli.py:61).
+#
+# This is the only Job here that needs egress to the public internet: it
+# git-clones mathlib4 and six blueprint repos from github.com. If the namespace
+# has a default-deny NetworkPolicy, this pod needs an explicit allow rule for
+# TCP/443 plus DNS, or the clones hang until the deadline kills them.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mathgraph-setup
+spec:
+  # Clones are the slow, flaky part. Retry, but not forever.
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  # ~8GB of shallow clones over a slow link. Generous on purpose; the retry
+  # budget above is the real guard against a wedged run.
+  activeDeadlineSeconds: 7200
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        # Makes the kubelet chown the PVC to gid 10001 so the non-root clone
+        # can write to a freshly provisioned volume.
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: setup
+          image: mathgraph:0.1.0
+          imagePullPolicy: IfNotPresent
+          # ENTRYPOINT is `mathgraph`. No --data-dir needed: MATHGRAPH_DATA is
+          # baked to /data in the image and is the flag's default.
+          args: ["setup"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              # Clone-bound, not CPU-bound: this waits on network and disk.
+              cpu: "1"
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mathgraph-data
+        # readOnlyRootFilesystem still needs a writable /tmp: HOME is set there
+        # because git will not run without a writable home for its config.
+        - name: tmp
+          emptyDir: {}
