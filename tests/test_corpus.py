@@ -210,6 +210,31 @@ class Abstention(unittest.TestCase):
         self.assertGreater(self.al.tau_cov, 0.0)
         self.assertGreater(self.al.delta_margin, 0.0)
 
+    def test_zero_false_matches_on_the_arm_it_was_fitted_on(self):
+        """The arm above is PFR; this is the 439 blueprint pairs, which is
+        what GRAPH_THRESHOLDS was actually fitted against. It was untested,
+        and that is how 0.2474/0.2671 came to hold on PFR while admitting
+        three false matches here the moment the corpus was rebuilt with the
+        to_additive ground truth wired in.
+
+        Same construction as the fit: a pair whose declaration is genuinely
+        absent from a mathlib-only index has no correct answer but abstain."""
+        pairs = bp_pairs()
+        if not pairs:
+            self.skipTest("blueprint_pairs.jsonl not present")
+        false = []
+        n = 0
+        for p in pairs:
+            if set(p["targets"]) & self.known:
+                continue                 # answer is in mathlib; not a negative
+            n += 1
+            a = self.al.align(p["text"], title=p.get("title", ""), topk=3)
+            if a.status == MATCHED:
+                false.append((p["id"], a.candidates[0].name, round(a.coverage, 4)))
+        self.assertGreater(n, 400, "expected essentially all 439 to be negatives")
+        self.assertEqual(false, [], f"{len(false)}/{n} false matches; "
+                                    f"GRAPH_THRESHOLDS need refitting")
+
 
 @needs("idx_full")
 class NonexistentIsSound(unittest.TestCase):

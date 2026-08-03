@@ -134,13 +134,16 @@ three cases.
 Retrieval barely moves, and the direction it moves is worth stating precisely.
 `bench` is unchanged on the lexical arm (18.9/32.0) and gains one statement on
 `+structural` r@1 (20.0 → 20.6). On the 439 blueprint pairs the abstention arm
-goes from 14 answered / 9 correct to 16 answered / 11 correct, with zero false
-matches in both. But both new answers crossed `tau_cov=0.2474` on **coverage**
-(0.238 → 0.257 and 0.243 → 0.269) while their margins did not move, so the
-gain is an IDF side-effect of a corpus 3,012 declarations smaller, not better
-matching. Two statements sitting within 0.02 of a fitted threshold is not a
-robust improvement, and `GRAPH_THRESHOLDS` was fitted before this filter
-existed. Refitting it against a validated corpus is the open item.
+goes from 14 answered / 9 correct to 16 answered / 11 correct. But both new
+answers crossed `tau_cov` on **coverage** (0.238 → 0.257 and 0.243 → 0.269)
+while their margins did not move, so the gain is an IDF side-effect of a corpus
+3,012 declarations smaller, not better matching. Two statements sitting within
+0.02 of a fitted threshold is not a robust improvement.
+
+That paragraph used to end "with zero false matches in both", and it was
+wrong: at the old `0.2474/0.2671` the validated corpus admits **three** false
+matches on that arm. The thresholds have been refitted and the claim now
+holds — see "Refitting against a validated corpus" below.
 
 ### 2. The English→mathlib dictionary is learned, not written
 
@@ -495,9 +498,9 @@ postings still contributed to the numerator. So a token living solely in the
 type field — exactly what the third field was added to serve — inflated
 `coverage` without bounding it. This is reachable, not theoretical: the
 two-token query `{equiv, bg}` scored **coverage 2.315** on
-`Equiv.equivCongr_refl_left`. `coverage` is the abstention statistic
-(`tau_cov=0.2474`), so the fitted threshold was reading a quantity that is not
-a fraction. Fixed by charging each token the largest field weight it can
+`Equiv.equivCongr_refl_left`. `coverage` is the abstention statistic — the
+thing `tau_cov` is compared against, at the time 0.2474 — so the fitted
+threshold was reading a quantity that is not a fraction. Fixed by charging each token the largest field weight it can
 actually earn, which restores `mass` as an upper bound on `raw`.
 
 The honest part: at the shipped `typ_weight=0.15` this changed **nothing
@@ -561,6 +564,64 @@ One more thing the audit turned up and did not fix: `type_tokens` truncates at
 `":="`, which is essential on regex-scraped heads (86% contain one, and the
 rest of the string is a definition body) but wrong on elaborated types, where
 **5.5%** contain a `":="` inside the type itself and lose every token after it.
+
+### Refitting against a validated corpus
+
+Wiring the `to_additive` ground truth in left `GRAPH_THRESHOLDS` fitted
+against a corpus the index builder no longer produces, and that was recorded
+as the open item. Closing it turned up something worse than drift.
+
+The old pair answers 14 of 439 with 9 correct and no false match on the
+unvalidated corpus it was fitted on. On the validated corpus, at the same
+thresholds, **three** statements from `equational_theories` — `387_implies_43`
+and two like it — are answered against a mathlib-only index that does not
+contain their declarations. Their coverage is 0.24743. `tau_cov` was 0.2474.
+
+That is the whole story: the fit had placed the threshold **0.0002** above the
+highest negative it had to exclude, and dropping 3,012 invented `to_additive`
+names moved the IDF enough to push three statements across it. The zero-
+false-match property was not robust to a corpus change; it was resting on the
+fourth decimal place.
+
+Refitting on the validated corpus gives `0.2525/0.2648` — 16 answered, 11
+correct, no false match. But **both** corpus states ship: `setup` validates the
+reconstruction only when `elaborate` has been run, and the laptop path has no
+Lean toolchain, so a threshold that is clean on one and not the other is not
+usable. `0.2525/0.2648` admits one false match on the unvalidated corpus.
+
+The shipped pair is fitted against the negative arms of both at once:
+
+| thresholds | validated corpus | unvalidated corpus |
+|---|---|---|
+| `0.2474/0.2671` (old) | 16 answered / 11 correct / **3 false** | 14 / 9 / 0 false |
+| `0.2525/0.2648` (validated only) | 16 / 11 / 0 false | 14 / 9 / **1 false** |
+| **`0.2525/0.2649` (shipped)** | **16 / 11 / 0 false** | **14 / 9 / 0 false** |
+
+One ten-thousandth of `delta_margin` separates the last two rows, which is a
+fair description of how much slack this operating point has ever had. The PFR
+absent arm is unaffected — 0 false matches on all three pairs, on both corpora.
+
+Two things that should have caught this earlier are now in place. The fit is
+code rather than a procedure described in prose and run by hand —
+
+```
+python -m mathgraph.evaluate graph <validated-artifacts> <unvalidated-artifacts>
+```
+
+which takes positives from the first corpus and negatives from every corpus
+given, and reproduces the shipped pair exactly. It reports its counts at the
+rounded 4-dp literal that actually ships rather than at the
+unrepresentable optimum near it — rounding a margin floor down re-admits the
+negative that set it. And the 439-pair negative arm now has a test. Only the
+PFR arm did, which is exactly why a pair that held on PFR and failed here
+could sit in `cli.py` unnoticed.
+
+Not fixed: `mathgraph setup` skips any index whose file already exists, so
+running `elaborate` after `setup` never rebuilds anything and the indices stay
+unvalidated silently — which is how the corpus this was found on got that way.
+`setup` now warns when an index predates the elaborated corpus; it still will
+not rebuild on its own, because deleting a user's built indices to regenerate
+them is not a thing a resumable bootstrap should do without being asked.
 
 ### The library benchmark
 

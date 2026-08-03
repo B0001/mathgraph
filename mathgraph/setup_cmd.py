@@ -128,6 +128,16 @@ def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
     truth = find_ground_truth(art)
     if truth is not None:
         _log(f"to_additive ground truth: {len(truth)} elaborated declarations")
+        # Every stage here skips its own output if present, which is what makes
+        # the bootstrap resumable -- and is also why an index built before
+        # `elaborate` was run stays unvalidated forever, silently.
+        stale = [n for n in ("idx_mathlib", "idx_full", "idx_blueprint")
+                 if os.path.exists(os.path.join(art, n, "index.pkl.gz"))
+                 and os.path.getmtime(os.path.join(art, n, "index.pkl.gz"))
+                 < os.path.getmtime(os.path.join(art, "mathlib_elab.jsonl"))]
+        if stale:
+            _log(f"WARNING: {', '.join(stale)} predate the elaborated corpus and "
+                 f"are not validated against it. Delete them to rebuild.")
     else:
         _log("no elaborated corpus: to_additive names will be unvalidated")
 
