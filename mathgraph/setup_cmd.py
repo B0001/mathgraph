@@ -41,8 +41,10 @@ def needs_build(idx_dir: str, truth_size: int) -> bool:
     been checked against anything.
 
     The index says which it is. `build` records `ground_truth_decls` -- 0 when
-    it ran without an elaborated environment -- and writes it beside the index,
-    so this is a small read rather than a 4s deserialisation of 240k rows.
+    it ran without an elaborated environment -- and `index_version`, and writes
+    both beside the index, so this is a small read rather than a 4s
+    deserialisation of 240k rows. The version covers the case ground truth
+    cannot: an index built by older code against the same environment.
 
     Deliberately not mtime. The indices this was found on are *newer* than the
     elaborated dump they were never validated against, because what changed was
@@ -50,15 +52,19 @@ def needs_build(idx_dir: str, truth_size: int) -> bool:
     code that consults it on 2 Aug. A file-time heuristic calls that fresh, and
     the first version of this function did.
     """
+    from .index import INDEX_VERSION
     if not os.path.exists(os.path.join(idx_dir, "index.pkl.gz")):
         return True
-    if not truth_size:
-        return False          # laptop path: no ground truth to be stale against
     p = os.path.join(idx_dir, "meta.json")
     if not os.path.exists(p):
         return True           # predates the record, so predates the validation
     with open(p, encoding="utf-8") as fh:
-        return json.load(fh).get("ground_truth_decls", 0) != truth_size
+        meta = json.load(fh)
+    if meta.get("index_version", 1) != INDEX_VERSION:
+        return True           # built by a builder that produced something else
+    if not truth_size:
+        return False          # laptop path: no ground truth to be stale against
+    return meta.get("ground_truth_decls", 0) != truth_size
 
 
 def _run(cmd, cwd=None, timeout=1800):
@@ -166,8 +172,8 @@ def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
              if os.path.exists(os.path.join(art, n, "index.pkl.gz"))
              and needs_build(os.path.join(art, n), n_truth)]
     if stale:
-        _log(f"{', '.join(stale)} were not built against this ground truth, so "
-             f"their to_additive names are unvalidated -- rebuilding")
+        _log(f"{', '.join(stale)}: built by an older builder or against a "
+             f"different ground truth -- rebuilding")
 
     idx_mathlib = os.path.join(art, "idx_mathlib")
     if needs_build(idx_mathlib, n_truth):

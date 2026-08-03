@@ -35,7 +35,17 @@ import re
 from collections import Counter, defaultdict
 
 from .names import (split_name, to_additive_name, parse_to_additive_attr,
-                    additive_tokens)
+                    additive_tokens, explicit_additive_name)
+
+# Bump when a change here alters what a rebuild would produce. `setup` skips an
+# index that already exists, so without this an index built by older code is
+# indistinguishable from a current one -- the same failure as an index built
+# before the to_additive ground truth existed, one level up. Ground truth is
+# data and is compared by size; this covers the builder itself.
+#   1  pre-2026-08 builds (no stamp)
+#   2  explicit_additive_name: @[to_additive <name>] resolves in the source's
+#      translated namespace instead of the scraped one
+INDEX_VERSION = 2
 
 STOP = set("""a an the of to in for on with and or is are be by that this it its as at from
 we if then such let there exists all any some not no non into over under between each
@@ -224,8 +234,7 @@ def expand_to_additive(rows: list[dict],
         if not has:
             continue
         if explicit:
-            new = explicit if "." in explicit else (
-                f"{r['namespace']}.{explicit}" if r["namespace"] else explicit)
+            new = explicit_additive_name(r["name"], explicit)
             kind = "explicit"
         else:
             new = to_additive_name(r["name"])
@@ -387,6 +396,7 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
             # what the reconstruction did, and whether anything checked it
             "to_additive": ta_stats,
             "ground_truth_decls": len(truth) if truth is not None else 0,
+            "index_version": INDEX_VERSION,
         },
     }
     with gzip.open(os.path.join(out_dir, "index.pkl.gz"), "wb") as fh:

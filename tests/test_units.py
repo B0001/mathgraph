@@ -22,8 +22,10 @@ from mathgraph.graph import build_graph
 from mathgraph.index import (STOP, GroundTruth, doc_words, expand_to_additive,
                              stem, type_tokens)
 from mathgraph.latex import extract_math, parse
-from mathgraph.names import (additive_tokens, parse_to_additive_attr,
-                             split_name, to_additive_name)
+from mathgraph.names import (additive_tokens, explicit_additive_name,
+                             parse_to_additive_attr, split_name,
+                             to_additive_name)
+from mathgraph.index import INDEX_VERSION
 from mathgraph.setup_cmd import needs_build
 
 
@@ -352,6 +354,54 @@ class Graph(unittest.TestCase):
                          {"not_attempted": 1})
 
 
+class ExplicitAdditiveName(unittest.TestCase):
+    """`@[to_additive <name>]` names the twin's last components; the namespace
+    it lands in is the source's, additively translated. Ported from mathlib's
+    `targetName`, and every case here was checked against a real elaborated
+    environment -- the names asserted below exist, the ones rejected do not."""
+
+    def test_short_name_keeps_the_translated_namespace(self):
+        """The case that exposed the bug. Appending to the scraped namespace
+        gave a root-level `prod`, which is not a declaration."""
+        self.assertEqual(
+            explicit_additive_name("Submonoid.FG.prod", "prod"),
+            "AddSubmonoid.FG.prod")
+        self.assertEqual(
+            explicit_additive_name("ContMDiffMul.prod", "prod"),
+            "ContMDiffAdd.prod")
+
+    def test_twin_keeps_the_depth_of_the_source(self):
+        """A multi-part explicit name gives back one namespace component per
+        component beyond its first, so the twin is as deep as the original."""
+        self.assertEqual(
+            explicit_additive_name("Foo.Submonoid.bar_mul", "Submonoid.bar_add"),
+            "Foo.Submonoid.bar_add")
+
+    def test_root_names_absolutely(self):
+        self.assertEqual(
+            explicit_additive_name("Submonoid.FG.prod", "_root_.sum"), "sum")
+
+    def test_untranslatable_namespace_is_kept_as_is(self):
+        """`translateNamespace` leaves components it has no translation for."""
+        self.assertEqual(explicit_additive_name("Foo.bar_mul", "bar_add"),
+                         "Foo.bar_add")
+
+    def test_source_with_no_namespace(self):
+        self.assertEqual(explicit_additive_name("one_lt_two", "zero_lt_two"),
+                         "zero_lt_two")
+
+    def test_scrape_artifacts_do_not_leak_into_the_name(self):
+        """`_root_.Foo.bar` inside `namespace Baz` scrapes as
+        `Baz._root_.Foo.bar`, and `abbrev GrpMax.{u}` as `GrpMax.` -- neither
+        artifact is part of the declaration's actual name."""
+        self.assertEqual(
+            explicit_additive_name("QuotientGroup._root_.Subgroup.orderIsoCon",
+                                   "AddSubgroup.orderIsoAddCon"),
+            "AddSubgroup.orderIsoAddCon")
+        self.assertEqual(explicit_additive_name("GrpMax.", "GrpMaxAux"),
+                         "GrpMaxAux")
+
+
 class NeedsBuild(unittest.TestCase):
     """`setup` skips any stage whose output exists, which is what makes the
     bootstrap resumable and is what let an index built before `elaborate` stay
@@ -364,6 +414,7 @@ class NeedsBuild(unittest.TestCase):
         open(os.path.join(self.idx, "index.pkl.gz"), "w").close()
 
     def _meta(self, **kw):
+        kw.setdefault("index_version", INDEX_VERSION)
         with open(os.path.join(self.idx, "meta.json"), "w") as fh:
             json.dump(kw, fh)
 
@@ -373,7 +424,17 @@ class NeedsBuild(unittest.TestCase):
     def test_present_index_is_not_rebuilt_without_ground_truth(self):
         """The laptop path. Nothing to be stale against, so nothing to redo,
         however the index was built."""
+        self._meta(ground_truth_decls=0)
         self.assertFalse(needs_build(self.idx, 0))
+
+    def test_index_from_an_older_builder_is_stale(self):
+        """Ground truth cannot catch this one: same environment, different
+        code. Without the stamp an index built by the old to_additive rule
+        looks current forever."""
+        self._meta(ground_truth_decls=464208, index_version=INDEX_VERSION - 1)
+        self.assertTrue(needs_build(self.idx, 464208))
+        self._meta(ground_truth_decls=0, index_version=INDEX_VERSION - 1)
+        self.assertTrue(needs_build(self.idx, 0))   # even on the laptop path
 
     def test_index_with_no_meta_is_stale(self):
         """The trap, and the shape it was actually found in: built by a

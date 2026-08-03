@@ -154,6 +154,39 @@ def to_additive_name(name: str) -> str | None:
     return ".".join(out) if hit else None
 
 
+def explicit_additive_name(src: str, explicit: str) -> str:
+    """Where `@[to_additive <explicit>]` on `src` puts the generated twin.
+
+    Ported from mathlib's own `targetName` (`Mathlib/Tactic/Translate/Core.lean`),
+    because guessing it does not work: an explicit argument names the *last
+    components* of the twin, and the namespace it lands in is the source's,
+    additively translated. `@[to_additive prod]` on `Submonoid.FG.prod` is
+    `AddSubmonoid.FG.prod` -- not `Submonoid.FG.prod`, and certainly not a
+    root-level `prod`, which is what appending to an empty scraped namespace
+    used to produce.
+
+    The rule keeps the twin at the same depth as the source: the translated
+    namespace gives up as many trailing components as the explicit name has
+    beyond its first, then the explicit name is appended. `_root_` opts out
+    and names the twin absolutely.
+    """
+    if explicit.startswith("_root_."):
+        return explicit[len("_root_."):]
+    # `_root_` inside the *source* is a scrape artifact: `_root_.Foo.bar`
+    # declared inside `namespace Baz` is scraped as `Baz._root_.Foo.bar`, and
+    # the declaration it names is `Foo.bar`.
+    if "._root_." in src:
+        src = src.split("._root_.", 1)[1]
+    src = src.rstrip(".")                # `GrpMax.` -- universe binders, scraped
+    pre = src.rsplit(".", 1)[0] if "." in src else ""
+    if not pre:
+        return explicit
+    translated = to_additive_name(pre) or pre
+    parts = translated.split(".")
+    keep = parts[:max(0, len(parts) - explicit.count("."))]
+    return ".".join([*keep, explicit])
+
+
 def parse_to_additive_attr(attr_line: str) -> tuple[bool, str | None]:
     """Return (has_to_additive, explicit_name_or_None)."""
     for body in _ATTR_RE.findall(attr_line):

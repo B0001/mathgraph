@@ -89,18 +89,24 @@ declaration is indistinguishable from a paper using something novel — which
 corrupts exactly the signal this tool exists to produce.
 
 `names.py` implements the multiplicative→additive name translation and
-recovers **10,876** of them. Each carries `provenance: to_additive:inferred`
+recovers **11,043** of them. Each carries `provenance: to_additive:inferred`
 or `:explicit`, so a match can always be traced to how the name got here.
-**2,816** remain untranslatable and are reported as a known gap.
+**2,819** remain untranslatable and are reported as a known gap.
 
 **The reconstruction is a guess, and its error rate is now measured.** Checked
 against a real elaborated environment — the ground truth, since `to_additive`
-runs at elaboration time — **29.1%** of the inferred names (2,861 of 9,847) do
-not exist, along with 11.9% of the explicit ones (117 of 981). Roughly 3,000
-of the 10,876 are inventions: `Filter.le_zero_iff`, `Filter.NeBot.le_zero_iff`
-and `Filter.EventuallyEq.mulIndicator_zero` are not declarations. The
-dictionary in `names.py` is applied unconditionally, and mathlib's real naming
-has exceptions it does not encode.
+runs at elaboration time — **29.1%** of the inferred names (2,863 of 9,847) do
+not exist: `Filter.le_zero_iff`, `Filter.NeBot.le_zero_iff` and
+`Filter.EventuallyEq.mulIndicator_zero` are not declarations. The dictionary
+in `names.py` is applied unconditionally, and mathlib's real naming has
+exceptions it does not encode.
+
+The explicitly named twins are a different story, and used to be a worse one.
+They were 11.9% wrong (117 of 981) when this was first audited, for a reason
+that turned out to be a plain bug rather than dictionary coverage — see
+[the explicit names](#the-explicit-names-were-resolved-in-the-wrong-namespace)
+below. Resolving them the way mathlib does takes them to **2.8%** (34 of
+1,196).
 
 **The ground truth is now wired in, and it is optional by construction.** If
 `mathgraph elaborate` has been run, `index.build` checks every reconstruction
@@ -118,39 +124,61 @@ Absence is only read as evidence inside a module the environment covers. A PFR
 or blueprint declaration is missing from a mathlib environment because mathlib
 does not contain it, not because it does not exist, so outside those modules
 the reconstruction stands and is marked `:unvalidated`. Rebuilding the shipped
-corpora against a 464,208-declaration environment drops **3,012** names
-(2,863 inferred + 149 explicit) and validates 7,850.
+corpora against a 464,208-declaration environment drops **2,897** names
+(2,863 inferred + 34 explicit) and validates 8,148. Each index reports its own
+counts in `meta.json`.
 
-That 149 is `idx_full`'s figure; `idx_mathlib` and `idx_blueprint` drop 153.
-The four are all `@[to_additive prod]`, which the reconstruction turns into a
-root-level `prod` — and PFR happens to declare a `prod`, so in `idx_full`
-those four collide with a name already present and are skipped rather than
-counted as dropped. Each index reports its own counts in `meta.json`.
+### The explicit names were resolved in the wrong namespace
 
-**A root-level `prod` is not what mathlib generates, and that is a second
-bug in the reconstruction.** `@[to_additive prod]` on `Submonoid.FG.prod`
-names the twin `AddSubmonoid.FG.prod`: the explicit argument replaces the
-last component, and the namespace is *additively translated*. `names.py`
-instead appends the explicit name to the scraped `namespace` field —
-untranslated, and empty for 432 of the 1,011 short-name cases, which is how
-`prod` ends up in the root namespace. Measured against the environment,
-correcting the rule changes 299 names, of which:
+The explicit drops used to be 153, and four of them said what was wrong.
+`@[to_additive prod]` on `Submonoid.FG.prod` was reconstructing a **root-level
+`prod`** — not a declaration, which is why the environment dropped it. (In
+`idx_full` those four were dropped only 149 times, because PFR declares a
+`prod` of its own and they collided with a name already present. A count that
+moves with the corpus is usually a bug wearing a disguise.)
 
-| | |
+The rule mathlib implements is in `Mathlib/Tactic/Translate/Core.lean`, in
+`targetName`, and it is not guessable: an explicit argument names the twin's
+**last components**, and the namespace it lands in is the source's,
+*additively translated*. So `@[to_additive prod]` on `Submonoid.FG.prod` is
+`AddSubmonoid.FG.prod`. The twin keeps the depth of the source — the
+translated namespace gives up one trailing component per component the
+explicit name has beyond its first — and a `_root_` prefix opts out and names
+the twin absolutely. `names.py` was instead appending the explicit name to the
+*scraped* `namespace` field: untranslated, and empty for 432 of the 1,011
+short-name cases, which is how a root-level `prod` gets invented.
+
+Ported in `explicit_additive_name`, and scored against the environment over
+all 1,228 explicit reconstructions:
+
+| | in the environment |
 |---|---|
-| **89** | currently invented, correct under the fixed rule |
-| 181 | both names exist, both in the original's module — undecided |
-| 23 | wrong either way |
-| 4 | correct now, wrong under the fixed rule (`Left.one_lt_mul` and kin) |
+| appending to the scraped namespace | 1,075 / 1,228 (87.5%) |
+| **mathlib's rule** | **1,194 / 1,228 (97.2%)** |
 
-The 89 are a clear gain and the 4 a clear loss, but the 181 are the reason
-this is recorded rather than fixed: a reconstruction row carries the *type* of
-the multiplicative original, so naming it after the wrong existing declaration
-puts real text under a real name that does not own it — and unlike an
-invention, the environment cannot catch it, because the name exists. Applying
-a naming rule that is right about 89 cases and undetermined about 181 is how
-the original 29% error got here. It needs the rule mathlib actually
-implements, not a better guess at it.
+Errors fall from 153 to 34 and `explicit:validated` rises from 864 to 1,162 —
+larger than the 119 net correction, because a wrong name that happened to
+already exist in the scraped source was silently skipped rather than added at
+all.
+
+**And it moved a threshold, on the arm that is easy to forget.** On the
+validated corpus `GRAPH_THRESHOLDS` was unaffected — still 16 answered, 11
+correct, zero false. On the *unvalidated* one, where 1,196 explicit
+reconstructions are now kept under different names and nothing filters them,
+`0.2525/0.2649` picked up one false match. Refitting against both arms again
+gives `0.2525/0.2650`: one ten-thousandth, no change in yield, clean on both.
+That is twice now that this operating point has moved by the last digit under
+a corpus change, which is the honest measure of how much slack it has. The
+verifier profiles moved by at most 0.5pt on one arm and were left alone.
+
+Two of the 34 survivors are worth naming, because they are a *third* bug and
+not this one. `Left.one_lt_mul` carries the attrs string
+`@[to_additive add_pos_of_left] alias one_lt_mul_of_left := ...` — the scraper
+has swallowed an attribute belonging to a neighbouring `alias`, so the
+explicit name is being read off the wrong declaration entirely. The old rule
+happened to get those two right by being wrong in a compensating direction.
+`leanscan.py`'s attribute capture is the thing to fix, and it is not fixed
+here.
 
 This is what it does to `nonexistent`, which is the verdict that motivated the
 work. On a validated mathlib-only index every surviving reconstruction is
@@ -626,7 +654,7 @@ The shipped pair is fitted against the negative arms of both at once:
 |---|---|---|
 | `0.2474/0.2671` (old) | 16 answered / 11 correct / **3 false** | 14 / 9 / 0 false |
 | `0.2525/0.2648` (validated only) | 16 / 11 / 0 false | 14 / 9 / **1 false** |
-| **`0.2525/0.2649` (shipped)** | **16 / 11 / 0 false** | **14 / 9 / 0 false** |
+| `0.2525/0.2649` (joint, at the time) | 16 / 11 / 0 false | 14 / 9 / 0 false |
 
 One ten-thousandth of `delta_margin` separates the last two rows, which is a
 fair description of how much slack this operating point has ever had. The PFR
@@ -671,8 +699,9 @@ and makes the provenance histogram legible without loading anything:
 ```json
 { "provenance": { "source": 230742,
                   "to_additive:inferred:validated": 6986,
-                  "to_additive:explicit:validated": 864 },
-  "ground_truth_decls": 464208 }
+                  "to_additive:explicit:validated": 1162 },
+  "ground_truth_decls": 464208,
+  "index_version": 2 }
 ```
 
 So `setup` rebuilds an index whose `ground_truth_decls` does not match the
@@ -681,6 +710,13 @@ without one), or a different number (elaborated against a different mathlib).
 An index with no ground truth in hand is never rebuilt, because the laptop
 path has nothing to be stale against. Re-running `setup` on a current corpus
 is still a 2s no-op.
+
+`index_version` covers the case ground truth cannot, and the very next commit
+needed it: fixing the explicit-name rule changed what a rebuild produces
+without changing the environment it is checked against, so every existing
+index was current by every test above and wrong anyway. The stamp is a
+constant in `index.py` bumped when the builder's output changes — the same
+staleness question asked about the code instead of the data.
 
 ### The library benchmark
 
@@ -1030,7 +1066,7 @@ matches into `GRAPH_THRESHOLDS`, so they were re-measured after the rebuild
 | permissive | 40.1 → **41.0%** | 68.6 → **64.9%** | 0.0 → **0.2%** |
 
 Every profile moved better on both arms at once — more correct accepted, fewer
-hard negatives — which is what dropping 3,012 names that do not exist should
+hard negatives — which is what dropping ~3,000 names that do not exist should
 do to a layer whose first check is existence. The one regression is a single
 random proposal of 439 accepted by `permissive`. No profile needed moving.
 

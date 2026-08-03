@@ -35,7 +35,7 @@ LEX = dict(len_pivot=0.75, mod_weight=0.1, typ_weight=0.15,
 # observed coverage and margin value at the zero-false-match constraint.
 # Reproduce with `python -m mathgraph.evaluate graph <validated> <unvalidated>`
 # (positives from the first, negatives from both).
-# delta_margin is not comparable across margin definitions -- 0.2649 here is
+# delta_margin is not comparable across margin definitions -- 0.2650 here is
 # against the tail-mean separation statistic, not the old rank-1-vs-2 one.
 # The constraint is held on the negative arms of *both* corpus states, because
 # both are shipped: `setup` validates the to_additive reconstruction only when
@@ -45,9 +45,11 @@ LEX = dict(len_pivot=0.75, mod_weight=0.1, typ_weight=0.15,
 # History: 0.35/0.08 answered 1 of 439 with 1 false match; rank-1-vs-2
 # refitted answered 13 with 10 correct and none false; 0.2474/0.2671 answered
 # 14 with 9 correct and none false on an unvalidated corpus but 16 with 11 and
-# *three* false on a validated one; this answers 16 with 11 correct and none
-# false on the validated corpus, and 14 with 9 and none false on the other.
-GRAPH_THRESHOLDS = dict(tau_cov=0.2525, delta_margin=0.2649)
+# *three* false on a validated one; 0.2525/0.2649 was clean on both until
+# fixing the explicit to_additive names put one false match back on the
+# unvalidated arm. This answers 16 with 11 correct on the validated corpus and
+# 14 with 9 on the unvalidated one, with no false match on either.
+GRAPH_THRESHOLDS = dict(tau_cov=0.2525, delta_margin=0.2650)
 # Verifier thresholds calibrated on non-PFR blueprint projects.
 # Re-checked after the length-normalisation fix by asking, for each profile,
 # whether any threshold accepts strictly more correct proposals at no worse
