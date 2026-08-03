@@ -391,6 +391,12 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
     }
     with gzip.open(os.path.join(out_dir, "index.pkl.gz"), "wb") as fh:
         pickle.dump(art, fh, protocol=4)
+    # The same meta, readable without deserialising 240k rows. `setup` needs
+    # `ground_truth_decls` to decide whether an existing index was built
+    # against the elaborated environment, and paying a 4s index load to answer
+    # one integer is what made that check not worth doing.
+    with open(os.path.join(out_dir, "meta.json"), "w", encoding="utf-8") as fh:
+        json.dump(art["meta"], fh, indent=2)
     for fname, bucket in (("holdout.jsonl", holdout), ("devpos.jsonl", pmi_holdout)):
         if not bucket:
             continue

@@ -31,6 +31,36 @@ BLUEPRINTS = [
 ]
 
 
+def needs_build(idx_dir: str, truth_size: int) -> bool:
+    """Is this index missing, or built against a different ground truth?
+
+    Every stage of the bootstrap skips its own output if present, which is what
+    makes it resumable and is also what used to make an index built before
+    `mathgraph elaborate` stay unvalidated forever: nothing ever rebuilt it, so
+    `setup` reported success over a corpus whose to_additive names had never
+    been checked against anything.
+
+    The index says which it is. `build` records `ground_truth_decls` -- 0 when
+    it ran without an elaborated environment -- and writes it beside the index,
+    so this is a small read rather than a 4s deserialisation of 240k rows.
+
+    Deliberately not mtime. The indices this was found on are *newer* than the
+    elaborated dump they were never validated against, because what changed was
+    the builder rather than the ground truth: the dump landed on 28 Jul and the
+    code that consults it on 2 Aug. A file-time heuristic calls that fresh, and
+    the first version of this function did.
+    """
+    if not os.path.exists(os.path.join(idx_dir, "index.pkl.gz")):
+        return True
+    if not truth_size:
+        return False          # laptop path: no ground truth to be stale against
+    p = os.path.join(idx_dir, "meta.json")
+    if not os.path.exists(p):
+        return True           # predates the record, so predates the validation
+    with open(p, encoding="utf-8") as fh:
+        return json.load(fh).get("ground_truth_decls", 0) != truth_size
+
+
 def _run(cmd, cwd=None, timeout=1800):
     return subprocess.run(cmd, cwd=cwd, timeout=timeout,
                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -126,35 +156,33 @@ def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
     # to_additive reconstruction is kept and marked `:unvalidated`; with it
     # the ~29% that name nothing are dropped.
     truth = find_ground_truth(art)
+    n_truth = len(truth) if truth is not None else 0
     if truth is not None:
-        _log(f"to_additive ground truth: {len(truth)} elaborated declarations")
-        # Every stage here skips its own output if present, which is what makes
-        # the bootstrap resumable -- and is also why an index built before
-        # `elaborate` was run stays unvalidated forever, silently.
-        stale = [n for n in ("idx_mathlib", "idx_full", "idx_blueprint")
-                 if os.path.exists(os.path.join(art, n, "index.pkl.gz"))
-                 and os.path.getmtime(os.path.join(art, n, "index.pkl.gz"))
-                 < os.path.getmtime(os.path.join(art, "mathlib_elab.jsonl"))]
-        if stale:
-            _log(f"WARNING: {', '.join(stale)} predate the elaborated corpus and "
-                 f"are not validated against it. Delete them to rebuild.")
+        _log(f"to_additive ground truth: {n_truth} elaborated declarations")
     else:
         _log("no elaborated corpus: to_additive names will be unvalidated")
 
+    stale = [n for n in ("idx_mathlib", "idx_full", "idx_blueprint")
+             if os.path.exists(os.path.join(art, n, "index.pkl.gz"))
+             and needs_build(os.path.join(art, n), n_truth)]
+    if stale:
+        _log(f"{', '.join(stale)} were not built against this ground truth, so "
+             f"their to_additive names are unvalidated -- rebuilding")
+
     idx_mathlib = os.path.join(art, "idx_mathlib")
-    if not os.path.exists(os.path.join(idx_mathlib, "index.pkl.gz")):
+    if needs_build(idx_mathlib, n_truth):
         _log("building index: mathlib only (absent-arm reference corpus)")
         meta["idx_mathlib"] = build(mathlib_raw, idx_mathlib, truth=truth)
 
     idx_full = os.path.join(art, "idx_full")
-    if not os.path.exists(os.path.join(idx_full, "index.pkl.gz")):
+    if needs_build(idx_full, n_truth):
         _log("building index: mathlib + PFR (present-arm reference corpus)")
         combined = _combine([mathlib_raw, pfr_raw], os.path.join(art, "_full.jsonl"))
         meta["idx_full"] = build(combined, idx_full, truth=truth)
         os.unlink(combined)
 
     idx_bp = os.path.join(art, "idx_blueprint")
-    if not os.path.exists(os.path.join(idx_bp, "index.pkl.gz")):
+    if needs_build(idx_bp, n_truth):
         _log("building index: mathlib + blueprints (validation corpus)")
         combined = _combine([mathlib_raw, decls_path], os.path.join(art, "_bp.jsonl"))
         meta["idx_blueprint"] = build(combined, idx_bp, truth=truth)

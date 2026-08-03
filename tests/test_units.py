@@ -10,6 +10,9 @@ only restate the source; these assert the properties the constants and
 algorithms were chosen for.
 """
 
+import json
+import os
+import tempfile
 import unittest
 
 import numpy as np
@@ -21,6 +24,7 @@ from mathgraph.index import (STOP, GroundTruth, doc_words, expand_to_additive,
 from mathgraph.latex import extract_math, parse
 from mathgraph.names import (additive_tokens, parse_to_additive_attr,
                              split_name, to_additive_name)
+from mathgraph.setup_cmd import needs_build
 
 
 class Stem(unittest.TestCase):
@@ -346,6 +350,48 @@ class Graph(unittest.TestCase):
         self.assertTrue(all("alignment" not in n for n in self.g["nodes"]))
         self.assertEqual(self.g["summary"]["alignment_status"],
                          {"not_attempted": 1})
+
+
+class NeedsBuild(unittest.TestCase):
+    """`setup` skips any stage whose output exists, which is what makes the
+    bootstrap resumable and is what let an index built before `elaborate` stay
+    unvalidated forever -- nothing rebuilt it and nothing said so."""
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+        self.idx = os.path.join(self.d, "idx_mathlib")
+        os.makedirs(self.idx)
+        open(os.path.join(self.idx, "index.pkl.gz"), "w").close()
+
+    def _meta(self, **kw):
+        with open(os.path.join(self.idx, "meta.json"), "w") as fh:
+            json.dump(kw, fh)
+
+    def test_missing_index_is_built(self):
+        self.assertTrue(needs_build(os.path.join(self.d, "nope"), 464208))
+
+    def test_present_index_is_not_rebuilt_without_ground_truth(self):
+        """The laptop path. Nothing to be stale against, so nothing to redo,
+        however the index was built."""
+        self.assertFalse(needs_build(self.idx, 0))
+
+    def test_index_with_no_meta_is_stale(self):
+        """The trap, and the shape it was actually found in: built by a
+        version of `build` that had no ground truth to record."""
+        self.assertTrue(needs_build(self.idx, 464208))
+
+    def test_index_built_without_the_ground_truth_is_stale(self):
+        self._meta(ground_truth_decls=0)
+        self.assertTrue(needs_build(self.idx, 464208))
+
+    def test_index_built_against_a_different_ground_truth_is_stale(self):
+        """A re-elaborated mathlib is a different corpus, not the same one."""
+        self._meta(ground_truth_decls=460000)
+        self.assertTrue(needs_build(self.idx, 464208))
+
+    def test_index_built_against_this_ground_truth_is_done(self):
+        self._meta(ground_truth_decls=464208)
+        self.assertFalse(needs_build(self.idx, 464208))
 
 
 if __name__ == "__main__":

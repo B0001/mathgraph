@@ -616,12 +616,40 @@ negative that set it. And the 439-pair negative arm now has a test. Only the
 PFR arm did, which is exactly why a pair that held on PFR and failed here
 could sit in `cli.py` unnoticed.
 
-Not fixed: `mathgraph setup` skips any index whose file already exists, so
-running `elaborate` after `setup` never rebuilds anything and the indices stay
-unvalidated silently — which is how the corpus this was found on got that way.
-`setup` now warns when an index predates the elaborated corpus; it still will
-not rebuild on its own, because deleting a user's built indices to regenerate
-them is not a thing a resumable bootstrap should do without being asked.
+### The index that reported itself fresh
+
+The corpus above was found unvalidated for a reason worth writing down.
+`setup` skips any stage whose output already exists — that is what makes the
+bootstrap resumable — so running `elaborate` afterwards rebuilt nothing, and
+`setup` then reported success over a corpus whose `to_additive` names had
+never been checked against anything.
+
+The obvious fix is to treat an index older than the elaborated dump as stale.
+It does not work, and shipping it would have been worse than the bug: **the
+indices in question are newer than the dump they were never validated
+against.** The dump landed on 28 Jul and the indices on 28 Jul nine minutes
+later; the code that consults the dump landed on 2 Aug. What went stale was
+the builder, not the ground truth, and no file time can see that.
+
+What can see it is the index. `build` already computed `ground_truth_decls` —
+0 when it ran without an elaborated environment — and buried it in the pickle,
+where reading it costs a 4s deserialisation of 240k rows. It is now also
+written to `meta.json` beside the index, which makes the check a small read,
+and makes the provenance histogram legible without loading anything:
+
+```json
+{ "provenance": { "source": 230742,
+                  "to_additive:inferred:validated": 6986,
+                  "to_additive:explicit:validated": 864 },
+  "ground_truth_decls": 464208 }
+```
+
+So `setup` rebuilds an index whose `ground_truth_decls` does not match the
+environment in hand — missing (built before the field existed), 0 (built
+without one), or a different number (elaborated against a different mathlib).
+An index with no ground truth in hand is never rebuilt, because the laptop
+path has nothing to be stale against. Re-running `setup` on a current corpus
+is still a 2s no-op.
 
 ### The library benchmark
 
