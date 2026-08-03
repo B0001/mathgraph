@@ -121,6 +121,37 @@ the reconstruction stands and is marked `:unvalidated`. Rebuilding the shipped
 corpora against a 464,208-declaration environment drops **3,012** names
 (2,863 inferred + 149 explicit) and validates 7,850.
 
+That 149 is `idx_full`'s figure; `idx_mathlib` and `idx_blueprint` drop 153.
+The four are all `@[to_additive prod]`, which the reconstruction turns into a
+root-level `prod` — and PFR happens to declare a `prod`, so in `idx_full`
+those four collide with a name already present and are skipped rather than
+counted as dropped. Each index reports its own counts in `meta.json`.
+
+**A root-level `prod` is not what mathlib generates, and that is a second
+bug in the reconstruction.** `@[to_additive prod]` on `Submonoid.FG.prod`
+names the twin `AddSubmonoid.FG.prod`: the explicit argument replaces the
+last component, and the namespace is *additively translated*. `names.py`
+instead appends the explicit name to the scraped `namespace` field —
+untranslated, and empty for 432 of the 1,011 short-name cases, which is how
+`prod` ends up in the root namespace. Measured against the environment,
+correcting the rule changes 299 names, of which:
+
+| | |
+|---|---|
+| **89** | currently invented, correct under the fixed rule |
+| 181 | both names exist, both in the original's module — undecided |
+| 23 | wrong either way |
+| 4 | correct now, wrong under the fixed rule (`Left.one_lt_mul` and kin) |
+
+The 89 are a clear gain and the 4 a clear loss, but the 181 are the reason
+this is recorded rather than fixed: a reconstruction row carries the *type* of
+the multiplicative original, so naming it after the wrong existing declaration
+puts real text under a real name that does not own it — and unlike an
+invention, the environment cannot catch it, because the name exists. Applying
+a naming rule that is right about 89 cases and undetermined about 181 is how
+the original 29% error got here. It needs the rule mathlib actually
+implements, not a better guess at it.
+
 This is what it does to `nonexistent`, which is the verdict that motivated the
 work. On a validated mathlib-only index every surviving reconstruction is
 confirmed, so `nonexistent` is exact in **both** directions. On `idx_full` and
@@ -985,6 +1016,44 @@ absolute rates are higher. `precise` and `permissive` are the original
 constants, which survived the scoring change on the frontier; `balanced` is
 refitted. See [Recalibration after the
 fix](#recalibration-after-the-fix).
+
+### Re-checked against the validated corpus
+
+These profiles were fitted on the same unvalidated corpus that put three false
+matches into `GRAPH_THRESHOLDS`, so they were re-measured after the rebuild
+(`python -m mathgraph.evaluate verify <artifacts>`):
+
+| profile | accepts correct | top *wrong* candidate | random |
+|---|---|---|---|
+| precise | 18.0 → **18.7%** | 18.7 → **17.5%** | 0.0 → 0.0% |
+| balanced | 26.2 → **26.9%** | 33.1 → **28.2%** | 0.0 → 0.0% |
+| permissive | 40.1 → **41.0%** | 68.6 → **64.9%** | 0.0 → **0.2%** |
+
+Every profile moved better on both arms at once — more correct accepted, fewer
+hard negatives — which is what dropping 3,012 names that do not exist should
+do to a layer whose first check is existence. The one regression is a single
+random proposal of 439 accepted by `permissive`. No profile needed moving.
+
+Searching for one anyway is where this gets interesting. Sweep every observed
+(`tau_abs`, `tau_rel`) and the criterion in this repo — accepts strictly more
+correct at no worse rate on *every* negative population — is met by 227
+alternatives to `precise`, 52 to `balanced`, and 70 to `permissive`, the best
+of them worth +7, +3 and +3 statements. Taking any of them would be a mistake.
+Selecting the maximum of ~100k grid points against 439 statements finds a gain
+whether or not one exists, so the sweep was redone fitted on three blueprint
+projects and scored on the two held out (`LeanAPAP`, `con-nf`):
+
+| profile | held-out correct | held-out hard negative |
+|---|---|---|
+| precise | 9.2% → 13.2% | 14.5% → **19.7%** |
+| balanced | 18.4% → 18.4% | 32.9% → **34.2%** |
+| permissive | 38.2% → 42.1% | 59.2% → **69.7%** |
+
+Not one of them still dominates. `balanced` buys nothing at all and costs on
+the negative arm; the other two buy three statements each and pay five and ten
+points of false accepts for them. The dominance was in-fold only. This is the
+same instinct that declined to move `permissive` for a one-statement gain
+earlier — now with the held-out arm that shows it was right.
 
 ## The shipped benchmark
 
