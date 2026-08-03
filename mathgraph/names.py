@@ -65,6 +65,31 @@ _TO_ADDITIVE_CAMEL = {
 _ATTR_RE = re.compile(r"@\[([^\]]*)\]")
 _TO_ADD_RE = re.compile(r"\bto_additive\b\s*(?P<rest>[^,\]]*)")
 
+# Token-level view of the same dictionary, for translating a *type* rather than
+# a name. Only the single-word keys apply: tokens arrive already split by
+# split_name, so a multi-word key like `mul_indicator` can never match one.
+_TOKEN_MAP = {k: v.split("_") for k, v in _TO_ADDITIVE_SNAKE.items()
+              if "_" not in k}
+
+
+def additive_tokens(tokens: list[str]) -> list[str]:
+    """Translate type tokens from the multiplicative to the additive vocabulary.
+
+    `@[to_additive]` generates its declarations at elaboration time and never
+    writes them to source, so a scanned twin has no type text of its own and its
+    third index field would be empty -- see `index.expand_to_additive`. The
+    additive twin's type is the original's with the multiplicative structures
+    replaced, and tokens are the right granularity for that substitution since
+    `type_tokens` has already split and lowercased everything.
+
+    Approximate by construction: it inherits exactly the coverage of mathlib's
+    naming dictionary above, so an unlisted structure passes through unchanged.
+    """
+    out: list[str] = []
+    for t in tokens:
+        out.extend(_TOKEN_MAP.get(t, (t,)))
+    return out
+
 
 def _translate_snake(part: str) -> str | None:
     """Translate one dot-component written in snake_case."""

@@ -40,7 +40,7 @@ uv run mathgraph setup
 
 **Rank candidate declarations for an informal statement.** Pass the formulas
 too — they carry more signal than the prose does, and the structural
-reranker is worth about +40% recall@5 over lexical alone.
+reranker is worth about +22% recall@5 over lexical alone.
 
 ```bash
 uv run mathgraph query \
@@ -58,10 +58,31 @@ uv run mathgraph verify "the sum of two continuous functions is continuous" \
 ```
 
 Exit code is 0 for `verified`, 1 otherwise, so it drops into a shell
-pipeline. `nonexistent` is an exact verdict — the name is not in the library,
-including the ~10k declarations `@[to_additive]` generates and never writes
-to source. `rejected` and `verified` are calibrated, not exact, and the
+pipeline. `rejected` and `verified` are calibrated, not exact, and the
 `reasons` field says which threshold decided it.
+
+`nonexistent` is sound; whether it is also complete depends on how you built
+the index. When you get it, the name really is absent. Not getting it means
+less than it looks by default: the index includes ~10k declarations
+reconstructed for `@[to_additive]`, which generates them at elaboration time
+and never writes them to source, and **29% of the inferred reconstructions
+name something mathlib never generated**.
+
+Running `mathgraph elaborate` once fixes this. It produces a real elaborated
+environment, and every later `mathgraph setup` rebuild checks the
+reconstructions against it and drops the ~3,000 inventions. Without it nothing
+is checked and every reconstruction is kept.
+
+Check `provenance` on the match — it tells you which world you are in:
+
+| provenance | trust |
+|---|---|
+| `source` | scanned from a real file |
+| `to_additive:*:validated` | reconstructed, confirmed against a real environment |
+| `to_additive:*:unvalidated` | reconstructed, unchecked — a guess |
+
+A calibrated verdict on a `:unvalidated` additive name is not evidence the
+name exists.
 
 **Extract a paper's dependency graph.** Exact, no inference: `\label`,
 `\ref`, and `\uses` are authored edges.
@@ -80,14 +101,35 @@ uv run mathgraph bench
 Expected, on the held-out PFR blueprint:
 
 ```json
-{"lexical":     {"n": 175, "recall@1": 0.177, "recall@5": 0.291},
- "+structural": {"n": 175, "recall@1": 0.206, "recall@5": 0.366}}
+{"lexical":     {"n": 175, "recall@1": 0.189, "recall@5": 0.32},
+ "+structural": {"n": 175, "recall@1": 0.2,   "recall@5": 0.389}}
 ```
 
 If those numbers don't reproduce exactly, the corpora have moved on since
 this was measured — mathlib changes daily. That is worth knowing and is
 partly why the benchmark ships frozen in `bench_release/`, which does not
 depend on a live checkout.
+
+## Tests
+
+```bash
+python -m unittest discover tests              # pure logic, ~2ms
+MATHGRAPH_DATA=./mathgraph-data \
+  python -m unittest discover tests            # + calibration, ~100s
+```
+
+Stdlib `unittest`, no test dependency to install. The corpus-dependent tests
+skip themselves when there is no corpus, so the first form works on a fresh
+clone.
+
+They pin *behaviour*, not the constants — asserting `typ_weight == 0.15` would
+only restate the source. What they hold down is the properties those constants
+were fitted for: that `coverage` is a fraction, that the absent arm yields zero
+false matches, that `nonexistent` is sound and that `to_additive`-reconstructed
+names stay reachable, and that the verifier profiles are strictly nested. If you change a
+scorer, the benchmark test is meant to fail — that is the signal to refit
+`GRAPH_THRESHOLDS` and `VERIFY_PROFILES` in the same commit, not to widen the
+tolerance.
 
 ## Optional: real elaborated types
 
@@ -104,15 +146,21 @@ uv run mathgraph query --corpus idx_elaborated "..." --math '...'
 ```
 
 This replaces scraped type text with pretty-printed, typeclass-resolved,
-notation-expanded statements. The structural matchers read types as text, so
-they consume the better input with no code changes — that interface was the
-reason to shape them that way.
+notation-expanded statements, and the type's identifiers become a third
+indexed field alongside name and module tokens — which is what lets a query
+say "Hausdorff" and reach `IsCompact.isClosed`, whose name never mentions it.
 
-**Caveat, stated plainly:** the Lean side of this path (`lean/DumpDecls.lean`)
-was written without a toolchain available to run it. The Python ingest is
-tested against synthetic elaborated input and the matchers verified to
-consume it; the Lean dumper itself is unrun. Expect to fix an API detail or
-two against your mathlib version. Nothing else depends on it.
+Run against mathlib at `v4.33.0-rc1` this produces **480,883 declarations** in
+about 13 minutes, peaking at 5.9 GB of RAM — so 16 GB is enough, despite the
+`import Mathlib`.
+
+Two things that will bite you:
+
+- `mathgraph setup` makes a **sparse** clone containing only `Mathlib/`, which
+  cannot build. Run `git sparse-checkout disable` in the checkout first, or
+  lake will fail on a missing `Cache/Main.lean`.
+- The build itself is the expensive part: ~7 GB of `.lake` artifacts on top of
+  the clone, well beyond the ~600 MB the rest of the pipeline needs.
 
 ## Layout
 

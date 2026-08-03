@@ -74,10 +74,10 @@ class Aligner:
     """Scores informal text against the mathlib name-token index."""
 
     def __init__(self, art: dict, max_df_frac: float = 0.03,
-                 tau_cov: float = 0.2347, delta_margin: float = 0.2722,
+                 tau_cov: float = 0.2474, delta_margin: float = 0.2671,
                  expand_k: int = 8, expand_alpha: float = 0.85,
                  len_pivot: float = 0.75, mod_weight: float = 0.35,
-                 prefix_weight: float = 0.7,
+                 typ_weight: float = 0.15, prefix_weight: float = 0.7,
                  title_boost: float = 1.6):
         self.rows = art["rows"]
         self.idf = art["idf"]
@@ -89,6 +89,7 @@ class Aligner:
         self.expand_k = expand_k
         self.expand_alpha = expand_alpha
         self.mod_weight = mod_weight
+        self.typ_weight = typ_weight
         self.prefix_weight = prefix_weight
         self.title_boost = title_boost
 
@@ -113,6 +114,12 @@ class Aligner:
                      for t, v in art["postings"].items()}
         self.modpost = {t: np.asarray(v, dtype=np.int32)
                         for t, v in art.get("mod_postings", {}).items()}
+        # Third field: identifiers from the declaration's own type. A name
+        # index cannot answer "Hausdorff" for `IsCompact.isClosed`, because
+        # the hypothesis is `[T2Space X]` in the type and appears nowhere in
+        # the name. Absent on indices built before this field existed.
+        self.typpost = {t: np.asarray(v, dtype=np.int32)
+                        for t, v in art.get("typ_postings", {}).items()}
         # token -> stem, so a query word can hit a token that is a plural or
         # a participle of itself without going through the PMI table
         self.by_stem: dict[str, list[str]] = {}
@@ -135,7 +142,7 @@ class Aligner:
             if tok not in self.idf:
                 return
             if not (len(self.post.get(tok, ())) <= self.max_df
-                    or tok in self.modpost):
+                    or tok in self.modpost or tok in self.typpost):
                 return
             # An expansion is a hypothesis about what mathlib calls this word;
             # it cannot be stronger evidence than the word actually written.
@@ -187,16 +194,35 @@ class Aligner:
         mass = 0.0
         for tok, weight in qw.items():
             contrib = weight * self.idf[tok]
+            # The largest share of this token any single declaration can earn.
+            # Postings are disjoint by construction -- index.build files a
+            # declaration under mod_postings/typ_postings only for tokens its
+            # own name does not already carry -- so the ceiling is just the
+            # largest field weight in play, and `mass` stays an upper bound on
+            # `raw`. That bound is what makes coverage a fraction. Counting
+            # only the name field let a token living solely in the type or
+            # module index inflate the numerator and not the denominator, which
+            # is reachable rather than theoretical: the two-token query
+            # {equiv, bg} scored coverage 2.315 on Equiv.equivCongr_refl_left.
+            ceiling = 0.0
             arr = self.post.get(tok)
             if arr is not None and arr.size:
-                mass += contrib
+                ceiling = 1.0
                 idx_parts.append(arr)
                 wt_parts.append(np.full(arr.size, contrib, dtype=np.float32))
             marr = self.modpost.get(tok)
             if self.mod_weight and marr is not None and 0 < marr.size <= self.max_df * 6:
+                ceiling = max(ceiling, self.mod_weight)
                 idx_parts.append(marr)
                 wt_parts.append(np.full(marr.size, contrib * self.mod_weight,
                                         dtype=np.float32))
+            tarr = self.typpost.get(tok)
+            if self.typ_weight and tarr is not None and 0 < tarr.size <= self.max_df * 6:
+                ceiling = max(ceiling, self.typ_weight)
+                idx_parts.append(tarr)
+                wt_parts.append(np.full(tarr.size, contrib * self.typ_weight,
+                                        dtype=np.float32))
+            mass += contrib * ceiling
         if not idx_parts or mass <= 0:
             return np.empty(0, dtype=np.int32), np.empty(0, dtype=np.float32), 0.0
 

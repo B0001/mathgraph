@@ -90,8 +90,57 @@ corrupts exactly the signal this tool exists to produce.
 
 `names.py` implements the multiplicative→additive name translation and
 recovers **10,876** of them. Each carries `provenance: to_additive:inferred`
-or `:explicit`, so a match never rests on a name that was not verified to
-exist. **2,816** remain untranslatable and are reported as a known gap.
+or `:explicit`, so a match can always be traced to how the name got here.
+**2,816** remain untranslatable and are reported as a known gap.
+
+**The reconstruction is a guess, and its error rate is now measured.** Checked
+against a real elaborated environment — the ground truth, since `to_additive`
+runs at elaboration time — **29.1%** of the inferred names (2,861 of 9,847) do
+not exist, along with 11.9% of the explicit ones (117 of 981). Roughly 3,000
+of the 10,876 are inventions: `Filter.le_zero_iff`, `Filter.NeBot.le_zero_iff`
+and `Filter.EventuallyEq.mulIndicator_zero` are not declarations. The
+dictionary in `names.py` is applied unconditionally, and mathlib's real naming
+has exceptions it does not encode.
+
+**The ground truth is now wired in, and it is optional by construction.** If
+`mathgraph elaborate` has been run, `index.build` checks every reconstruction
+against the elaborated environment and drops the ones it contradicts. If it
+has not — the laptop path, with no Lean toolchain — every reconstruction is
+kept and says so. The provenance carries the answer as a third component:
+
+| provenance | meaning |
+|---|---|
+| `to_additive:inferred:validated` | reconstructed, and the environment confirms it exists |
+| `to_additive:inferred:unvalidated` | reconstructed, nothing checked it |
+| `to_additive:explicit:validated` / `:unvalidated` | same, for an explicitly named twin |
+
+Absence is only read as evidence inside a module the environment covers. A PFR
+or blueprint declaration is missing from a mathlib environment because mathlib
+does not contain it, not because it does not exist, so outside those modules
+the reconstruction stands and is marked `:unvalidated`. Rebuilding the shipped
+corpora against a 464,208-declaration environment drops **3,012** names
+(2,863 inferred + 149 explicit) and validates 7,850.
+
+This is what it does to `nonexistent`, which is the verdict that motivated the
+work. On a validated mathlib-only index every surviving reconstruction is
+confirmed, so `nonexistent` is exact in **both** directions. On `idx_full` and
+`idx_blueprint` it is not: 48 and 78 reconstructions respectively sit in PFR
+and blueprint modules the mathlib environment does not cover, and those remain
+unvalidated. Without an elaborated corpus nothing is validated and the old
+caveat stands in full — `nonexistent` is sound, and its absence merely
+probable. Read `provenance`; it is the only signal that distinguishes the
+three cases.
+
+Retrieval barely moves, and the direction it moves is worth stating precisely.
+`bench` is unchanged on the lexical arm (18.9/32.0) and gains one statement on
+`+structural` r@1 (20.0 → 20.6). On the 439 blueprint pairs the abstention arm
+goes from 14 answered / 9 correct to 16 answered / 11 correct, with zero false
+matches in both. But both new answers crossed `tau_cov=0.2474` on **coverage**
+(0.238 → 0.257 and 0.243 → 0.269) while their margins did not move, so the
+gain is an IDF side-effect of a corpus 3,012 declarations smaller, not better
+matching. Two statements sitting within 0.02 of a fitted threshold is not a
+robust improvement, and `GRAPH_THRESHOLDS` was fitted before this filter
+existed. Refitting it against a validated corpus is the open item.
 
 ### 2. The English→mathlib dictionary is learned, not written
 
@@ -152,8 +201,8 @@ statement has a correct answer:
 
 | metric | value | before the length-normalisation fix |
 |---|---|---|
-| recall@1 | **17.7%** | 7.4% |
-| recall@5 | **29.1%** | 20.0% |
+| recall@1 | **18.9%** | 7.4% |
+| recall@5 | **32.0%** | 20.0% |
 
 Both arms re-measured on the same corpus after the scoring fix described in
 [Length normalisation](#length-normalisation-was-backwards); the "before"
@@ -224,9 +273,9 @@ its source word's fixes it without a hand-written stoplist.
 | PFR present arm | r@1 | r@5 | r@10 |
 |---|---|---|---|
 | lexical, before | 9.1% | 20.0% | 25.1% |
-| lexical, after | **17.7%** | **29.1%** | **33.1%** |
+| lexical, after | **18.9%** | **32.0%** | — |
 | + skeleton, before | 11.4% | 27.4% | 32.0% |
-| + skeleton, after | **20.6%** | **36.6%** | **41.1%** |
+| + skeleton, after | **20.0%** | **38.9%** | — |
 
 Roughly a doubling of recall@1 on the held-out paper benchmark, and the
 library benchmark moved by a similar factor independently. **Abstention is
@@ -239,6 +288,55 @@ The general lesson is the transferable part: **`raw / ‖doc‖₂` is only a
 length correction when the query side is normalised too.** Where it is not,
 it is a length *bonus*, and it is invisible because the ranking still looks
 plausible — every result here was a topology lemma about compact sets.
+
+### The type is a third indexed field
+
+`DumpDecls.lean` had never been run. Running it against a built mathlib
+produces **480,883 declarations with elaborated types** — typeclass-resolved,
+notation-expanded — and immediately shows what a name index cannot see:
+
+```
+IsCompact.isClosed
+  ∀ {X} [TopologicalSpace X] [T2Space X] {s : Set X}, IsCompact s → IsClosed s
+```
+
+`[T2Space X]` is the Hausdorff hypothesis. It is in the type and **nowhere in
+the name**, so no amount of name-token matching reaches it from the word
+"Hausdorff". 1,574 declarations carry it.
+
+Building the elaborated corpus alone changed nothing, because `index.build`
+tokenized only `name` and `module`; the type sat in `head`, read exclusively
+by the structural rerankers, which need `--math` to fire. The corpus knew
+`T2Space` and the retriever could not see it. So the type's identifiers are
+now a third indexed field alongside name and module tokens, at `typ_weight`,
+excluding whatever the name already says.
+
+| typ_weight | BP r@1/r@5 | PFR r@1/r@5 |
+|---|---|---|
+| 0.0 (names + modules only) | 20.3 / 29.8 | 17.7 / 29.7 |
+| **0.15** | **21.0 / 30.3** | **18.9 / 32.0** |
+| 0.3 | 20.3 / 30.8 | 14.9 / 32.6 |
+| 0.5 | 17.1 / 29.8 | 13.1 / 31.4 |
+| 1.0 | 8.7 / 21.0 | 7.4 / 20.0 |
+
+**The weight had to be fitted, and fitting it to the motivating query would
+have been a disaster.** At `typ_weight=0.5` the compact-Hausdorff query ranks
+its answer first — and PFR r@1 collapses from 18.9% to 13.1%. The blueprint
+optimum is 0.15, where that query reaches rank 3 instead of rank 1. One query
+is not a benchmark, and this is the clearest demonstration in this repository
+of why.
+
+Source-scanned indices benefit too: the regex-scraped `head` carries type text
+of lower quality, and `idx_mathlib` moves the same query from unranked to
+rank 3 without any Lean toolchain at all.
+
+Three latent bugs surfaced, all because the script had never been executed:
+`lean/DumpDecls.lean` was at the repository root while `leanast.dump()` and
+this README both looked for it under `lean/`; `mathgraph setup` makes a
+shallow *sparse* clone containing only `Mathlib/`, so `Cache/` and everything
+lake needs was missing; and the dumper called `Options.setNat`, which no
+longer exists now that `Options` is a structure rather than an alias for
+`KVMap`.
 
 ### Recalibration after the fix
 
@@ -295,7 +393,8 @@ which fixes both at once and, importantly, fixes (2) **without** an
 equivalence relation over names: a lone duplicate is one of nine competitors,
 so it moves the mean by about a ninth instead of collapsing the statistic. On
 a `[1.0, 1.0, 0.1×8]` score vector the old margin reads 0.0 and the new one
-reads 0.80; on a genuine nine-way tie the new one still reads 0.01.
+reads 0.80; on a genuine nine-way tie the new one reads 0.0, which is the
+correct refusal — the statistic rescues a lone duplicate, not a real tie.
 
 Collapsing duplicates explicitly was measured as an alternative and is
 **not** worth it: an apostrophe-strip rescues 9 correct retrievals but is
@@ -330,6 +429,138 @@ defaulted to 0.5 while `StructReranker` used 0.45, so the two rerankers
 disagreed on the same constant for no stated reason. Everything now uses 0.45. The tree row is unaffected either way: 21.1 / 33.1 / 40.6 at both
 gate values, which is its own small evidence that this gate is not where the
 signal lives.
+
+### The elaborated corpus cannot be evaluated on paper text
+
+`bench` runs against `idx_full`, which is regex-scraped, so `idx_elaborated` —
+the 464,208-declaration corpus the whole elaborated path was built for — had
+never been measured on paper prose. Attempting it establishes that it cannot
+be, which is worth more than the attempt.
+
+`idx_elaborated` is mathlib-only, and blueprint `\lean{}` annotations almost
+always name the *project's own* declarations rather than mathlib's. Of 618
+paper statements (439 blueprint pairs + 179 PFR blocks), the number whose gold
+answer exists in a mathlib-only corpus is **6**. Every recall figure over that
+set moves in steps of 17 percentage points. There is no measurement here, and
+reporting one would be dishonest. Evaluating the elaborated path on paper text
+requires elaborating the blueprint projects too, which means building each of
+them — hours and roughly 15 GB apiece.
+
+So the claim that elaborated types help on the real task remains **unproven,
+and is not currently provable with these corpora.** The ranking gains reported
+for the third field were measured on scraped indices, and they stand; they are
+simply not evidence about this corpus.
+
+Two things did come out of looking.
+
+**It is not "mathlib with better types".** `mathgraph elaborate` runs
+`import Mathlib` and dumps the environment, which is a much larger and
+different thing than Mathlib:
+
+| | declarations |
+|---|---|
+| Mathlib | 339,368 |
+| Lean core + Init + Std | 114,954 |
+| Aesop, Batteries, ProofWidgets, Qq, … | 9,886 |
+
+27% of the corpus is not Mathlib at all, and **8.1% (37,416) is compiler
+boilerplate** — 14,653 `noConfusion`, 7,161 `.rec`, 5,758 `.mk.inj`, 5,672
+`sizeOf_spec` — which are not mathematical statements in any sense. This is
+the likeliest explanation for the elaborated corpus underperforming its
+promise, and it is fixable by filtering rather than by tuning.
+
+**It breaks the zero-false-match claim.** At `GRAPH_THRESHOLDS`, `idx_mathlib`
+produces 0 false matches on the 612-statement absent arm and `idx_elaborated`
+produces 1 — a con-nf statement that reduces to almost nothing after math
+stripping (`"( ( ^ -1 )^ = ( ^ )^ -1 ), and ( ^ ) is permutative"`) matching
+`Array.permute!`, a **Lean core** declaration reachable only because the
+corpus contains far more than Mathlib. The thresholds were fitted on
+source-scanned indices and do not transfer to this one.
+
+For the record, the documented compact-Hausdorff behaviour reproduces on
+`idx_mathlib` exactly as written — rank 3 for "a compact subset of a Hausdorff
+space is closed" — but on `idx_elaborated` the same query gives rank **4**,
+not the rank 3 the README claimed. Several natural rephrasings reach rank 1 on
+both, which is a fair reminder of how little one query establishes.
+
+### Auditing the third field: two fixes, one load-bearing accident
+
+Adding a third index field put three things in the scoring path worth checking.
+All three were measured; only two were wrong, and the interesting result is the
+one that was not.
+
+**`coverage` was not a fraction.** `_score` accumulated the denominator
+`mass` only for query tokens with *name* postings, while module and type
+postings still contributed to the numerator. So a token living solely in the
+type field — exactly what the third field was added to serve — inflated
+`coverage` without bounding it. This is reachable, not theoretical: the
+two-token query `{equiv, bg}` scored **coverage 2.315** on
+`Equiv.equivCongr_refl_left`. `coverage` is the abstention statistic
+(`tau_cov=0.2474`), so the fitted threshold was reading a quantity that is not
+a fraction. Fixed by charging each token the largest field weight it can
+actually earn, which restores `mass` as an upper bound on `raw`.
+
+The honest part: at the shipped `typ_weight=0.15` this changed **nothing
+measurable**. Zero verdict flips across all 618 paper queries (439 blueprint
+pairs + 179 PFR blocks), mean inflation 0.0009, and the abstention operating
+point is identical before and after — 14 answered / 9 correct / **0 false
+matches** of 439, refitting to the same thresholds either way. It only starts
+moving verdicts around `typ_weight ≳ 1.0`, and at 2.0 it moves 143 of them and
+real queries reach coverage 1.34. It was a latent defect whose severity scales
+with a tunable constant, and the sweep above ran that constant to 1.0. Ranking
+was never affected — order comes from `raw/lennorm`, which never touches
+`mass`.
+
+**`to_additive` twins had no type field at all.** `expand_to_additive` sets
+`head = ""`, so all **10,875** generated declarations in `idx_full` carried
+zero type tokens against 99.9% of source declarations — the third field was
+structurally unable to fire for any additive lemma, in a tool benchmarked on
+additive combinatorics. The type is recoverable without inventing source text:
+it is the original's with the multiplicative structures renamed, applied at
+token granularity through mathlib's own naming dictionary
+(`names.additive_tokens`), leaving `head` honestly empty so provenance stays
+truthful.
+
+| | BP r@1/r@5 | PFR r@1/r@5 | PFR +structural |
+|---|---|---|---|
+| empty type field (shipped) | 21.0 / 30.3 | 18.9 / 32.0 | 20.0 / 38.9 |
+| twins get type tokens | **21.2 / 30.5** | 18.9 / 32.0 | **20.6** / 38.9 |
+
+Eight numbers, none worse, four better — but every delta is about **one
+statement**, which is inside the noise floor this repository has already
+established for these corpora. The case for it is that it removes a structural
+asymmetry, not that it improves the benchmark, and it needed no threshold
+refitted. It takes effect only on rebuild; existing indices are unaffected,
+which is why `bench` is unchanged.
+
+**`max_df` is bypassed, and closing it makes things worse.** `query_weights`
+admits a token if it appears in *any* field, so 27 tokens whose name document
+frequency far exceeds `max_df` (7,278) are readmitted through the module or
+type index — and `_score` then adds their full name postings at full weight.
+These are precisely the population the filter exists to exclude: `of`
+(name_df 40,069), `theory` (37,581), `is` (33,041), `set` (12,771). Several
+were newly readmitted by the type field.
+
+Gating each field on its own document frequency — what a per-field frequency
+filter should mean — costs real accuracy:
+
+| | PFR r@1/r@5 | PFR +structural |
+|---|---|---|
+| shipped (wholesale bypass) | **18.9 / 32.0** | **20.0 / 38.9** |
+| `max_df` per field | 17.1 / 30.3 | 20.0 / 35.4 |
+
+So this is a **load-bearing accident, not a bug**, and it is left alone. The
+reason it helps is that `add`, `mul`, `le`, `eq`, `set` and `is` are core
+mathlib vocabulary rather than stopwords; a flat 3%-of-corpus cutoff is simply
+miscalibrated for the name field, and the bypass has been silently
+compensating. The honest description of the shipped behaviour is that `max_df`
+applies only to tokens absent from the module and type indices. Worth
+revisiting deliberately, as a `max_df` question rather than a gating one.
+
+One more thing the audit turned up and did not fix: `type_tokens` truncates at
+`":="`, which is essential on regex-scraped heads (86% contain one, and the
+rest of the string is a definition body) but wrong on elaborated types, where
+**5.5%** contain a `":="` inside the type itself and lose every token after it.
 
 ### The library benchmark
 
@@ -536,8 +767,8 @@ transfer:
 
 | PFR present arm | r@1 | r@5 | r@10 |
 |---|---|---|---|
-| lexical baseline | 17.7% | 29.1% | 33.1% |
-| + structural reranking | **20.6%** | **36.6%** | **41.1%** |
+| lexical baseline | 18.9% | 32.0% | — |
+| + structural reranking | **20.0%** | **38.9%** | — |
 
 +16% / +26% / +24% relative, with the blueprint validation set unchanged
 (the gate keeps the term out where it has nothing to say).
@@ -568,7 +799,7 @@ rather than a single winner:
 
 | PFR present arm | r@1 | r@5 | r@10 |
 |---|---|---|---|
-| lexical baseline | 17.7% | 29.1% | 33.1% |
+| lexical baseline | 18.9% | 32.0% | — |
 | + skeleton | 20.6% | **36.6%** | **41.1%** |
 | + tree | **21.1%** | 33.1% | 40.6% |
 | + both | not re-measured since the fix (was **13.1%** / 24.6% / 30.9%) | | |

@@ -22,7 +22,12 @@ DEFAULT_DATA = os.environ.get("MATHGRAPH_DATA", "./mathgraph-data")
 
 # Retrieval parameters fitted on the blueprint validation corpus, with PFR
 # held out. See README "Structural matching" for the derivation.
-LEX = dict(len_pivot=0.75, mod_weight=0.1,
+# typ_weight is deliberately small. Swept on the blueprint corpus with PFR
+# held out, r@1 peaks at 0.15 and falls off hard above it; the single query
+# that motivated the whole elaborated-types path wants 0.5, which is exactly
+# where PFR r@1 collapses from 18.9% to 13.1%. Fitting to that one query
+# would have cost a fifth of the benchmark.
+LEX = dict(len_pivot=0.75, mod_weight=0.1, typ_weight=0.15,
            prefix_weight=0.85, title_boost=2.5)
 # Abstention thresholds for `graph`, fitted on the 439 non-PFR blueprint pairs
 # against a genuine negative arm (the same statements against a mathlib-only
@@ -33,7 +38,7 @@ LEX = dict(len_pivot=0.75, mod_weight=0.1,
 # History: 0.35/0.08 answered 1 of 439 with 1 false match; rank-1-vs-2
 # refitted answered 13 with 10 correct and none false; this answers 17 with
 # 12 correct and none false.
-GRAPH_THRESHOLDS = dict(tau_cov=0.2347, delta_margin=0.2722)
+GRAPH_THRESHOLDS = dict(tau_cov=0.2474, delta_margin=0.2671)
 # Verifier thresholds calibrated on non-PFR blueprint projects.
 # Re-checked after the length-normalisation fix by asking, for each profile,
 # whether any threshold accepts strictly more correct proposals at no worse
@@ -170,16 +175,17 @@ def cmd_scan(args):
 
 
 def cmd_index(args):
-    from .index import build
-    print(json.dumps(build(args.raw, args.out, args.holdout, args.pmi_holdout),
-                     indent=2))
+    from .index import build, find_ground_truth
+    art = os.path.join(os.path.abspath(args.data_dir), "artifacts")
+    print(json.dumps(build(args.raw, args.out, args.holdout, args.pmi_holdout,
+                           truth=find_ground_truth(art)), indent=2))
 
 
 def cmd_elaborate(args):
     """Optional upgrade path: replace regex-scraped types with real
     elaborated ones. Requires a built mathlib and a Lean toolchain."""
     from .leanast import dump, to_index_rows, merge_docs
-    from .index import build
+    from .index import build, find_ground_truth
     art = os.path.join(os.path.abspath(args.data_dir), "artifacts")
     mathlib = args.mathlib or os.path.join(os.path.abspath(args.data_dir),
                                            "mathlib4")
@@ -191,8 +197,14 @@ def cmd_elaborate(args):
         n = merge_docs(rows, src, rows + ".tmp")
         os.replace(rows + ".tmp", rows)
     out = os.path.join(art, "idx_elaborated")
-    print(json.dumps({"rows": n, "index": build(rows, out)}, indent=2))
+    # `rows` is the environment dump itself, so it is its own ground truth:
+    # every to_additive twin in it is already a real declaration and the
+    # reconstruction has nothing left to add.
+    print(json.dumps({"rows": n,
+                      "index": build(rows, out, truth=find_ground_truth(art))},
+                     indent=2))
     print("use with:  mathgraph query --corpus idx_elaborated ...")
+    print("the scraped indices can now be rebuilt against it: mathgraph setup")
 
 
 def cmd_setup(args):
