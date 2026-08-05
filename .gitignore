@@ -20,3 +20,9 @@ mathgraph-data/*
 !mathgraph-data/artifacts/
 mathgraph-data/artifacts/*
 !mathgraph-data/artifacts/blueprint_pairs.jsonl
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
