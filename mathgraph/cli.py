@@ -33,12 +33,25 @@ LEX = dict(len_pivot=0.75, mod_weight=0.1, typ_weight=0.15,
 # against a genuine negative arm (the same statements against a mathlib-only
 # index, where their answer does not exist), by exhaustive search over every
 # observed coverage and margin value at the zero-false-match constraint.
-# delta_margin is not comparable across margin definitions -- 0.2722 here is
+# Reproduce with `python -m mathgraph.evaluate graph <validated> <unvalidated>`
+# (positives from the first, negatives from both).
+# delta_margin is not comparable across margin definitions -- 0.2658 here is
 # against the tail-mean separation statistic, not the old rank-1-vs-2 one.
+# The constraint is held on the negative arms of *both* corpus states, because
+# both are shipped: `setup` validates the to_additive reconstruction only when
+# `elaborate` has been run, and the laptop path has no toolchain. The previous
+# pair was fitted on the unvalidated one alone and did not survive the other --
+# see README "Refitting against a validated corpus".
 # History: 0.35/0.08 answered 1 of 439 with 1 false match; rank-1-vs-2
-# refitted answered 13 with 10 correct and none false; this answers 17 with
-# 12 correct and none false.
-GRAPH_THRESHOLDS = dict(tau_cov=0.2474, delta_margin=0.2671)
+# refitted answered 13 with 10 correct and none false; 0.2474/0.2671 answered
+# 14 with 9 correct and none false on an unvalidated corpus but 16 with 11 and
+# *three* false on a validated one; 0.2525/0.2649 and then 0.2525/0.2650 each
+# survived one corpus change and not the next. Every move has been forced by
+# the corpus growing or shrinking under it, never by a scorer change -- this
+# operating point is genuinely narrow and the arms are what detect it. This
+# answers 16 with 11 correct on the validated corpus and 14 with 9 on the
+# unvalidated one, with no false match on either, nor on the PFR absent arm.
+GRAPH_THRESHOLDS = dict(tau_cov=0.2526, delta_margin=0.2658)
 # Verifier thresholds calibrated on non-PFR blueprint projects.
 # Re-checked after the length-normalisation fix by asking, for each profile,
 # whether any threshold accepts strictly more correct proposals at no worse

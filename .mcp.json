@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "aider-mcp-server": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/Users/benjaminhess/Downloads/aider-mcp-server",
+        "run",
+        "aider-mcp-server",
+        "--editor-model",
+        "qwen2.5-coder:14b",
+        "--current-working-dir",
+        "."
+      ],
+      "env": {}
+    }
+  }
+}

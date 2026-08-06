@@ -31,6 +31,42 @@ BLUEPRINTS = [
 ]
 
 
+def needs_build(idx_dir: str, truth_size: int) -> bool:
+    """Is this index missing, or built against a different ground truth?
+
+    Every stage of the bootstrap skips its own output if present, which is what
+    makes it resumable and is also what used to make an index built before
+    `mathgraph elaborate` stay unvalidated forever: nothing ever rebuilt it, so
+    `setup` reported success over a corpus whose to_additive names had never
+    been checked against anything.
+
+    The index says which it is. `build` records `ground_truth_decls` -- 0 when
+    it ran without an elaborated environment -- and `index_version`, and writes
+    both beside the index, so this is a small read rather than a 4s
+    deserialisation of 240k rows. The version covers the case ground truth
+    cannot: an index built by older code against the same environment.
+
+    Deliberately not mtime. The indices this was found on are *newer* than the
+    elaborated dump they were never validated against, because what changed was
+    the builder rather than the ground truth: the dump landed on 28 Jul and the
+    code that consults it on 2 Aug. A file-time heuristic calls that fresh, and
+    the first version of this function did.
+    """
+    from .index import INDEX_VERSION
+    if not os.path.exists(os.path.join(idx_dir, "index.pkl.gz")):
+        return True
+    p = os.path.join(idx_dir, "meta.json")
+    if not os.path.exists(p):
+        return True           # predates the record, so predates the validation
+    with open(p, encoding="utf-8") as fh:
+        meta = json.load(fh)
+    if meta.get("index_version", 1) != INDEX_VERSION:
+        return True           # built by a builder that produced something else
+    if not truth_size:
+        return False          # laptop path: no ground truth to be stale against
+    return meta.get("ground_truth_decls", 0) != truth_size
+
+
 def _run(cmd, cwd=None, timeout=1800):
     return subprocess.run(cmd, cwd=cwd, timeout=timeout,
                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -82,37 +118,47 @@ def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
     os.makedirs(art, exist_ok=True)
     meta = {}
 
+    # The scans are not cached. Scanning all of mathlib is ~3s against a clone
+    # that costs minutes, so skipping it buys nothing and costs the failure
+    # this bootstrap keeps rediscovering: a scraper fix lands, the cached
+    # .jsonl predates it, and every index built from it is quietly wrong.
     mathlib_raw = os.path.join(art, "mathlib.jsonl")
-    if not os.path.exists(mathlib_raw):
-        _log("scanning mathlib declarations")
-        n = write_index(os.path.join(mathlib_dir, "Mathlib"), mathlib_raw)
-        _log(f"  {n} declarations")
-    meta["mathlib_decls"] = sum(1 for _ in open(mathlib_raw, encoding="utf-8"))
+    _log("scanning mathlib declarations")
+    n = write_index(os.path.join(mathlib_dir, "Mathlib"), mathlib_raw)
+    _log(f"  {n} declarations")
+    meta["mathlib_decls"] = n
 
     pfr_dir = os.path.join(bp_dir, "pfr")
     pfr_raw = os.path.join(art, "pfr.jsonl")
-    if os.path.isdir(pfr_dir) and not os.path.exists(pfr_raw):
+    if os.path.isdir(pfr_dir):
         _log("scanning PFR declarations (evaluation set)")
         write_index(os.path.join(pfr_dir, "PFR"), pfr_raw)
 
+    # The pairs are the exception, and the reason is calibration rather than
+    # cost: every threshold in cli.py is fitted against these 439, so silently
+    # regenerating them would invalidate every published number. The
+    # declarations they are scored against are rebuilt like any other scan.
     pairs_path = os.path.join(art, "blueprint_pairs.jsonl")
     decls_path = os.path.join(art, "blueprint_decls.jsonl")
-    if not os.path.exists(pairs_path):
-        _log("harvesting paper-prose/declaration pairs (PFR excluded)")
-        roots = [os.path.join(bp_dir, d) for d in sorted(os.listdir(bp_dir))
-                 if os.path.isdir(os.path.join(bp_dir, d))]
-        pairs, decls = harvest(roots, exclude={"pfr"})
+    _log("harvesting paper-prose/declaration pairs (PFR excluded)")
+    roots = [os.path.join(bp_dir, d) for d in sorted(os.listdir(bp_dir))
+             if os.path.isdir(os.path.join(bp_dir, d))]
+    pairs, decls = harvest(roots, exclude={"pfr"})
+    if os.path.exists(pairs_path):
+        _log(f"  pairs are pinned ({len(pairs)} harvested, keeping the file); "
+             f"declarations rebuilt")
+    else:
         with open(pairs_path, "w", encoding="utf-8") as fh:
             for p in pairs:
                 fh.write(json.dumps(p, ensure_ascii=False) + "\n")
-        seen = set()
-        with open(decls_path, "w", encoding="utf-8") as fh:
-            for d in decls:
-                if d["name"] in seen:
-                    continue
-                seen.add(d["name"])
-                fh.write(json.dumps(d, ensure_ascii=False) + "\n")
         _log(f"  {len(pairs)} pairs")
+    seen = set()
+    with open(decls_path, "w", encoding="utf-8") as fh:
+        for d in decls:
+            if d["name"] in seen:
+                continue
+            seen.add(d["name"])
+            fh.write(json.dumps(d, ensure_ascii=False) + "\n")
     meta["blueprint_pairs"] = sum(1 for _ in open(pairs_path, encoding="utf-8"))
 
     def _combine(parts, out):
@@ -126,25 +172,33 @@ def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
     # to_additive reconstruction is kept and marked `:unvalidated`; with it
     # the ~29% that name nothing are dropped.
     truth = find_ground_truth(art)
+    n_truth = len(truth) if truth is not None else 0
     if truth is not None:
-        _log(f"to_additive ground truth: {len(truth)} elaborated declarations")
+        _log(f"to_additive ground truth: {n_truth} elaborated declarations")
     else:
         _log("no elaborated corpus: to_additive names will be unvalidated")
 
+    stale = [n for n in ("idx_mathlib", "idx_full", "idx_blueprint")
+             if os.path.exists(os.path.join(art, n, "index.pkl.gz"))
+             and needs_build(os.path.join(art, n), n_truth)]
+    if stale:
+        _log(f"{', '.join(stale)}: built by an older builder or against a "
+             f"different ground truth -- rebuilding")
+
     idx_mathlib = os.path.join(art, "idx_mathlib")
-    if not os.path.exists(os.path.join(idx_mathlib, "index.pkl.gz")):
+    if needs_build(idx_mathlib, n_truth):
         _log("building index: mathlib only (absent-arm reference corpus)")
         meta["idx_mathlib"] = build(mathlib_raw, idx_mathlib, truth=truth)
 
     idx_full = os.path.join(art, "idx_full")
-    if not os.path.exists(os.path.join(idx_full, "index.pkl.gz")):
+    if needs_build(idx_full, n_truth):
         _log("building index: mathlib + PFR (present-arm reference corpus)")
         combined = _combine([mathlib_raw, pfr_raw], os.path.join(art, "_full.jsonl"))
         meta["idx_full"] = build(combined, idx_full, truth=truth)
         os.unlink(combined)
 
     idx_bp = os.path.join(art, "idx_blueprint")
-    if not os.path.exists(os.path.join(idx_bp, "index.pkl.gz")):
+    if needs_build(idx_bp, n_truth):
         _log("building index: mathlib + blueprints (validation corpus)")
         combined = _combine([mathlib_raw, decls_path], os.path.join(art, "_bp.jsonl"))
         meta["idx_blueprint"] = build(combined, idx_bp, truth=truth)

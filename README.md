@@ -89,18 +89,24 @@ declaration is indistinguishable from a paper using something novel — which
 corrupts exactly the signal this tool exists to produce.
 
 `names.py` implements the multiplicative→additive name translation and
-recovers **10,876** of them. Each carries `provenance: to_additive:inferred`
+recovers **11,043** of them. Each carries `provenance: to_additive:inferred`
 or `:explicit`, so a match can always be traced to how the name got here.
-**2,816** remain untranslatable and are reported as a known gap.
+**2,819** remain untranslatable and are reported as a known gap.
 
 **The reconstruction is a guess, and its error rate is now measured.** Checked
 against a real elaborated environment — the ground truth, since `to_additive`
-runs at elaboration time — **29.1%** of the inferred names (2,861 of 9,847) do
-not exist, along with 11.9% of the explicit ones (117 of 981). Roughly 3,000
-of the 10,876 are inventions: `Filter.le_zero_iff`, `Filter.NeBot.le_zero_iff`
-and `Filter.EventuallyEq.mulIndicator_zero` are not declarations. The
-dictionary in `names.py` is applied unconditionally, and mathlib's real naming
-has exceptions it does not encode.
+runs at elaboration time — **29.1%** of the inferred names (2,863 of 9,847) do
+not exist: `Filter.le_zero_iff`, `Filter.NeBot.le_zero_iff` and
+`Filter.EventuallyEq.mulIndicator_zero` are not declarations. The dictionary
+in `names.py` is applied unconditionally, and mathlib's real naming has
+exceptions it does not encode.
+
+The explicitly named twins are a different story, and used to be a worse one.
+They were 11.9% wrong (117 of 981) when this was first audited, for a reason
+that turned out to be a plain bug rather than dictionary coverage — see
+[the explicit names](#the-explicit-names-were-resolved-in-the-wrong-namespace)
+below. Resolving them the way mathlib does takes them to **2.8%** (34 of
+1,196).
 
 **The ground truth is now wired in, and it is optional by construction.** If
 `mathgraph elaborate` has been run, `index.build` checks every reconstruction
@@ -118,8 +124,61 @@ Absence is only read as evidence inside a module the environment covers. A PFR
 or blueprint declaration is missing from a mathlib environment because mathlib
 does not contain it, not because it does not exist, so outside those modules
 the reconstruction stands and is marked `:unvalidated`. Rebuilding the shipped
-corpora against a 464,208-declaration environment drops **3,012** names
-(2,863 inferred + 149 explicit) and validates 7,850.
+corpora against a 464,208-declaration environment drops **2,897** names
+(2,863 inferred + 34 explicit) and validates 8,148. Each index reports its own
+counts in `meta.json`.
+
+### The explicit names were resolved in the wrong namespace
+
+The explicit drops used to be 153, and four of them said what was wrong.
+`@[to_additive prod]` on `Submonoid.FG.prod` was reconstructing a **root-level
+`prod`** — not a declaration, which is why the environment dropped it. (In
+`idx_full` those four were dropped only 149 times, because PFR declares a
+`prod` of its own and they collided with a name already present. A count that
+moves with the corpus is usually a bug wearing a disguise.)
+
+The rule mathlib implements is in `Mathlib/Tactic/Translate/Core.lean`, in
+`targetName`, and it is not guessable: an explicit argument names the twin's
+**last components**, and the namespace it lands in is the source's,
+*additively translated*. So `@[to_additive prod]` on `Submonoid.FG.prod` is
+`AddSubmonoid.FG.prod`. The twin keeps the depth of the source — the
+translated namespace gives up one trailing component per component the
+explicit name has beyond its first — and a `_root_` prefix opts out and names
+the twin absolutely. `names.py` was instead appending the explicit name to the
+*scraped* `namespace` field: untranslated, and empty for 432 of the 1,011
+short-name cases, which is how a root-level `prod` gets invented.
+
+Ported in `explicit_additive_name`, and scored against the environment over
+all 1,228 explicit reconstructions:
+
+| | in the environment |
+|---|---|
+| appending to the scraped namespace | 1,075 / 1,228 (87.5%) |
+| **mathlib's rule** | **1,194 / 1,228 (97.2%)** |
+
+Errors fall from 153 to 34 and `explicit:validated` rises from 864 to 1,162 —
+larger than the 119 net correction, because a wrong name that happened to
+already exist in the scraped source was silently skipped rather than added at
+all.
+
+**And it moved a threshold, on the arm that is easy to forget.** On the
+validated corpus `GRAPH_THRESHOLDS` was unaffected — still 16 answered, 11
+correct, zero false. On the *unvalidated* one, where 1,196 explicit
+reconstructions are now kept under different names and nothing filters them,
+`0.2525/0.2649` picked up one false match. Refitting against both arms again
+gives `0.2525/0.2650`: one ten-thousandth, no change in yield, clean on both.
+That is twice now that this operating point has moved by the last digit under
+a corpus change, which is the honest measure of how much slack it has. The
+verifier profiles moved by at most 0.5pt on one arm and were left alone.
+
+Two of the 34 survivors are worth naming, because they are a *third* bug and
+not this one. `Left.one_lt_mul` carries the attrs string
+`@[to_additive add_pos_of_left] alias one_lt_mul_of_left := ...` — the scraper
+has swallowed an attribute belonging to a neighbouring `alias`, so the
+explicit name is being read off the wrong declaration entirely. The old rule
+happened to get those two right by being wrong in a compensating direction.
+`leanscan.py`'s attribute capture is the thing to fix, and it is not fixed
+here.
 
 This is what it does to `nonexistent`, which is the verdict that motivated the
 work. On a validated mathlib-only index every surviving reconstruction is
@@ -134,13 +193,16 @@ three cases.
 Retrieval barely moves, and the direction it moves is worth stating precisely.
 `bench` is unchanged on the lexical arm (18.9/32.0) and gains one statement on
 `+structural` r@1 (20.0 → 20.6). On the 439 blueprint pairs the abstention arm
-goes from 14 answered / 9 correct to 16 answered / 11 correct, with zero false
-matches in both. But both new answers crossed `tau_cov=0.2474` on **coverage**
-(0.238 → 0.257 and 0.243 → 0.269) while their margins did not move, so the
-gain is an IDF side-effect of a corpus 3,012 declarations smaller, not better
-matching. Two statements sitting within 0.02 of a fitted threshold is not a
-robust improvement, and `GRAPH_THRESHOLDS` was fitted before this filter
-existed. Refitting it against a validated corpus is the open item.
+goes from 14 answered / 9 correct to 16 answered / 11 correct. But both new
+answers crossed `tau_cov` on **coverage** (0.238 → 0.257 and 0.243 → 0.269)
+while their margins did not move, so the gain is an IDF side-effect of a corpus
+3,012 declarations smaller, not better matching. Two statements sitting within
+0.02 of a fitted threshold is not a robust improvement.
+
+That paragraph used to end "with zero false matches in both", and it was
+wrong: at the old `0.2474/0.2671` the validated corpus admits **three** false
+matches on that arm. The thresholds have been refitted and the claim now
+holds — see "Refitting against a validated corpus" below.
 
 ### 2. The English→mathlib dictionary is learned, not written
 
@@ -201,8 +263,14 @@ statement has a correct answer:
 
 | metric | value | before the length-normalisation fix |
 |---|---|---|
-| recall@1 | **18.9%** | 7.4% |
-| recall@5 | **32.0%** | 20.0% |
+| recall@1 | **18.2%** | 7.4% |
+| recall@5 | **31.8%** | 20.0% |
+
+The present arm is **176** statements as of the scanner fix below, not the 175
+every table before it reports, and recall is measured against a corpus ~11k
+declarations larger. Both effects are that fix, and comparisons across it are
+not like-for-like — see [what the scanner was
+dropping](#the-scanner-was-dropping-11000-declarations).
 
 Both arms re-measured on the same corpus after the scoring fix described in
 [Length normalisation](#length-normalisation-was-backwards); the "before"
@@ -495,9 +563,9 @@ postings still contributed to the numerator. So a token living solely in the
 type field — exactly what the third field was added to serve — inflated
 `coverage` without bounding it. This is reachable, not theoretical: the
 two-token query `{equiv, bg}` scored **coverage 2.315** on
-`Equiv.equivCongr_refl_left`. `coverage` is the abstention statistic
-(`tau_cov=0.2474`), so the fitted threshold was reading a quantity that is not
-a fraction. Fixed by charging each token the largest field weight it can
+`Equiv.equivCongr_refl_left`. `coverage` is the abstention statistic — the
+thing `tau_cov` is compared against, at the time 0.2474 — so the fitted
+threshold was reading a quantity that is not a fraction. Fixed by charging each token the largest field weight it can
 actually earn, which restores `mass` as an upper bound on `raw`.
 
 The honest part: at the shipped `typ_weight=0.15` this changed **nothing
@@ -561,6 +629,100 @@ One more thing the audit turned up and did not fix: `type_tokens` truncates at
 `":="`, which is essential on regex-scraped heads (86% contain one, and the
 rest of the string is a definition body) but wrong on elaborated types, where
 **5.5%** contain a `":="` inside the type itself and lose every token after it.
+
+### Refitting against a validated corpus
+
+Wiring the `to_additive` ground truth in left `GRAPH_THRESHOLDS` fitted
+against a corpus the index builder no longer produces, and that was recorded
+as the open item. Closing it turned up something worse than drift.
+
+The old pair answers 14 of 439 with 9 correct and no false match on the
+unvalidated corpus it was fitted on. On the validated corpus, at the same
+thresholds, **three** statements from `equational_theories` — `387_implies_43`
+and two like it — are answered against a mathlib-only index that does not
+contain their declarations. Their coverage is 0.24743. `tau_cov` was 0.2474.
+
+That is the whole story: the fit had placed the threshold **0.0002** above the
+highest negative it had to exclude, and dropping 3,012 invented `to_additive`
+names moved the IDF enough to push three statements across it. The zero-
+false-match property was not robust to a corpus change; it was resting on the
+fourth decimal place.
+
+Refitting on the validated corpus gives `0.2525/0.2648` — 16 answered, 11
+correct, no false match. But **both** corpus states ship: `setup` validates the
+reconstruction only when `elaborate` has been run, and the laptop path has no
+Lean toolchain, so a threshold that is clean on one and not the other is not
+usable. `0.2525/0.2648` admits one false match on the unvalidated corpus.
+
+The shipped pair is fitted against the negative arms of both at once:
+
+| thresholds | validated corpus | unvalidated corpus |
+|---|---|---|
+| `0.2474/0.2671` (old) | 16 answered / 11 correct / **3 false** | 14 / 9 / 0 false |
+| `0.2525/0.2648` (validated only) | 16 / 11 / 0 false | 14 / 9 / **1 false** |
+| `0.2525/0.2649` (joint, at the time) | 16 / 11 / 0 false | 14 / 9 / 0 false |
+
+One ten-thousandth of `delta_margin` separates the last two rows, which is a
+fair description of how much slack this operating point has ever had. The PFR
+absent arm is unaffected — 0 false matches on all three pairs, on both corpora.
+
+Two things that should have caught this earlier are now in place. The fit is
+code rather than a procedure described in prose and run by hand —
+
+```
+python -m mathgraph.evaluate graph <validated-artifacts> <unvalidated-artifacts>
+```
+
+which takes positives from the first corpus and negatives from every corpus
+given, and reproduces the shipped pair exactly. It reports its counts at the
+rounded 4-dp literal that actually ships rather than at the
+unrepresentable optimum near it — rounding a margin floor down re-admits the
+negative that set it. And the 439-pair negative arm now has a test. Only the
+PFR arm did, which is exactly why a pair that held on PFR and failed here
+could sit in `cli.py` unnoticed.
+
+### The index that reported itself fresh
+
+The corpus above was found unvalidated for a reason worth writing down.
+`setup` skips any stage whose output already exists — that is what makes the
+bootstrap resumable — so running `elaborate` afterwards rebuilt nothing, and
+`setup` then reported success over a corpus whose `to_additive` names had
+never been checked against anything.
+
+The obvious fix is to treat an index older than the elaborated dump as stale.
+It does not work, and shipping it would have been worse than the bug: **the
+indices in question are newer than the dump they were never validated
+against.** The dump landed on 28 Jul and the indices on 28 Jul nine minutes
+later; the code that consults the dump landed on 2 Aug. What went stale was
+the builder, not the ground truth, and no file time can see that.
+
+What can see it is the index. `build` already computed `ground_truth_decls` —
+0 when it ran without an elaborated environment — and buried it in the pickle,
+where reading it costs a 4s deserialisation of 240k rows. It is now also
+written to `meta.json` beside the index, which makes the check a small read,
+and makes the provenance histogram legible without loading anything:
+
+```json
+{ "provenance": { "source": 230742,
+                  "to_additive:inferred:validated": 6986,
+                  "to_additive:explicit:validated": 1162 },
+  "ground_truth_decls": 464208,
+  "index_version": 2 }
+```
+
+So `setup` rebuilds an index whose `ground_truth_decls` does not match the
+environment in hand — missing (built before the field existed), 0 (built
+without one), or a different number (elaborated against a different mathlib).
+An index with no ground truth in hand is never rebuilt, because the laptop
+path has nothing to be stale against. Re-running `setup` on a current corpus
+is still a 2s no-op.
+
+`index_version` covers the case ground truth cannot, and the very next commit
+needed it: fixing the explicit-name rule changed what a rebuild produces
+without changing the environment it is checked against, so every existing
+index was current by every test above and wrong anyway. The stamp is a
+constant in `index.py` bumped when the builder's output changes — the same
+staleness question asked about the code instead of the data.
 
 ### The library benchmark
 
@@ -765,13 +927,16 @@ Three design decisions, each forced by an off-PFR measurement:
 Hyperparameters chosen on the blueprint corpus, PFR untouched until the final
 transfer:
 
-| PFR present arm | r@1 | r@5 | r@10 |
+| PFR present arm (n=175, pre-scanner-fix corpus) | r@1 | r@5 | r@10 |
 |---|---|---|---|
 | lexical baseline | 18.9% | 32.0% | — |
 | + structural reranking | **20.0%** | **38.9%** | — |
 
 +16% / +26% / +24% relative, with the blueprint validation set unchanged
-(the gate keeps the term out where it has nothing to say).
+(the gate keeps the term out where it has nothing to say). On the current
+corpus (n=176, ~11k more declarations) the same two rows are 18.2 / 31.8 and
+**19.3 / 38.1** — the gap the reranker buys is what this table is about, and
+it survives the corpus change at 1.1 / 6.3 points.
 
 These are post-fix numbers. Against the pre-fix baseline the same term gave
 8.0%→10.9% / 20.0%→28.0% / 25.7%→33.7%, a larger *relative* lift — fixing the
@@ -896,6 +1061,44 @@ absolute rates are higher. `precise` and `permissive` are the original
 constants, which survived the scoring change on the frontier; `balanced` is
 refitted. See [Recalibration after the
 fix](#recalibration-after-the-fix).
+
+### Re-checked against the validated corpus
+
+These profiles were fitted on the same unvalidated corpus that put three false
+matches into `GRAPH_THRESHOLDS`, so they were re-measured after the rebuild
+(`python -m mathgraph.evaluate verify <artifacts>`):
+
+| profile | accepts correct | top *wrong* candidate | random |
+|---|---|---|---|
+| precise | 18.0 → **18.7%** | 18.7 → **17.5%** | 0.0 → 0.0% |
+| balanced | 26.2 → **26.9%** | 33.1 → **28.2%** | 0.0 → 0.0% |
+| permissive | 40.1 → **41.0%** | 68.6 → **64.9%** | 0.0 → **0.2%** |
+
+Every profile moved better on both arms at once — more correct accepted, fewer
+hard negatives — which is what dropping ~3,000 names that do not exist should
+do to a layer whose first check is existence. The one regression is a single
+random proposal of 439 accepted by `permissive`. No profile needed moving.
+
+Searching for one anyway is where this gets interesting. Sweep every observed
+(`tau_abs`, `tau_rel`) and the criterion in this repo — accepts strictly more
+correct at no worse rate on *every* negative population — is met by 227
+alternatives to `precise`, 52 to `balanced`, and 70 to `permissive`, the best
+of them worth +7, +3 and +3 statements. Taking any of them would be a mistake.
+Selecting the maximum of ~100k grid points against 439 statements finds a gain
+whether or not one exists, so the sweep was redone fitted on three blueprint
+projects and scored on the two held out (`LeanAPAP`, `con-nf`):
+
+| profile | held-out correct | held-out hard negative |
+|---|---|---|
+| precise | 9.2% → 13.2% | 14.5% → **19.7%** |
+| balanced | 18.4% → 18.4% | 32.9% → **34.2%** |
+| permissive | 38.2% → 42.1% | 59.2% → **69.7%** |
+
+Not one of them still dominates. `balanced` buys nothing at all and costs on
+the negative arm; the other two buy three statements each and pay five and ten
+points of false accepts for them. The dominance was in-fold only. This is the
+same instinct that declined to move `permissive` for a one-statement gain
+earlier — now with the held-out arm that shows it was right.
 
 ## The shipped benchmark
 

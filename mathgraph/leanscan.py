@@ -98,8 +98,22 @@ def scan_file(path: str, module: str) -> Iterator[Decl]:
             while "]" not in buf[-1] and j + 1 < n:
                 j += 1
                 buf.append(lines[j].rstrip("\n"))
+            # `@[simp] theorem foo ...` is one line, and 11k mathlib
+            # declarations are written that way. Consuming the whole line as an
+            # attribute loses the declaration outright *and* leaks the
+            # attribute onto whatever is declared next -- which is how
+            # `@[to_additive add_pos_of_left] alias one_lt_mul_of_left := ...`
+            # ended up attributing an additive twin to `Left.one_lt_mul`.
+            last = buf[-1]
+            cut = last.index("]") + 1 if "]" in last else len(last)
+            rest = last[cut:].strip()
+            buf[-1] = last[:cut]
             pending_attrs.append(" ".join(x.strip() for x in buf))
-            i = j + 1
+            if rest:
+                lines[j] = rest          # re-read the remainder as its own line
+                i = j
+            else:
+                i = j + 1
             continue
 
         m = NAMESPACE_RE.match(stripped)

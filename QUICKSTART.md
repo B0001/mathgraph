@@ -172,9 +172,16 @@ mathgraph-data/
     mathlib.jsonl      scanned declarations
     blueprint_pairs.jsonl
     idx_mathlib/       absent-arm reference corpus
+      index.pkl.gz
+      meta.json        provenance histogram + which ground truth built it
     idx_full/          + PFR, present-arm corpus
     idx_blueprint/     + blueprints, validation corpus
 ```
 
 Delete `artifacts/` to rebuild indices without re-cloning; delete the whole
 directory to start over.
+
+Re-running `setup` on a current corpus is a 2s no-op. It does rebuild an index
+whose `meta.json` reports a different `ground_truth_decls` than the elaborated
+environment present — which is what makes `elaborate` after `setup` take
+effect, instead of leaving indices whose `to_additive` names nothing checked.
