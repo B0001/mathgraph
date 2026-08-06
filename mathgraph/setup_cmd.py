@@ -118,37 +118,47 @@ def build_all(root: str, bp_dir: str, mathlib_dir: str) -> dict:
     os.makedirs(art, exist_ok=True)
     meta = {}
 
+    # The scans are not cached. Scanning all of mathlib is ~3s against a clone
+    # that costs minutes, so skipping it buys nothing and costs the failure
+    # this bootstrap keeps rediscovering: a scraper fix lands, the cached
+    # .jsonl predates it, and every index built from it is quietly wrong.
     mathlib_raw = os.path.join(art, "mathlib.jsonl")
-    if not os.path.exists(mathlib_raw):
-        _log("scanning mathlib declarations")
-        n = write_index(os.path.join(mathlib_dir, "Mathlib"), mathlib_raw)
-        _log(f"  {n} declarations")
-    meta["mathlib_decls"] = sum(1 for _ in open(mathlib_raw, encoding="utf-8"))
+    _log("scanning mathlib declarations")
+    n = write_index(os.path.join(mathlib_dir, "Mathlib"), mathlib_raw)
+    _log(f"  {n} declarations")
+    meta["mathlib_decls"] = n
 
     pfr_dir = os.path.join(bp_dir, "pfr")
     pfr_raw = os.path.join(art, "pfr.jsonl")
-    if os.path.isdir(pfr_dir) and not os.path.exists(pfr_raw):
+    if os.path.isdir(pfr_dir):
         _log("scanning PFR declarations (evaluation set)")
         write_index(os.path.join(pfr_dir, "PFR"), pfr_raw)
 
+    # The pairs are the exception, and the reason is calibration rather than
+    # cost: every threshold in cli.py is fitted against these 439, so silently
+    # regenerating them would invalidate every published number. The
+    # declarations they are scored against are rebuilt like any other scan.
     pairs_path = os.path.join(art, "blueprint_pairs.jsonl")
     decls_path = os.path.join(art, "blueprint_decls.jsonl")
-    if not os.path.exists(pairs_path):
-        _log("harvesting paper-prose/declaration pairs (PFR excluded)")
-        roots = [os.path.join(bp_dir, d) for d in sorted(os.listdir(bp_dir))
-                 if os.path.isdir(os.path.join(bp_dir, d))]
-        pairs, decls = harvest(roots, exclude={"pfr"})
+    _log("harvesting paper-prose/declaration pairs (PFR excluded)")
+    roots = [os.path.join(bp_dir, d) for d in sorted(os.listdir(bp_dir))
+             if os.path.isdir(os.path.join(bp_dir, d))]
+    pairs, decls = harvest(roots, exclude={"pfr"})
+    if os.path.exists(pairs_path):
+        _log(f"  pairs are pinned ({len(pairs)} harvested, keeping the file); "
+             f"declarations rebuilt")
+    else:
         with open(pairs_path, "w", encoding="utf-8") as fh:
             for p in pairs:
                 fh.write(json.dumps(p, ensure_ascii=False) + "\n")
-        seen = set()
-        with open(decls_path, "w", encoding="utf-8") as fh:
-            for d in decls:
-                if d["name"] in seen:
-                    continue
-                seen.add(d["name"])
-                fh.write(json.dumps(d, ensure_ascii=False) + "\n")
         _log(f"  {len(pairs)} pairs")
+    seen = set()
+    with open(decls_path, "w", encoding="utf-8") as fh:
+        for d in decls:
+            if d["name"] in seen:
+                continue
+            seen.add(d["name"])
+            fh.write(json.dumps(d, ensure_ascii=False) + "\n")
     meta["blueprint_pairs"] = sum(1 for _ in open(pairs_path, encoding="utf-8"))
 
     def _combine(parts, out):

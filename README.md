@@ -263,8 +263,14 @@ statement has a correct answer:
 
 | metric | value | before the length-normalisation fix |
 |---|---|---|
-| recall@1 | **18.9%** | 7.4% |
-| recall@5 | **32.0%** | 20.0% |
+| recall@1 | **18.2%** | 7.4% |
+| recall@5 | **31.8%** | 20.0% |
+
+The present arm is **176** statements as of the scanner fix below, not the 175
+every table before it reports, and recall is measured against a corpus ~11k
+declarations larger. Both effects are that fix, and comparisons across it are
+not like-for-like — see [what the scanner was
+dropping](#the-scanner-was-dropping-11000-declarations).
 
 Both arms re-measured on the same corpus after the scoring fix described in
 [Length normalisation](#length-normalisation-was-backwards); the "before"
@@ -921,13 +927,16 @@ Three design decisions, each forced by an off-PFR measurement:
 Hyperparameters chosen on the blueprint corpus, PFR untouched until the final
 transfer:
 
-| PFR present arm | r@1 | r@5 | r@10 |
+| PFR present arm (n=175, pre-scanner-fix corpus) | r@1 | r@5 | r@10 |
 |---|---|---|---|
 | lexical baseline | 18.9% | 32.0% | — |
 | + structural reranking | **20.0%** | **38.9%** | — |
 
 +16% / +26% / +24% relative, with the blueprint validation set unchanged
-(the gate keeps the term out where it has nothing to say).
+(the gate keeps the term out where it has nothing to say). On the current
+corpus (n=176, ~11k more declarations) the same two rows are 18.2 / 31.8 and
+**19.3 / 38.1** — the gap the reranker buys is what this table is about, and
+it survives the corpus change at 1.1 / 6.3 points.
 
 These are post-fix numbers. Against the pre-fix baseline the same term gave
 8.0%→10.9% / 20.0%→28.0% / 25.7%→33.7%, a larger *relative* lift — fixing the

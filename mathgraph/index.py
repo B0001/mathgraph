@@ -37,15 +37,19 @@ from collections import Counter, defaultdict
 from .names import (split_name, to_additive_name, parse_to_additive_attr,
                     additive_tokens, explicit_additive_name)
 
-# Bump when a change here alters what a rebuild would produce. `setup` skips an
-# index that already exists, so without this an index built by older code is
-# indistinguishable from a current one -- the same failure as an index built
-# before the to_additive ground truth existed, one level up. Ground truth is
-# data and is compared by size; this covers the builder itself.
+# Bump when a change anywhere upstream of an index alters what a rebuild would
+# produce -- this module or the scanner feeding it. `setup` skips an index that
+# already exists, so without this an index built by older code is
+# indistinguishable from a current one, the same failure as an index built
+# before the to_additive ground truth existed one level up. Ground truth is
+# data and is compared by size; this covers the code.
 #   1  pre-2026-08 builds (no stamp)
 #   2  explicit_additive_name: @[to_additive <name>] resolves in the source's
 #      translated namespace instead of the scraped one
-INDEX_VERSION = 2
+#   3  leanscan reads `@[attr] decl ...` written on one line, recovering ~11k
+#      declarations it used to drop and no longer leaking the attribute onto
+#      the declaration that follows
+INDEX_VERSION = 3
 
 STOP = set("""a an the of to in for on with and or is are be by that this it its as at from
 we if then such let there exists all any some not no non into over under between each
