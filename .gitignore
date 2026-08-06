@@ -29,3 +29,5 @@ mathgraph-data/artifacts/*
 
 .beads/interactions.jsonl
 .claude/settings.json
+
+sandbox.sh
