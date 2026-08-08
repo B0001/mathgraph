@@ -31,3 +31,7 @@ mathgraph-data/artifacts/*
 .claude/settings.json
 
 sandbox.sh
+
+# Sandbox run output (see sandbox.sh)
+sandbox-handoffs/
+.sandbox.lock/

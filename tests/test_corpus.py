@@ -125,14 +125,14 @@ class Benchmark(unittest.TestCase):
     Tolerance is deliberate. Exact equality catches scorer regressions but
     fires the moment anyone legitimately improves the scorer, which would train
     people to edit the test. A band of one percentage point is wider than the
-    ~0.6pt that a single statement moves at n=175, and narrower than any change
+    ~0.6pt that a single statement moves at n=176, and narrower than any change
     worth reporting. If this fails because you improved something, that is the
     signal to refit GRAPH_THRESHOLDS and VERIFY_PROFILES and update the numbers
     here in the same commit -- not to widen the band.
     """
 
     DELTA = 0.01
-    EXPECTED = {"lexical": (0.189, 0.320), "+structural": (0.200, 0.389)}
+    EXPECTED = {"lexical": (0.182, 0.318), "+structural": (0.193, 0.381)}
 
     @classmethod
     def setUpClass(cls):
@@ -160,7 +160,7 @@ class Benchmark(unittest.TestCase):
             cls.got[label] = (h1 / n, h5 / n, n)
 
     def test_evaluated_on_the_documented_number_of_statements(self):
-        self.assertEqual(self.got["lexical"][2], 175)
+        self.assertEqual(self.got["lexical"][2], 176)
 
     def test_recall_matches_published(self):
         for label, (r1, r5) in self.EXPECTED.items():

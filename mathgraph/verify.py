@@ -178,29 +178,43 @@ def corrupt(rng, rows, name2id, gold: str, mode: str) -> str | None:
     raise ValueError(mode)
 
 
-def evaluate(verifier: Verifier, gold_pairs: list[tuple[str, str, str]],
+def evaluate(verifier: Verifier,
+             gold_pairs: list[tuple[str, str, str]]
+                        | list[tuple[str, str, str, list]],
              seed: int = 0) -> dict:
-    """gold_pairs: (text, title, gold_name). Reports acceptance rate per
-    proposal population; a good verifier accepts correct proposals and
-    rejects every corrupted population."""
+    """gold_pairs: (text, title, gold_name), optionally with a fourth
+    `math_segments` element (the LaTeX formulas from the statement). Without
+    it, `Verifier.verify`'s formula-pattern accept path never fires (it is
+    gated on `math_segments` being non-empty) -- this is the table's
+    pre-pattern baseline. With it, patterns are wired in as an independent
+    accept path and `pattern_fire_rate` reports how often that path alone
+    verified the proposal (its `reasons` say "formula pattern match").
+
+    Reports acceptance rate per proposal population; a good verifier accepts
+    correct proposals and rejects every corrupted population."""
     import random
     rng = random.Random(seed)
     rows = verifier.al.rows
     out = {}
     pops = ["correct", "sibling", "wrong_namespace", "hallucinated", "random"]
     for pop in pops:
-        acc = tot = nonex = 0
-        for text, title, gold in gold_pairs:
+        acc = tot = nonex = fired = 0
+        for pair in gold_pairs:
+            text, title, gold = pair[0], pair[1], pair[2]
+            math_segments = pair[3] if len(pair) > 3 else None
             prop = gold if pop == "correct" else corrupt(
                 rng, rows, verifier.name2id, gold, pop)
             if prop is None:
                 continue
-            v = verifier.verify(text, prop, title)
+            v = verifier.verify(text, prop, title, math_segments=math_segments)
             tot += 1
             if v.status == VERIFIED:
                 acc += 1
+                if any(r.startswith("formula pattern match") for r in v.reasons):
+                    fired += 1
             if v.status == NONEXISTENT:
                 nonex += 1
         out[pop] = {"n": tot, "accept_rate": round(acc / max(1, tot), 3),
-                    "caught_nonexistent": round(nonex / max(1, tot), 3)}
+                    "caught_nonexistent": round(nonex / max(1, tot), 3),
+                    "pattern_fire_rate": round(fired / max(1, tot), 3)}
     return out

@@ -182,6 +182,52 @@ def cmd_bench(args):
     print(json.dumps(out, indent=2))
 
 
+def cmd_verify_bench(args):
+    """Reproduce the verify-layer accept-rate table (README "The verification
+    layer"): corrupt the PFR present-arm gold pairs five ways and measure
+    each shipped profile's accept rate per population.
+
+    `--patterns` additionally wires each statement's LaTeX formulas in as
+    `math_segments`, so `Verifier.verify`'s formula-pattern accept path can
+    fire (README "Argument identity (argmatch.py)"). Without the flag,
+    `math_segments` is never passed and that path is dark -- this is the
+    pre-pattern baseline the accept-rate table itself reports."""
+    import glob
+    from .latex import parse
+    from .index import load
+    from .align import Aligner
+    from .verify import Verifier, evaluate
+
+    pat = os.path.join(os.path.abspath(args.data_dir), "blueprints", "pfr",
+                       "blueprint", "src", "chapter", "*.tex")
+    files = sorted(glob.glob(pat))
+    if not files:
+        raise SystemExit(f"no PFR blueprint sources at {pat}")
+    blocks = []
+    for f in files:
+        blocks.extend(parse(open(f, encoding="utf-8").read()))
+    blocks = [b for b in blocks if b.declared_lean and b.kind != "proof"
+              and len(b.text.split()) >= 5]
+
+    al = Aligner(load(_art(args, "idx_full")), tau_cov=0.0, delta_margin=0.0,
+                 **LEX)
+    known = {r["name"] for r in al.rows}
+    gold_pairs = []
+    for b in blocks:
+        gold = [g for g in b.declared_lean if g in known]
+        if gold:
+            if args.patterns:
+                gold_pairs.append((b.text, b.title, gold[0], b.math))
+            else:
+                gold_pairs.append((b.text, b.title, gold[0]))
+
+    out = {"n": len(gold_pairs), "patterns": args.patterns}
+    for profile in ("permissive", "precise"):
+        V = Verifier(al, **VERIFY_PROFILES[profile])
+        out[profile] = evaluate(V, gold_pairs, seed=args.seed)
+    print(json.dumps(out, indent=2))
+
+
 def cmd_scan(args):
     from .leanscan import write_index
     print(f"{write_index(args.src, args.out)} declarations -> {args.out}")
@@ -277,6 +323,14 @@ def main(argv=None):
 
     s = sub.add_parser("bench", help="reproduce the PFR benchmark")
     s.set_defaults(fn=cmd_bench)
+
+    s = sub.add_parser("verify-bench",
+                       help="reproduce the verify-layer accept-rate table")
+    s.add_argument("--seed", type=int, default=0)
+    s.add_argument("--patterns", action="store_true",
+                   help="wire in formula-pattern accept path (math_segments) "
+                        "and report its fire rate per population")
+    s.set_defaults(fn=cmd_verify_bench)
 
     s = sub.add_parser("scan", help="scan a Lean source tree")
     s.add_argument("src")

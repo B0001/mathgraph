@@ -13,8 +13,10 @@ It was measured, on two benchmarks with genuine negative arms. The result is
 in [Benchmarks](#benchmarks) and it is largely negative: abstention is perfect
 on real paper text, retrieval is weak, and **neither benchmark admits an
 operating point where the alignment is trustworthy**. Maximum achievable
-precision is ~15% on the library benchmark and ~67% on 3 answers out of 349 on
-the paper benchmark.
+precision is ~15% on the library benchmark and 100% on 3 answers out of 350 on
+the paper benchmark (re-measured against the current scorer; see the
+[combined-arm sweep](#benchmarks) below — the previously reported ~67% on 349
+was stale on both counts).
 
 So the usable output of this tool is the exact internal graph plus a *flagged,
 ranked candidate list for a human to check* — not an assertion layer. That
@@ -249,14 +251,15 @@ approximates it, and flatters it.
 
 179 annotated statements, split into two arms.
 
-**Absent arm** — only mathlib indexed, so 174 of 175 statements have no
-correct answer anywhere in the index:
+**Absent arm** — only mathlib indexed, so 174 of the 179 statements have no
+correct answer anywhere in the index (5 already have an answer in mathlib
+alone):
 
 | metric | value |
 |---|---|
 | correct abstention | **100%** |
 | false matches | **0** |
-| status breakdown | 167 unmatched, 7 ambiguous, 0 matched |
+| status breakdown | 170 unmatched, 4 ambiguous, 0 matched |
 
 **Present arm** — the paper's own formalization added to the index, so every
 statement has a correct answer:
@@ -278,9 +281,40 @@ column is the old scorer on that same corpus, so the delta is a like-for-like
 comparison. Abstention is unaffected — still zero false matches.
 
 **Calibration sweep over both arms combined.** Best achievable precision is
-**~67%, on 3 answers out of 349**. There is no operating point that is both
-useful and trustworthy: the coverage and margin statistics do not separate
-correct matches from incorrect ones on this input.
+**100%, on 3 answers out of 350** (`176` present + `174` absent — an
+exhaustive threshold sweep treating both PFR arms as one pool, an "answer" is
+any statement clearing the threshold, and it is correct only if it's a
+present-arm statement whose rank-1 candidate is gold; every absent-arm answer
+is wrong by construction). Reproduce with:
+
+```
+uv run python -m mathgraph.bench_pfr \
+  '{"deploy": "mathgraph-data/artifacts/idx_full", "mathlib_only": "mathgraph-data/artifacts/idx_mathlib", "pattern": "mathgraph-data/blueprints/pfr/blueprint/src/chapter/*.tex", "len_pivot": 0.75, "mod_weight": 0.1, "typ_weight": 0.15, "prefix_weight": 0.85, "title_boost": 2.5}'
+```
+
+and read `combined_calibration` off the output. That same JSON also prints
+`present.recall@1` as **0.188**, not the 18.2% above — `bench_pfr.py`'s
+`arm_present` scores present-arm recall through `Aligner.align` directly,
+which is a different code path from `cmd_bench`'s `StructReranker` used for
+the published present-arm table, and the two disagree by one statement at the
+rank-1 boundary (recall@5 matches exactly, at 31.8%/0.318 either way). Both
+numbers are real and reproduce; the 18.2% table above is the canonical one.
+See mathgraph-7dw and `arm_present`'s docstring.
+
+This replaces a previously reported "~67%, on 3 answers out of 349" that no
+script in this repository reproduced: 349 was arithmetically 175 (the present
+arm's pre-scanner-fix
+count) + 174 (the absent arm), and no combined-arm sweep existed in code to
+produce the 67% either. The scorer has changed twice since that figure was
+written (length normalisation, the type field) and the peak the current
+scorer reaches is higher, not lower — this is a re-measurement, not a
+different methodology chosen to move the number.
+
+There is still no operating point that is both useful and trustworthy: 3
+answers out of 350 is 0.9% coverage, too small a sample for 100% precision to
+mean anything, and the coverage and margin statistics do not separate correct
+matches from incorrect ones on this input at any threshold that answers more
+than a handful.
 
 ### Why
 
@@ -288,18 +322,34 @@ Median statement: **13 English words against 4 formula blocks**. Lexical
 matching has an intrinsic ceiling on formula-dense prose, and ~29% recall@5 is
 approximately where it sits. The failure is not in the plumbing:
 
-- the first stage reaches the gold declaration **97%** of the time
-- but places it at **median rank ~250** of 242,550
+- the lexical stage's pre-rerank pool (`StructReranker`'s shipped `depth=10000`)
+  contains the gold declaration **83.5%** of the time (147 of 176 present-arm
+  statements)
+- when it does, gold sits at **median rank 42** within that pool, out of
+  **251,236** declarations in the index overall
 
-So it is a ranking problem, not a retrieval problem — and a linear reranker
-trained listwise on ~7,000 groups produced **no measurable lift** once a
-training-population bug was fixed. Token-overlap features do not contain
-enough to rank with. That reranker is *not* in this repository: it was
-described here as retained, but the module never existed in the tree, and the
-only trace was a dead `from .rerank import featurize` inside a branch nothing
-could reach. Both have been removed rather than left to imply a component that
-is not there. The negative result is recorded here, which is the part that
-was actually worth keeping.
+Reproduce with `bench_pfr`'s `lexical_pool` field (same command as the
+[combined-arm sweep](#benchmarks) above). This replaces a previously reported
+"97% / median rank ~250 of 242,550" that no script in this repository
+reproduced — no code computed this stat at all before this measurement was
+added, so there is no way to confirm whether 97%/250 held under the
+then-current scorer and corpus or was already stale when written. Both the
+scorer (see "Length normalisation was backwards" below) and the corpus
+(176 vs the old 175, 251,236 vs the old 242,550 declarations) have changed
+since, and the shift is not a small drift: reach dropped 97%→83.5% while
+median rank improved 250→42. So this is now **partly** a retrieval problem,
+not purely a ranking one — 16.5% of present-arm statements never put gold in
+front of the reranker at all, a revision from the "ranking problem, not a
+retrieval problem" framing this section previously asserted outright.
+
+For what does reach the pool, a linear reranker trained listwise on ~7,000
+groups produced **no measurable lift** once a training-population bug was
+fixed. Token-overlap features do not contain enough to rank with. That
+reranker is *not* in this repository: it was described here as retained, but
+the module never existed in the tree, and the only trace was a dead `from
+.rerank import featurize` inside a branch nothing could reach. Both have been
+removed rather than left to imply a component that is not there. The negative
+result is recorded here, which is the part that was actually worth keeping.
 
 ### Length normalisation was backwards
 
@@ -904,9 +954,12 @@ bracket-application heads, and operator shape survive translation nearly
 verbatim — and none of them survive being flattened to `MATH`, which is what
 every earlier stage did. So both sides are reduced to a skeleton (relations,
 operators, application heads, relation|head bigrams) and skeleton overlap
-reranks the lexical top-K — reranking, because the measured bottleneck was
-always ranking: the lexical stage reaches gold 97% of the time at median rank
-~250.
+reranks the lexical top-K — reranking, because at the time this was built the
+measured bottleneck looked like ranking, not retrieval. Current numbers (see
+["Why"](#why) above) put the pre-rerank pool's reach at 83.5%, not the 97%
+originally measured, so that motivation is now only partly true — but
+reranking still measurably helps (recall@5 31.8%→38.1%), so the design stands
+on its current results, not the stale ones that motivated it.
 
 Three design decisions, each forced by an off-PFR measurement:
 
@@ -991,15 +1044,34 @@ canonical form. Two findings and one relocation:
   Hypothesis bodies are scanned too.
 - **Patterns are too sparse to rerank** (recall aggregates unmoved) —
   and that is the predicted profile, so they were relocated to where sparse-
-  but-conclusive is the right shape: the verifier. Measured fire rates:
-  8.6% on correct proposals vs 0.6% on sibling lemmas and 0.0% on
-  wrong-namespace, hallucinated, and random ones — a ~14:1 likelihood ratio
-  against the hardest corruption and effectively infinite against the rest.
+  but-conclusive is the right shape: the verifier. Reproduce with
+  `uv run mathgraph verify-bench --patterns`, which builds the same 176
+  present-arm gold pairs as the table below but also passes each statement's
+  LaTeX formulas as `math_segments`, so `Verifier.verify`'s pattern-accept
+  path actually fires (added under mathgraph-g8x — before it, no checked-in
+  command exercised that path at all: `verify.evaluate`'s gold pairs never
+  carried `math_segments`). Measured fire rate on the current 176-statement
+  present arm: 8.5% on correct proposals vs 2.3% on sibling lemmas and 0.0%
+  on wrong-namespace, hallucinated, and random ones — a **~3.7:1** likelihood
+  ratio against the hardest corruption, not the ~14:1 the previous,
+  unreproducible version of this paragraph reported (8.6%/0.6%/0.0%, dated
+  before the 175→176 corpus move and never re-verified against it — see
+  mathgraph-g8x).
 
 Wired in as an independent accept path (a firing pattern verifies on its
-own), the verifier's operating point moves from accepting 34.9% of correct
-proposals to **41.7%**, with every corrupted population unchanged. Free
-recall at held precision.
+own, bypassing the profile's evidence thresholds), the permissive profile's
+operating point moves from accepting 35.8% of correct proposals to
+**42.6%** (precise: 8.5% → 16.5%). This is not free: the sibling
+population's false-accept rate rises alongside it, permissive 9.7% →
+**11.9%** and precise 1.1% → **3.4%** — the same sparse pattern feature that
+fires on a correct proposal's formula also fires, less often, on a sibling
+lemma from the same module. Every other corrupted population
+(wrong-namespace, hallucinated, random) is unchanged at 0.0%. (The previous
+version of this paragraph reported 34.9% → 41.7% "with every corrupted
+population unchanged" and called it "free recall at held precision"; that
+was unreproducible before mathgraph-g8x, and the "unchanged" claim does not
+hold even on today's numbers — sibling moves. Reproduce with the same
+`verify-bench --patterns` command above.)
 
 Genuinely elaborated Lean ASTs (typeclass-resolved, notation-expanded) remain
 the rung above. The path is now built — `lean/DumpDecls.lean` dumps them from
@@ -1010,8 +1082,9 @@ Lean dumper is written but **unrun**, since the development environment had
 no toolchain. It is opt-in (`mathgraph elaborate`) and nothing else depends
 on it. The ladder so
 far — symbols failed, skeletons +40%, sides +precision, argument patterns
-+7pts of verification recall for free — says each level of structure pays,
-and says where each level belongs.
++7pts of verification recall at a real but smaller sibling-false-accept
+cost — says each level of structure pays, and says where each level
+belongs.
 
 ## The verification layer
 
@@ -1027,15 +1100,30 @@ do not support it), **verified**. Thresholds are calibrated on the non-PFR
 blueprint corpus and transferred to PFR untouched.
 
 Evaluated by corrupting gold proposals the ways proposers actually fail
-(175 statements × 5 proposal populations):
+(176 PFR present-arm statements × 5 proposal populations). Reproduce with
+`uv run mathgraph verify-bench` — this driver did not exist before
+mathgraph-2zj; `verify.evaluate`, which it wraps, had no caller anywhere in
+the repository and this table was not reproducible from any checked-in
+command:
 
 | proposal population | accept rate (permissive) | accept rate (precise) |
 |---|---|---|
-| correct | **34.9%** | 6.3% |
-| sibling lemma, same module | 10.3% | 1.1% |
-| same name, wrong namespace | 33.3% | 0.0% |
+| correct | **35.8%** | 8.5% |
+| sibling lemma, same module | 9.7% | 1.1% |
+| same name, wrong namespace (n=21, not 176 — see below) | 38.1% | 0.0% |
 | hallucinated name | **0.0%** (100% caught as nonexistent) | 0.0% |
-| random declaration | 0.6% | 0.0% |
+| random declaration | 0.0% | 0.0% |
+
+This replaces a previously reported 175-statement table (34.9%/6.3%,
+10.3%/1.1%, 33.3%/0.0%, 0.0%/0.0%, 0.6%/0.0%) that predates the present
+arm's move from 175 to 176 statements (see above) and predates
+`verify-bench` — no script in this repository reproduced it, so this is a
+genuine re-measurement, not a rounding fix, and not every row moved the same
+direction. **The wrong-namespace row is measured on 21 of the 176
+statements, not all 176**: `corrupt()`'s wrong-namespace mode needs another
+declaration in the index sharing the gold's last name component, and only 21
+of the 176 gold names have one, so that row carries far less statistical
+weight than the other four.
 
 The existence check alone is worth deploying: every fabricated name is caught,
 exactly, at zero false-alarm cost — and fabricated names are the dominant LLM
@@ -1102,16 +1190,33 @@ earlier — now with the held-out arm that shows it was right.
 
 ## The shipped benchmark
 
-`bench_release/` is the frozen, standalone version: `tasks.jsonl` (175
-present-arm + 174 absent-arm statements, each naming its reference corpus),
-a stdlib-only `scorer.py`, and a data card. Predictions are one JSON line per
-task, `null` meaning abstain; the scorer reports precision, recall, and the
-absent-arm false-match rate side by side so no system can hide behind any one
-number. Derived from the PFR blueprint (Apache 2.0); inherits Apache 2.0.
+`bench_release/` is not checked into this repo — it's produced on demand by
+running `python -m mathgraph.freeze_bench`, which writes a standalone
+`tasks.jsonl` (one row per statement, each naming its reference corpus), a
+stdlib-only `scorer.py`, and a data card, so the benchmark can be used without
+cloning anything. Predictions are one JSON line per task, `null` meaning
+abstain; the scorer reports precision, recall, and the absent-arm false-match
+rate side by side so no system can hide behind any one number. Derived from
+the PFR blueprint (Apache 2.0); inherits Apache 2.0.
+
+Row counts depend on the corpus the generator is run against, and are not
+reproduced here: the present arm has already drifted from 175 to **176**
+statements elsewhere in this document (see above), and `freeze_bench.py`'s
+data card is a static template whose text does not recompute from the corpus
+it's actually run on — its stated counts and baseline numbers can go stale
+independently of `tasks.jsonl`. Treat any counts printed inside a generated
+`bench_release/README.md` as unverified until that template interpolates its
+real numbers; check them against `tasks.jsonl` directly.
 
 The calibrated abstention layer is model-agnostic and unchanged throughout.
 Any replacement retrieval stage drops into `bench_dense.py` and is scored on
 the same two arms against the same author-written ground truth — a real test
 rather than a demo.
 
-Index scale: 242,550 declarations, 5,609 name tokens, ~3 ms per lexical query.
+Index scale, measured directly against `idx_full` (`len(art['rows'])`,
+`len(art['postings'])`, and 50 timed `Aligner.align` calls) as of 2026-08-08:
+**251,236** declarations, **5,399** name tokens. These move with mathlib and
+are not frozen; re-run the measurement rather than trusting this line. Per-
+query latency is hardware- and container-dependent and not a reproducible
+figure across environments, so it is omitted here rather than reported as a
+false constant.

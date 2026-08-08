@@ -40,7 +40,9 @@ uv run mathgraph setup
 
 **Rank candidate declarations for an informal statement.** Pass the formulas
 too — they carry more signal than the prose does, and the structural
-reranker is worth about +22% recall@5 over lexical alone.
+reranker is worth about +20% recall@5 over lexical alone (recompute with
+`uv run mathgraph bench`: `(structural.recall@5 - lexical.recall@5) /
+lexical.recall@5`; currently (0.381-0.318)/0.318 = 19.8%).
 
 ```bash
 uv run mathgraph query \
@@ -101,8 +103,8 @@ uv run mathgraph bench
 Expected, on the held-out PFR blueprint:
 
 ```json
-{"lexical":     {"n": 175, "recall@1": 0.189, "recall@5": 0.32},
- "+structural": {"n": 175, "recall@1": 0.2,   "recall@5": 0.389}}
+{"lexical":     {"n": 176, "recall@1": 0.182, "recall@5": 0.318},
+ "+structural": {"n": 176, "recall@1": 0.193, "recall@5": 0.381}}
 ```
 
 If those numbers don't reproduce exactly, the corpora have moved on since

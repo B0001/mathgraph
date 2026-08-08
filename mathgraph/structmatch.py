@@ -9,9 +9,13 @@ flattened to `MATH`, which is what every earlier stage here did.
 
 So both sides are reduced to a skeleton -- relations, application heads,
 operators, and relation|operand bigrams -- and the overlap reranks the
-lexical top-K. Reranking rather than first-stage retrieval, because the
-measured bottleneck is ranking: the lexical stage reaches the gold
-declaration 97% of the time and puts it at median rank ~250.
+lexical top-K. Reranking rather than first-stage retrieval -- though as of
+the 2026-08-08 re-measurement (176-statement present arm, StructReranker's
+shipped depth=10000), the lexical stage's pre-rerank pool reaches the gold
+declaration only 83.5% of the time (147/176) and puts it at median rank 42
+when it does, so this is now partly a retrieval problem too, not purely a
+ranking one. See README.md's "Why" section and `bench_pfr.lexical_pool_stats`
+(the function that produces these numbers) for detail and reproduction.
 """
 
 from __future__ import annotations

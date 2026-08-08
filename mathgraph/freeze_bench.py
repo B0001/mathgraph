@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import string
 import sys
 
 from .bench_pfr import blueprint_blocks
@@ -80,13 +81,15 @@ with abstention scored as a first-class outcome.
 
 ## What it is
 
-175 + 174 statements from the blueprint of the Polynomial Freiman-Ruzsa
+$N_PRES + $N_ABS statements from the blueprint of the Polynomial Freiman-Ruzsa
 formalization (Tao et al.), ordinary research prose, each carrying the
-authors' own `\\lean{...}` annotation as gold.
+authors' own `\\lean{...}` annotation as gold. These counts are computed from
+the corpus that generated this release's tasks.jsonl, not hardcoded -- if you
+edit this template and the numbers stop matching tasks.jsonl, that is a bug.
 
-- **present arm** (175): the gold declaration exists in the reference corpus
+- **present arm** ($N_PRES): the gold declaration exists in the reference corpus
   (mathlib4 + the PFR formalization). The right move is to name it.
-- **absent arm** (174): the gold declaration exists only in the PFR project,
+- **absent arm** ($N_ABS): the gold declaration exists only in the PFR project,
   which is *excluded* from the reference corpus for this arm. Nothing in the
   corpus is correct, so the only right move is to abstain (`null`).
 
@@ -118,13 +121,19 @@ task. Score with `python scorer.py tasks.jsonl predictions.jsonl`.
 
 | system | precision | recall | false-match (absent) |
 |---|---|---|---|
-| lexical + calibrated abstention | ~0.67* | 0.011 | 0.00 |
+| lexical + calibrated abstention | see note † | see note † | see note † |
 | dense dual-encoder (docstring-trained) | ~0.06 | 0.006 | high |
 | always-answer lexical top-1 | 0.04 | 0.074 | 1.00 |
 
-*on 3 answers — reported to show that even the best calibrated operating
-point is nearly useless for assertion. The bar to clear is: precision you
-would trust, at recall above a few percent, with false-match near zero.
+† Not computed by this script, so not hardcoded here. A figure for this row
+("~67%, on 3 answers out of 349") shipped in this exact spot for at least two
+scorer revisions after it stopped matching the code that was supposed to
+produce it. Reproduce it yourself against the corpus that generated this
+release with `python -m mathgraph.bench_pfr` (see the parent repository's
+README, "Calibration sweep over both arms combined", for the exact
+invocation) and read `combined_calibration` off the output. The bar to
+clear is: precision you would trust, at recall above a few percent, with
+false-match near zero.
 
 ## Provenance and license
 
@@ -134,9 +143,14 @@ Reference corpus: mathlib4 (Apache 2.0). This benchmark inherits Apache 2.0.
 '''
 
 
-def main(out_dir="bench_release"):
+def main(out_dir="bench_release", pattern=None):
     os.makedirs(out_dir, exist_ok=True)
-    blocks = blueprint_blocks("/home/claude/pfr/blueprint/src/chapter/*.tex")
+    if pattern is None:
+        pattern = os.path.join(
+            os.environ.get("MATHGRAPH_DATA", "./mathgraph-data"),
+            "blueprints/pfr/blueprint/src/chapter/*.tex",
+        )
+    blocks = blueprint_blocks(pattern)
     deploy = {r["name"] for r in load("idx_deploy")["rows"]}
     mathlib = {r["name"] for r in load("idx_mathlib_only")["rows"]}
 
@@ -162,8 +176,9 @@ def main(out_dir="bench_release"):
                     "corpus": "mathlib4", "gold": [], **base,
                 }, ensure_ascii=False) + "\n")
 
+    card = string.Template(CARD).substitute(N_PRES=n_pres, N_ABS=n_abs)
     open(os.path.join(out_dir, "scorer.py"), "w").write(SCORER)
-    open(os.path.join(out_dir, "README.md"), "w").write(CARD)
+    open(os.path.join(out_dir, "README.md"), "w").write(card)
     print(json.dumps({"present": n_pres, "absent": n_abs, "dir": out_dir}))
 
 
