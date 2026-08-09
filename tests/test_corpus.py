@@ -349,5 +349,143 @@ class VerifierProfiles(unittest.TestCase):
         self.assertLess(len(self.acc["precise"]), len(self.acc["permissive"]))
 
 
+@needs("idx_full", "idx_mathlib")
+class LexicalPoolAndCombinedCalibration(unittest.TestCase):
+    """Pins `bench_pfr.lexical_pool_stats` and `combined_precision_sweep`
+    (README "Why": 83.5% reach / median rank 42, and the calibration sweep's
+    100% precision on 3 of 350). Neither function had a caller anywhere in
+    tests/ before mathgraph-jvx -- only `main()`'s CLI path exercised them,
+    which is exactly how the sibling absent-arm 170/4 figure (README:262)
+    went stale for hours without anything catching it.
+    """
+
+    DELTA = 0.01
+
+    @classmethod
+    def setUpClass(cls):
+        from mathgraph.bench_pfr import (arm_present, arm_absent,
+                                         lexical_pool_stats,
+                                         combined_precision_sweep)
+        blocks = pfr_blocks()
+        if not blocks:
+            raise unittest.SkipTest("PFR blueprint sources not present")
+        al_full = aligner("idx_full")
+        al_mathlib = aligner("idx_mathlib")
+        cls.present = arm_present(al_full, blocks)
+        cls.pool = lexical_pool_stats(al_full, blocks)
+        cls.absent = arm_absent(al_mathlib, blocks)
+        cls.combined = combined_precision_sweep(cls.present, cls.absent)
+
+    def test_lexical_pool_reach_and_rank(self):
+        self.assertEqual(self.pool["n"], 176)
+        self.assertAlmostEqual(
+            self.pool["reach_rate"], 0.835, delta=self.DELTA,
+            msg=f"reach_rate {self.pool['reach_rate']} vs 0.835")
+        self.assertEqual(self.pool["median_rank"], 42)
+
+    def test_combined_calibration_peak(self):
+        self.assertEqual(self.combined["n_present"], 176)
+        self.assertEqual(self.combined["n_absent"], 174)
+        self.assertEqual(self.combined["n_combined"], 350)
+        self.assertAlmostEqual(self.combined["precision"], 1.0, delta=self.DELTA)
+        self.assertEqual(self.combined["answered"], 3)
+        self.assertEqual(self.combined["correct"], 3)
+
+
+@needs("idx_full")
+class VerifyBenchAcceptRates(unittest.TestCase):
+    """Pins `verify.evaluate`'s accept-rate table (README "The verification
+    layer") and the lift from wiring `math_segments` in so the formula-pattern
+    accept path fires (README "Argument identity"). Before mathgraph-jvx,
+    `verify.evaluate` had no caller in tests/ -- only `cli.cmd_verify_bench`
+    (`mathgraph verify-bench [--patterns]`) called it, so this table could
+    drift the same way the sibling README:262 figure did.
+    """
+
+    DELTA = 0.01
+
+    @classmethod
+    def setUpClass(cls):
+        from mathgraph.verify import Verifier, evaluate
+        blocks = pfr_blocks()
+        if not blocks:
+            raise unittest.SkipTest("PFR blueprint sources not present")
+        al = aligner("idx_full")
+        known = {r["name"] for r in al.rows}
+        no_pat, with_pat = [], []
+        for b in blocks:
+            gold = [g for g in b.declared_lean if g in known]
+            if gold:
+                no_pat.append((b.text, b.title, gold[0]))
+                with_pat.append((b.text, b.title, gold[0], b.math))
+        cls.n = len(no_pat)
+        cls.no_pat, cls.with_pat = {}, {}
+        for profile in ("permissive", "precise"):
+            V = Verifier(al, **VERIFY_PROFILES[profile])
+            cls.no_pat[profile] = evaluate(V, no_pat, seed=0)
+            cls.with_pat[profile] = evaluate(V, with_pat, seed=0)
+
+    def test_evaluated_on_the_documented_number_of_statements(self):
+        self.assertEqual(self.n, 176)
+
+    def test_accept_rates_without_patterns(self):
+        expected = {
+            ("permissive", "correct"): 0.358, ("permissive", "sibling"): 0.097,
+            ("permissive", "wrong_namespace"): 0.381,
+            ("permissive", "hallucinated"): 0.0, ("permissive", "random"): 0.0,
+            ("precise", "correct"): 0.085, ("precise", "sibling"): 0.011,
+            ("precise", "wrong_namespace"): 0.0,
+            ("precise", "hallucinated"): 0.0, ("precise", "random"): 0.0,
+        }
+        for (profile, pop), want in expected.items():
+            got = self.no_pat[profile][pop]["accept_rate"]
+            self.assertAlmostEqual(got, want, delta=self.DELTA,
+                                   msg=f"{profile}/{pop} accept_rate {got} vs {want}")
+
+    def test_wrong_namespace_population_size(self):
+        """21 of 176, not all 176 -- corrupt()'s wrong_namespace mode needs a
+        same-tail sibling declaration and most gold names don't have one."""
+        self.assertEqual(self.no_pat["permissive"]["wrong_namespace"]["n"], 21)
+
+    def test_hallucinated_always_caught_as_nonexistent(self):
+        self.assertEqual(
+            self.no_pat["permissive"]["hallucinated"]["caught_nonexistent"], 1.0)
+
+    def test_unpatterned_evaluate_never_fires_patterns(self):
+        """Without a 4th `math_segments` element per pair, the pattern-accept
+        path must stay dark -- this is the pre-pattern baseline the table
+        above reports."""
+        for profile in ("permissive", "precise"):
+            for pop, stats in self.no_pat[profile].items():
+                self.assertEqual(stats["pattern_fire_rate"], 0.0,
+                                 f"{profile}/{pop} fired without math_segments")
+
+    def test_pattern_path_lifts_accept_and_fire_rate(self):
+        expected_accept = {
+            ("permissive", "correct"): 0.426, ("permissive", "sibling"): 0.119,
+            ("precise", "correct"): 0.165, ("precise", "sibling"): 0.034,
+        }
+        for (profile, pop), want in expected_accept.items():
+            got = self.with_pat[profile][pop]["accept_rate"]
+            self.assertAlmostEqual(got, want, delta=self.DELTA,
+                                   msg=f"{profile}/{pop} accept_rate {got} vs {want}")
+        expected_fire = {"correct": 0.085, "sibling": 0.023,
+                         "wrong_namespace": 0.0, "hallucinated": 0.0, "random": 0.0}
+        for pop, want in expected_fire.items():
+            got = self.with_pat["permissive"][pop]["pattern_fire_rate"]
+            self.assertAlmostEqual(got, want, delta=self.DELTA,
+                                   msg=f"pattern_fire_rate[{pop}] {got} vs {want}")
+
+    def test_unmatched_populations_are_unaffected_by_patterns(self):
+        """README: "Every other corrupted population (wrong-namespace,
+        hallucinated, random) is unchanged" by wiring math_segments in."""
+        for profile in ("permissive", "precise"):
+            for pop in ("wrong_namespace", "hallucinated", "random"):
+                self.assertAlmostEqual(
+                    self.with_pat[profile][pop]["accept_rate"],
+                    self.no_pat[profile][pop]["accept_rate"], delta=self.DELTA,
+                    msg=f"{profile}/{pop} accept_rate moved with patterns wired in")
+
+
 if __name__ == "__main__":
     unittest.main()

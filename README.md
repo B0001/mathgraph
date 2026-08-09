@@ -259,7 +259,14 @@ alone):
 |---|---|
 | correct abstention | **100%** |
 | false matches | **0** |
-| status breakdown | 170 unmatched, 4 ambiguous, 0 matched |
+| status breakdown | 168 unmatched, 6 ambiguous, 0 matched |
+
+This replaces a previously published 170/4 split that no longer reproduces:
+the exact command below (same code, same unchanged `idx_mathlib` artifact,
+dated before the commit that published 170/4) gives 168/6 on every re-run —
+repeated back-to-back, under three different `PYTHONHASHSEED` values, and
+rescored in float64 instead of `_score`'s float32 accumulator, all agree.
+Abstention and false-match rate are unaffected either way — see mathgraph-p14.
 
 **Present arm** — the paper's own formalization added to the index, so every
 statement has a correct answer:
@@ -289,7 +296,7 @@ is wrong by construction). Reproduce with:
 
 ```
 uv run python -m mathgraph.bench_pfr \
-  '{"deploy": "mathgraph-data/artifacts/idx_full", "mathlib_only": "mathgraph-data/artifacts/idx_mathlib", "pattern": "mathgraph-data/blueprints/pfr/blueprint/src/chapter/*.tex", "len_pivot": 0.75, "mod_weight": 0.1, "typ_weight": 0.15, "prefix_weight": 0.85, "title_boost": 2.5}'
+  '{"deploy": "idx_full", "mathlib_only": "idx_mathlib", "pattern": "mathgraph-data/blueprints/pfr/blueprint/src/chapter/*.tex", "len_pivot": 0.75, "mod_weight": 0.1, "typ_weight": 0.15, "prefix_weight": 0.85, "title_boost": 2.5}'
 ```
 
 and read `combined_calibration` off the output. That same JSON also prints
@@ -303,12 +310,11 @@ See mathgraph-7dw and `arm_present`'s docstring.
 
 This replaces a previously reported "~67%, on 3 answers out of 349" that no
 script in this repository reproduced: 349 was arithmetically 175 (the present
-arm's pre-scanner-fix
-count) + 174 (the absent arm), and no combined-arm sweep existed in code to
-produce the 67% either. The scorer has changed twice since that figure was
-written (length normalisation, the type field) and the peak the current
-scorer reaches is higher, not lower — this is a re-measurement, not a
-different methodology chosen to move the number.
+arm's pre-scanner-fix count) + 174 (the absent arm), and no combined-arm
+sweep existed in code to produce the 67% either. The scorer has changed
+twice since that figure was written (length normalisation, the type field)
+and the peak the current scorer reaches is higher, not lower — this is a
+re-measurement, not a different methodology chosen to move the number.
 
 There is still no operating point that is both useful and trustworthy: 3
 answers out of 350 is 0.9% coverage, too small a sample for 100% precision to
@@ -1201,12 +1207,19 @@ the PFR blueprint (Apache 2.0); inherits Apache 2.0.
 
 Row counts depend on the corpus the generator is run against, and are not
 reproduced here: the present arm has already drifted from 175 to **176**
-statements elsewhere in this document (see above), and `freeze_bench.py`'s
-data card is a static template whose text does not recompute from the corpus
-it's actually run on — its stated counts and baseline numbers can go stale
-independently of `tasks.jsonl`. Treat any counts printed inside a generated
-`bench_release/README.md` as unverified until that template interpolates its
-real numbers; check them against `tasks.jsonl` directly.
+statements elsewhere in this document (see above). `freeze_bench.py`'s data
+card templates its `$N_PRES`/`$N_ABS` counts via `string.Template(CARD)
+.substitute(N_PRES=n_pres, N_ABS=n_abs)`, using the same counts written to
+`tasks.jsonl`, so those two numbers can't drift apart from each other within
+one release — but they still move with whatever corpus the generator was run
+against, so a count quoted from an older `bench_release/README.md` need not
+match a freshly generated one; check it against that release's own
+`tasks.jsonl`. The Baselines table's `lexical + calibrated abstention` row is
+a different case: it is deliberately left as "see note" rather than computed
+by the script at all (with a footnote on how to reproduce it), not a value
+that has gone stale. Either way, don't trust a number printed inside a
+generated `bench_release/README.md` without checking it against the release
+it came from.
 
 The calibrated abstention layer is model-agnostic and unchanged throughout.
 Any replacement retrieval stage drops into `bench_dense.py` and is scored on

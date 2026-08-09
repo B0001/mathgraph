@@ -13,6 +13,7 @@ its own Lean declarations. It is the test set.
 from __future__ import annotations
 
 import json
+import os
 import random
 import sys
 
@@ -52,11 +53,12 @@ def augment(text: str, rng: random.Random, keep=0.5, cap=16) -> str:
     return " ".join(kept[:cap])
 
 
-def build(idx_dir="idx_deploy", pairs_path="blueprint_pairs.jsonl",
+def build(idx_dir="idx_full", pairs_path="blueprint_pairs.jsonl",
           decls_path="blueprint_decls.jsonl", holdout_prefix="PFR.",
           upsample=25, dim=192, pre_epochs=10, ft_epochs=6, seed=0,
           n_augment=2):
-    art = load(idx_dir)
+    art_dir = os.path.join(os.environ.get("MATHGRAPH_DATA", "./mathgraph-data"), "artifacts")
+    art = load(os.path.join(art_dir, idx_dir))
     rows = art["rows"]
 
     bp_rows = blueprint_rows(decls_path)

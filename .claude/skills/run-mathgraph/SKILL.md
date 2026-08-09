@@ -180,18 +180,32 @@ cluster.
   It is the corpus where `"a compact set in a Hausdorff space is closed"`
   actually returns `IsCompact.isClosed` at rank 1, so it is worth the load —
   once, through the driver, not per CLI call.
-- **Four modules are dead entry points.** `freeze_bench.py`, `bench_pfr.py`,
-  `bench_dense.py` and `adapt.py` default to index names nothing builds
-  (`idx_deploy`, `idx_mathlib_only`, `dense_mathlib.pkl.gz`), so
-  `python -m mathgraph.freeze_bench` and `python -m mathgraph.bench_pfr` both
-  die with `FileNotFoundError: 'idx_deploy/index.pkl.gz'`. `mathgraph bench`
-  is unaffected — `cli.cmd_bench` reimplements the PFR benchmark against
-  `idx_full` rather than calling `bench_pfr`. Related: `freeze_bench.py`
-  defines `main` twice (lines 33 and 137); the second shadows the first.
-- **`bench_release/` does not exist** and cannot currently be produced, though
-  README.md and QUICKSTART.md both say the benchmark "ships frozen" there.
-  Its generator is `freeze_bench.py`, which is one of the dead entry points
-  above.
+- **Fixed (mathgraph-2pj, mathgraph-dgd): `freeze_bench.py`, `bench_pfr.py`,
+  `bench_dense.py` and `adapt.py` used to default to index names nothing
+  builds (`idx_deploy`, `idx_mathlib_only`) with no `MATHGRAPH_DATA/artifacts`
+  path prefix. All four now default to the real names (`idx_full`,
+  `idx_mathlib`), resolved through `MATHGRAPH_DATA` the same way `cli.py`'s
+  `_art()` helper does. `python -m mathgraph.freeze_bench`,
+  `python -m mathgraph.bench_pfr`, `python -m mathgraph.adapt` and
+  `python -m mathgraph.bench_dense` all load an index successfully now (no
+  symlink workaround needed). Two things this did *not* fix, both still real:
+  `bench_pfr.py`/`bench_dense.py`'s default blueprint `pattern` is
+  `/home/claude/pfr/blueprint/src/chapter/*.tex`, which does not exist in
+  this container — pass an explicit `pattern` under
+  `$MATHGRAPH_DATA/blueprints/pfr/...`. And `bench_dense.py`'s default
+  `encoder="dense_mathlib.pkl.gz"` is not produced by anything in this repo
+  — pass an explicit path to an encoder you trained with `adapt.py`.
+  `mathgraph bench` was never affected by any of this — `cli.cmd_bench`
+  reimplements the PFR benchmark against `idx_full` rather than calling
+  `bench_pfr`. Unrelated and still open: `freeze_bench.py` defines `main`
+  twice (lines 34 and 144); the second shadows the first and is the one
+  that actually runs.
+- **`bench_release/` is not checked in** and must be regenerated with
+  `python -m mathgraph.freeze_bench` (see the fixed-entry-points gotcha
+  above — this now works against a real corpus and writes
+  `bench_release/{tasks.jsonl,scorer.py,README.md}`). README.md and
+  QUICKSTART.md describe it as "ships frozen", which describes the intended
+  release artifact, not something present in a fresh checkout.
 - **The Docker image contains only `mathgraph/`** — no `tests/`, no
   `.claude/`. The driver and the test suite run on the host.
 - Repo sources are mode 0600; the Dockerfile's `chmod -R a+rX` exists for that
@@ -205,5 +219,6 @@ cluster.
 | `missing index .../idx_mathlib` (CLI) or `!! no index at ...` (driver) | corpus absent — `uv run mathgraph setup` (~5-10 min, ~600 MB), or set `MATHGRAPH_DATA` to a populated one. |
 | `argument --corpus: invalid choice` | see the hardcoded-choices gotcha — use the driver, or add the name to `CORPORA` in `cli.py`. |
 | `bench` numbers drift from those above | the corpora moved; mathlib changes daily. There is no frozen fallback — see the `bench_release` gotcha. |
-| `FileNotFoundError: 'idx_deploy/index.pkl.gz'` | you ran a module directly instead of the CLI — see the `idx_deploy` gotcha. |
+| `FileNotFoundError: '.../chapter/*.tex'` from `bench_pfr.py`/`bench_dense.py` | the default `pattern` points at `/home/claude/pfr/...`, which doesn't exist here — pass an explicit `pattern` under `$MATHGRAPH_DATA/blueprints/pfr/...`. |
+| `FileNotFoundError: 'dense_mathlib.pkl.gz'` from `bench_dense.py` | nothing in this repo produces that file by default — train one with `adapt.py` and pass its path as `encoder`. |
 | `dot: command not found` | graphviz isn't installed; the `.dot` file was still written. |

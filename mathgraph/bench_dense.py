@@ -9,6 +9,7 @@ to the ones already in the README.
 from __future__ import annotations
 
 import json
+import os
 import sys
 
 import numpy as np
@@ -121,14 +122,15 @@ def sweep(recs, min_answers=5):
 def main(mode="dense", encoder="dense_mathlib.pkl.gz"):
     blocks = blueprint_blocks("/home/claude/pfr/blueprint/src/chapter/*.tex")
     enc = DualEncoder.load(encoder)
+    art_dir = os.path.join(os.environ.get("MATHGRAPH_DATA", "./mathgraph-data"), "artifacts")
 
-    art_d = load("idx_deploy")
+    art_d = load(os.path.join(art_dir, "idx_full"))
     Md = encode_corpus(enc, art_d["rows"])
     run_arm._name2id = {r["name"]: i for i, r in enumerate(art_d["rows"])}
     al_d = Aligner(art_d, tau_cov=0.0, delta_margin=0.0, **LEX) if mode != "dense" else None
     pres, rp = run_arm(art_d["rows"], enc, Md, blocks, "present", mode, al_d)
 
-    art_m = load("idx_mathlib_only")
+    art_m = load(os.path.join(art_dir, "idx_mathlib"))
     Mm = encode_corpus(enc, art_m["rows"])
     run_arm._name2id = {r["name"]: i for i, r in enumerate(art_m["rows"])}
     al_m = Aligner(art_m, tau_cov=0.0, delta_margin=0.0, **LEX) if mode != "dense" else None

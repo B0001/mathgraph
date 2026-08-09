@@ -24,10 +24,13 @@ uv run mathgraph setup
 ```
 
 Clones mathlib4 (sparse + blobless, so ~150 MB rather than several GB) and
-six blueprint projects, scans ~231k declarations, harvests ~1,071
-paper-prose/declaration pairs, and builds three indices. **~5-10 minutes,
-~600 MB on disk**, dominated by the clone. Resumable: every stage skips if
-its output already exists, so an interrupted run costs nothing to repeat.
+six blueprint projects, scans ~242k declarations, harvests ~440
+paper-prose/declaration pairs, and builds three indices. Both counts drift
+with upstream mathlib/blueprint commits; check the numbers from your own run
+with `wc -l artifacts/mathlib.jsonl artifacts/blueprint_pairs.jsonl`.
+**~5-10 minutes, ~600 MB on disk**, dominated by the clone. Resumable: every
+stage skips if its output already exists, so an interrupted run costs
+nothing to repeat.
 
 Put the data somewhere deliberate if you like:
 

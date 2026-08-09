@@ -108,8 +108,6 @@ indistinguishable from a right one downstream.
 ```
 
 Each statement names its reference `corpus` — the absent arm must be run
-against mathlib alone, with the PFR formalization withheld, or its abstention
-labels are meaningless. Each statement names its reference `corpus` — the absent arm must be run
 against mathlib alone (PFR formalization withheld) or its abstention labels
 are meaningless. Math is flattened to `MATH` in `text` (this benchmark is deliberately hard;
 formula-aware systems should recover the math from the arXiv source).
@@ -151,8 +149,9 @@ def main(out_dir="bench_release", pattern=None):
             "blueprints/pfr/blueprint/src/chapter/*.tex",
         )
     blocks = blueprint_blocks(pattern)
-    deploy = {r["name"] for r in load("idx_deploy")["rows"]}
-    mathlib = {r["name"] for r in load("idx_mathlib_only")["rows"]}
+    art_dir = os.path.join(os.environ.get("MATHGRAPH_DATA", "./mathgraph-data"), "artifacts")
+    deploy = {r["name"] for r in load(os.path.join(art_dir, "idx_full"))["rows"]}
+    mathlib = {r["name"] for r in load(os.path.join(art_dir, "idx_mathlib"))["rows"]}
 
     # The two arms use different reference corpora, so one statement can
     # appear in both: answerable against mathlib+PFR, unanswerable against

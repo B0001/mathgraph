@@ -81,8 +81,25 @@ provenance.
   MATHGRAPH_DATA=/workspace/mathgraph-data uv run python -m unittest discover tests
   ```
 
-  76 tests, roughly two minutes. `MATHGRAPH_DATA` is required; corpus tests
-  silently skip without it, which will make a broken run look green.
+  Roughly two minutes. `MATHGRAPH_DATA` is required; corpus tests silently
+  skip without it, which will make a broken run look green.
+- **If `uv run` fails immediately with `Failed to initialize cache at
+  /home/node/.cache/uv ... Permission denied`**, it's a container issue, not
+  a repo problem: `/home/node/.cache/uv` and `/home/node/.local/share/uv` are
+  owned by `root`, not the `node` user the session actually runs as. This is
+  fixed at the host level as of mathgraph-ehl (`sandbox.sh` chowns the uv
+  volumes to uid 1000 before dispatching), so you should not hit it. If you
+  somehow do, point uv at writable scratch space to unblock yourself and file
+  a bead:
+
+  ```
+  export UV_CACHE_DIR=/tmp/uv-cache UV_PYTHON_INSTALL_DIR=/tmp/uv-python XDG_DATA_HOME=/tmp/xdg-data
+  mkdir -p /tmp/uv-cache /tmp/uv-python /tmp/xdg-data
+  MATHGRAPH_DATA=/workspace/mathgraph-data uv run python -m unittest discover tests
+  ```
+
+  `/tmp` isn't a named volume, so this repeats the interpreter + wheel
+  downloads for every worker — it's a fallback, not the fix.
 - `bd` is the tracker. File a bead per work item with `bd create` before
   writing code, `bd update <id> --claim`, and close only when the evidence
   exists. An empty `bd ready` means file new beads, not that you are done.

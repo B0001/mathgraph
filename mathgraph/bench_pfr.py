@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import glob
 import json
+import os
 import statistics
 import sys
 
@@ -174,14 +175,15 @@ def combined_precision_sweep(present: dict, absent: dict) -> dict:
             "n_combined": n_combined}
 
 
-def main(deploy="idx_deploy", mathlib_only="idx_mathlib_only",
+def main(deploy="idx_full", mathlib_only="idx_mathlib",
          pattern="/home/claude/pfr/blueprint/src/chapter/*.tex", **kw):
     blocks = blueprint_blocks(pattern)
     out = {"blocks_with_gold": len(blocks)}
-    al = Aligner(load(deploy), **kw)
+    art_dir = os.path.join(os.environ.get("MATHGRAPH_DATA", "./mathgraph-data"), "artifacts")
+    al = Aligner(load(os.path.join(art_dir, deploy)), **kw)
     out["present"] = arm_present(al, blocks)
     out["lexical_pool"] = lexical_pool_stats(al, blocks)
-    al2 = Aligner(load(mathlib_only), **kw)
+    al2 = Aligner(load(os.path.join(art_dir, mathlib_only)), **kw)
     out["absent"] = arm_absent(al2, blocks)
     out["combined_calibration"] = combined_precision_sweep(out["present"], out["absent"])
     del out["present"]["records"], out["absent"]["records"]
