@@ -23,7 +23,7 @@ set -uo pipefail
 PROMPT_FILE="sandbox-prompt.md"
 HANDOFF_DIR="sandbox-handoffs"
 LOCK_DIR=".sandbox.lock"
-MAX_ATTEMPTS=2      # same bead comes back unclosed this many times -> stop
+MAX_ATTEMPTS=2      # same bead comes back unclosed this many times -> park it
 MAX_WORKERS=25      # backstop against a runaway queue
 
 cd "$(dirname "$0")" || exit 1
@@ -66,6 +66,13 @@ run_worker() {
     -p "$1" --dangerously-skip-permissions
 }
 
+# Beads that hit MAX_ATTEMPTS. They are skipped for the rest of the run and
+# reported at the end. This list is the whole reason a bad bead no longer kills
+# the run: parking one and moving on drains the queue, aborting on it does not.
+PARKED=""
+
+is_parked() { case " $PARKED " in *" $1 "*) return 0;; *) return 1;; esac; }
+
 ids_by_status() {
   bd list --status="$1" --json 2>/dev/null \
     | python3 -c 'import json,sys
@@ -73,19 +80,53 @@ try: print(" ".join(i["id"] for i in json.load(sys.stdin)))
 except Exception: pass'
 }
 
-next_ready() {
-  bd ready --json 2>/dev/null \
+# Epics are excluded from dispatch: a parent is marked in_progress as soon as
+# any child is claimed, so it sits in_progress permanently and is not work a
+# worker can finish. Dispatching one burns a whole session on nothing.
+stale_ids() {
+  bd list --status=in_progress --json 2>/dev/null \
     | python3 -c 'import json,sys
-try: print(json.load(sys.stdin)[0]["id"])
+try: print(" ".join(i["id"] for i in json.load(sys.stdin) if i.get("issue_type") != "epic"))
 except Exception: pass'
 }
+
+# Epics are excluded here for the same reason as above. `bd ready` surfaces an
+# epic whose children are all still unstarted -- it only disappears from the
+# ready queue once a child is claimed and the parent flips to in_progress -- so
+# without this filter the loop can dispatch a worker onto a bead nobody can
+# finish.
+ready_ids() {
+  bd ready --json 2>/dev/null \
+    | python3 -c 'import json,sys
+try: print(" ".join(i["id"] for i in json.load(sys.stdin) if i.get("issue_type") != "epic"))
+except Exception: pass'
+}
+
+# Both selectors skip parked ids. Skipping them in the READY path matters as
+# much as in the stale path: a worker that leaves its bead open (rather than
+# claimed) puts it straight back at the head of `bd ready`, and without the
+# skip the loop re-dispatches it forever.
+first_unparked() {
+  for id in $1; do
+    is_parked "$id" && continue
+    echo "$id"
+    return
+  done
+}
+
+next_ready() { first_unparked "$(ready_ids)"; }
 
 # bd ready EXCLUDES in_progress beads. A worker that claims one and then dies,
 # stalls, or hits a limit leaves it invisible to the queue forever -- so
 # "nothing ready" is not the same as "nothing left". This is the fallback that
 # makes the difference visible, and it is what gives MAX_ATTEMPTS something to
 # count: a stale claim that keeps failing now comes back instead of vanishing.
-next_stale() { ids_by_status in_progress | awk '{print $1}'; }
+#
+# It fires only once the ready queue is drained, so strays accumulate during a
+# long run and are swept at the end. That is deliberate -- fresh work first --
+# but it means a run that ends early (MAX_WORKERS, a kill) never reaches the
+# sweep. The end-of-run report names anything left, so it is visible either way.
+next_stale() { first_unparked "$(stale_ids)"; }
 
 # Empty queue on the first pass means the phase has not been triaged yet, not
 # that the work is done. Seed it: one worker that files beads and writes no
@@ -132,8 +173,9 @@ while :; do
     break
   fi
 
-  # Livelock guard, now load-bearing: with the stale-claim fallback above, a
-  # bead that a worker keeps failing to finish WILL come back, so cap it.
+  # Livelock guard. Counting consecutive re-dispatches of the SAME id is what
+  # detects a bead a worker cannot finish; parking it (rather than exiting) is
+  # what lets every other stranded bead still get its turn.
   if [ "$TASK_ID" = "$last_id" ]; then
     attempts=$((attempts + 1))
   else
@@ -141,16 +183,19 @@ while :; do
     last_id="$TASK_ID"
   fi
   if [ "$attempts" -gt "$MAX_ATTEMPTS" ]; then
-    echo "==> ABORT: $TASK_ID came back unfinished $MAX_ATTEMPTS times."
+    echo "==> PARKED $TASK_ID: came back unfinished $MAX_ATTEMPTS times."
     echo "    Inspect with: bd show $TASK_ID"
     echo "    Its handoff (if any): $HANDOFF_DIR/$TASK_ID.md"
-    exit 1
+    PARKED="$PARKED $TASK_ID"
+    last_id=""
+    attempts=0
+    continue
   fi
 
   workers=$((workers + 1))
   if [ "$workers" -gt "$MAX_WORKERS" ]; then
     echo "==> ABORT: hit MAX_WORKERS=$MAX_WORKERS. Queue is growing, not draining."
-    exit 1
+    break
   fi
 
   echo "==> worker $workers: $TASK_ID (attempt $attempts)"
@@ -183,7 +228,9 @@ not a failure.
 If you discover work outside this bead's scope, file it as a new bead. Do not
 do it now.
 
-Write your handoff to \`$HANDOFF_DIR/$TASK_ID.md\`."
+Write your handoff to \`$HANDOFF_DIR/$TASK_ID.md\` BEFORE you close the bead.
+A session that dies after closing and before writing leaves no trace of how
+the work was done; one that dies the other way round is merely unfinished."
 
   status=$?
   [ "$status" -ne 0 ] && echo "==> worker exited $status"
@@ -197,11 +244,31 @@ echo "Handoffs:   $HANDOFF_DIR/"
 echo "Open beads: $(printf '%s' "$open_left" | wc -w | tr -d ' ')"
 echo "Nothing was committed or pushed. Review with: git status && git diff"
 
-# "Queue drained" must never be reported while beads sit claimed-but-unclosed.
-if [ -n "$stranded" ]; then
+exit_code=0
+
+if [ -n "$PARKED" ]; then
   echo
-  echo "WARNING: bead(s) left in_progress -- claimed but never closed:"
-  for id in $stranded; do echo "    $id"; done
-  echo "These are NOT done. Inspect with: bd show <id>"
-  exit 1
+  echo "PARKED -- dispatched $MAX_ATTEMPTS times and never finished:"
+  for id in $PARKED; do echo "    $id"; done
+  echo "These need a human. Start with the bead and its handoff."
+  exit_code=1
 fi
+
+# "Queue drained" must never be reported while beads sit claimed-but-unclosed.
+# Parked ids are listed above; anything here that is not parked is a claim no
+# worker ever came back to -- usually a session that died mid-bead.
+if [ -n "$stranded" ]; then
+  unswept=""
+  for id in $stranded; do
+    is_parked "$id" || unswept="$unswept $id"
+  done
+  if [ -n "$unswept" ]; then
+    echo
+    echo "STRANDED -- claimed but never closed:"
+    for id in $unswept; do echo "    $id"; done
+    echo "These are NOT done. Inspect with: bd show <id>"
+    exit_code=1
+  fi
+fi
+
+exit "$exit_code"
