@@ -31,3 +31,9 @@ packages = ["mathgraph"]
 # Corpus artifacts are large and rebuilt locally by `mathgraph setup`;
 # they are never packaged into the wheel.
 package = true
+
+# The worker loop lives in the verified-sandbox package (`uv tool install
+# --editable`), not in this repo and not in its dependency graph. Only what
+# genuinely differs per repo is here; see that package's README for every key.
+[tool.sandbox.env]
+MATHGRAPH_DATA = "/workspace/mathgraph-data"
