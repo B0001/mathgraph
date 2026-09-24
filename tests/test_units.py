@@ -455,5 +455,29 @@ class NeedsBuild(unittest.TestCase):
         self.assertFalse(needs_build(self.idx, 464208))
 
 
+class PrecisionAtCoverageTest(unittest.TestCase):
+    """mathgraph-br3: the headline metric. Absent-arm answers are always wrong."""
+
+    def test_answers_highest_scores_first_and_counts_absent_as_wrong(self):
+        from mathgraph.bench_pretrained import precision_at_coverage
+        recs = ([{"score": 0.9, "ok": 1}, {"score": 0.8, "ok": 0}]    # present hit, absent answer
+                + [{"score": 0.1, "ok": 0}] * 8)
+        (r,) = precision_at_coverage(recs, "score", coverages=(0.2,))
+        self.assertEqual((r["answered"], r["correct"], r["precision"]), (2, 1, 0.5))
+
+    def test_ties_at_the_cut_never_inflate_coverage(self):
+        from mathgraph.bench_pretrained import precision_at_coverage
+        recs = [{"score": 0.9, "ok": 1}] + [{"score": 0.5, "ok": 0}] * 9
+        (r,) = precision_at_coverage(recs, "score", coverages=(0.2,))
+        self.assertEqual(r["answered"], 1)  # the 9-way tie at the cut is left out, not half-answered
+
+    def test_wilson_interval_brackets_the_rate(self):
+        from mathgraph.bench_pretrained import wilson
+        lo, hi = wilson(9, 10)
+        self.assertLess(lo, 0.9)
+        self.assertGreater(hi, 0.9)
+        self.assertAlmostEqual(lo, 0.5958, places=3)  # standard Wilson 95% for 9/10
+
+
 if __name__ == "__main__":
     unittest.main()

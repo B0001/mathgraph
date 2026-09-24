@@ -322,6 +322,55 @@ mean anything, and the coverage and margin statistics do not separate correct
 matches from incorrect ones on this input at any threshold that answers more
 than a handful.
 
+### Pretrained encoders, as precision at coverage (mathgraph-br3)
+
+No published mathlib retriever we could find has been scored on statements
+that have *no* counterpart. LeanSearch v2 drops them, Lean Finder reports
+recall only, and TheoremGraph's precision is LLM-judged. So we scored
+pretrained dense encoders on both arms. The protocol was pre-registered in the
+bead before any run: answer iff top-1 cosine clears a threshold, cut at a
+stated coverage of the pooled 350, and count an absent-arm answer as wrong
+unless a hand audit finds a genuine mathlib counterpart. Wilson 95% intervals:
+
+| encoder | recall@1 | prec @1% | prec @5% | prec @10% | prec @20% |
+|---|---|---|---|---|---|
+| bge-small-en-v1.5 | 26.1% | 4/4 [51, 100] | 61% [39, 80] | **57% [41, 72]** | 37% [27, 49] |
+| bge-base-en-v1.5 | 31.3% | 4/4 [51, 100] | 67% [44, 84] | **57% [41, 72]** | 49% [37, 60] |
+
+**No: neither reaches 90% precision at 10% coverage. The interval excludes it
+(upper bound 72%).** The margin statistic does no better (51–57% at 10%). Both
+encoders beat this repo's lexical recall@1 (18.2%), and neither makes it
+trustworthy.
+
+Most errors are not on the absent arm. At 10% coverage the absent arm
+contributes 2 (small) and 4 (base) false answers, and the present arm
+contributes 13 and 11 wrong top-1s, mostly a *sibling* PFR declaration (e.g.
+`torsion_PFR` for "PFR in infinite groups"). So the ceiling is ranking among
+near-duplicates, not abstention.
+
+Label audit: all 5 distinct absent-arm statements answered at 10% by either
+model were checked against mathlib source, and 1 was relabelled. "Existence
+of independent copies" → `ProbabilityTheory.indepFun_prod` is the two-variable
+case of the gold `independent_copies_two`, so it counts as correct. Goursat →
+`Subgroup.goursat` (graph of an isomorphism of quotients, not PFR's splitting
+form), Hahn–Banach → `domRestrict_surjective` / `exists_extension_of_le_sublinear`
+(different targets; the second only shares the name), and two
+multidistance/sequence statements stay wrong.
+
+What this does **not** show:
+- Lean Finder (an 8.2B Qwen3 model) and LeanSearch v2 were not run. They don't
+  fit on a 16 GB machine, and the absent arm needs an index without PFR in
+  it, which a hosted API can't provide. The question about *those* systems
+  is still open.
+- Formulas reach every encoder as `MATH` placeholders (the same input every
+  number in this README uses).
+- n=350 is small.
+
+bge-small ran on CPU and bge-base on Apple MPS.
+Reproduce:
+`uv run --with sentence-transformers python -m mathgraph.bench_pretrained BAAI/bge-base-en-v1.5`
+(it caches corpus embeddings under `mathgraph-data/artifacts/`).
+
 ### Why
 
 Median statement: **13 English words against 4 formula blocks**. Lexical
