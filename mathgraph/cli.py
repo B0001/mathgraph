@@ -266,6 +266,44 @@ def cmd_elaborate(args):
     print("the scraped indices can now be rebuilt against it: mathgraph setup")
 
 
+def cmd_cade_generate(args):
+    from .cade import generate_hypotheses
+    candidates = generate_hypotheses(args.source)
+    print(json.dumps([c.to_dict() for c in candidates], indent=2))
+
+
+def cmd_cade_feedback(args):
+    from .cade import consume_feedback, CandidateMolecule, IterationFeedback
+    if os.path.exists(args.candidate_json):
+        with open(args.candidate_json, "r") as f:
+            data = json.load(f)
+            if isinstance(data, list):
+                data = data[0]
+            candidate = CandidateMolecule(
+                id=data["id"],
+                name=data["name"],
+                atom_string=data["atom_string"],
+                source_id=data["source_id"],
+                metadata=data.get("metadata", {})
+            )
+    else:
+        candidate = CandidateMolecule(
+            id="mock_candidate",
+            name="Mock Candidate",
+            atom_string="H 0 0 0",
+            source_id="mock_source"
+        )
+        
+    feedback = IterationFeedback(
+        candidate_id=candidate.id,
+        verdict_ok=args.verdict_ok,
+        actuation_success=args.actuation_success,
+        reason=args.reason
+    )
+    result = consume_feedback(candidate, feedback)
+    print(json.dumps(result, indent=2))
+
+
 def cmd_setup(args):
     from .setup_cmd import main as setup_main
     return setup_main(args)
@@ -343,6 +381,20 @@ def main(argv=None):
     s.add_argument("--holdout", type=float, default=0.0)
     s.add_argument("--pmi-holdout", dest="pmi_holdout", type=float, default=0.0)
     s.set_defaults(fn=cmd_index)
+
+    cade_parser = sub.add_parser("cade", help="CADE Phase 3 loop integration")
+    cade_sub = cade_parser.add_subparsers(dest="cade_cmd", required=True)
+    
+    gen = cade_sub.add_parser("generate", help="generate molecular candidate hypotheses from source")
+    gen.add_argument("source", help="path to LaTeX/text source file")
+    gen.set_defaults(fn=cmd_cade_generate)
+    
+    feed = cade_sub.add_parser("feedback", help="consume synthesis/actuation feedback")
+    feed.add_argument("candidate_json", help="path to the candidate JSON file")
+    feed.add_argument("--verdict-ok", action="store_true", help="whether the certkit_bridge verdict was ok")
+    feed.add_argument("--actuation-success", action="store_true", help="whether the physical synthesis was successful")
+    feed.add_argument("--reason", default=None, help="reason or detail for the feedback status")
+    feed.set_defaults(fn=cmd_cade_feedback)
 
     args = p.parse_args(argv)
     return args.fn(args) or 0
