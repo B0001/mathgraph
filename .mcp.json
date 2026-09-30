@@ -5,7 +5,7 @@
       "command": "uv",
       "args": [
         "--directory",
-        "/Users/benjaminhess/Downloads/aider-mcp-server",
+        "../aider-mcp-server",
         "run",
         "aider-mcp-server",
         "--editor-model",
