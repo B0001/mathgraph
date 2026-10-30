@@ -26,6 +26,7 @@ mathgraph-data/artifacts/*
 *.db
 .beads-credential-key
 .beads/proxieddb/
+.beads.gate.lock
 
 .beads/interactions.jsonl
 .claude/settings.json
