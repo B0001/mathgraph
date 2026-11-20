@@ -1,0 +1,392 @@
+{
+  "bead": "mathgraph-269",
+  "protocol": "mathgraph/timesplit.py docstring",
+  "pin": "b44f89d15d463ede557bdf673707a8610210becf",
+  "nov": "d9a3e61fb84eff4c6bded19e8fbf7138f8890816",
+  "funnel": {
+    "leanscan(NOV)": 249877,
+    "theorem": 192454,
+    "not in leanscan(PIN) or elab(PIN)": 10213,
+    "declaration line added in the diff": 10067,
+    "no _root_": 9808,
+    "not truncated": 9760,
+    "not a window deprecation target": 7868,
+    "statement differs from every PIN statement": 7755,
+    "has a docstring": 1660,
+    "unique name": 1660
+  },
+  "unchanged_pool": 25650,
+  "holdout_frac": 0.06,
+  "pmi_holdout_frac": 0.06,
+  "seed": 0,
+  "ctrl_index": {
+    "n_decls": 244361,
+    "n_holdout": 4102,
+    "n_pmi_holdout": 3855
+  },
+  "dropped_still_indexed": {
+    "holdout": 11
+  },
+  "arm_sizes": {
+    "time": 1660,
+    "holdout": 1602,
+    "deletion": 1660,
+    "positive": 1206
+  },
+  "dense": {
+    "model": "BAAI/bge-small-en-v1.5",
+    "row_check_min_cos": 0.9999998807907104,
+    "positive_rows_reembedded": 1215
+  },
+  "mathlib_excerpts": "The audit sheet quotes declaration names, heads and docstrings from mathlib4 at PIN and NOV, (c) the mathlib contributors, Apache-2.0 (mathlib4/LICENSE; mathlib ships no NOTICE file). Keep the attribution, and ship the licence text with any release of the data.",
+  "verbatim_duplicate_docstring": {
+    "holdout": 260,
+    "deletion": 160,
+    "time": 22
+  },
+  "lexical": {
+    "threshold": {
+      "tau": 0.21251466870307922,
+      "strict": false,
+      "fit_per_arm": 603,
+      "coverage": 0.1
+    },
+    "positive": {
+      "answered": {
+        "k": 60,
+        "n": 603,
+        "rate": 0.0995,
+        "wilson95": [
+          0.0781,
+          0.126
+        ],
+        "half_width": 0.024
+      },
+      "precision": {
+        "k": 8,
+        "n": 60,
+        "rate": 0.1333,
+        "wilson95": [
+          0.0691,
+          0.2417
+        ],
+        "half_width": 0.0863
+      }
+    },
+    "time": {
+      "false_match": {
+        "k": 67,
+        "n": 830,
+        "rate": 0.0807,
+        "wilson95": [
+          0.0641,
+          0.1012
+        ],
+        "half_width": 0.0186
+      }
+    },
+    "holdout": {
+      "false_match": {
+        "k": 100,
+        "n": 801,
+        "rate": 0.1248,
+        "wilson95": [
+          0.1037,
+          0.1495
+        ],
+        "half_width": 0.0229
+      }
+    },
+    "deletion": {
+      "false_match": {
+        "k": 100,
+        "n": 830,
+        "rate": 0.1205,
+        "wilson95": [
+          0.1001,
+          0.1444
+        ],
+        "half_width": 0.0222
+      }
+    },
+    "kill_test": {
+      "holdout": {
+        "difference": -0.0441,
+        "needs_more_than": 0.0186,
+        "survives": false
+      },
+      "deletion": {
+        "difference": -0.0398,
+        "needs_more_than": 0.0186,
+        "survives": false
+      }
+    },
+    "survives": false,
+    "time_vs_shipped_idx_mathlib": {
+      "false_match": {
+        "k": 132,
+        "n": 1660,
+        "rate": 0.0795,
+        "wilson95": [
+          0.0675,
+          0.0935
+        ],
+        "half_width": 0.013
+      }
+    },
+    "exploratory_without_verbatim_duplicates": {
+      "time": {
+        "false_match": {
+          "k": 66,
+          "n": 821,
+          "rate": 0.0804,
+          "wilson95": [
+            0.0637,
+            0.101
+          ],
+          "half_width": 0.0187
+        }
+      },
+      "holdout": {
+        "false_match": {
+          "k": 77,
+          "n": 669,
+          "rate": 0.1151,
+          "wilson95": [
+            0.0931,
+            0.1415
+          ],
+          "half_width": 0.0242
+        }
+      },
+      "deletion": {
+        "false_match": {
+          "k": 90,
+          "n": 750,
+          "rate": 0.12,
+          "wilson95": [
+            0.0987,
+            0.1452
+          ],
+          "half_width": 0.0233
+        }
+      }
+    }
+  },
+  "bge-small": {
+    "threshold": {
+      "tau": 0.9128261208534241,
+      "strict": false,
+      "fit_per_arm": 603,
+      "coverage": 0.1
+    },
+    "positive": {
+      "answered": {
+        "k": 76,
+        "n": 603,
+        "rate": 0.126,
+        "wilson95": [
+          0.1019,
+          0.1549
+        ],
+        "half_width": 0.0265
+      },
+      "precision": {
+        "k": 0,
+        "n": 76,
+        "rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.0481
+        ],
+        "half_width": 0.0241
+      }
+    },
+    "time": {
+      "false_match": {
+        "k": 18,
+        "n": 830,
+        "rate": 0.0217,
+        "wilson95": [
+          0.0138,
+          0.034
+        ],
+        "half_width": 0.0101
+      }
+    },
+    "holdout": {
+      "false_match": {
+        "k": 112,
+        "n": 801,
+        "rate": 0.1398,
+        "wilson95": [
+          0.1175,
+          0.1656
+        ],
+        "half_width": 0.024
+      }
+    },
+    "deletion": {
+      "false_match": {
+        "k": 108,
+        "n": 830,
+        "rate": 0.1301,
+        "wilson95": [
+          0.1089,
+          0.1547
+        ],
+        "half_width": 0.0229
+      }
+    },
+    "kill_test": {
+      "holdout": {
+        "difference": -0.1181,
+        "needs_more_than": 0.0101,
+        "survives": false
+      },
+      "deletion": {
+        "difference": -0.1084,
+        "needs_more_than": 0.0101,
+        "survives": false
+      }
+    },
+    "survives": false,
+    "time_vs_shipped_idx_mathlib": {
+      "false_match": {
+        "k": 37,
+        "n": 1660,
+        "rate": 0.0223,
+        "wilson95": [
+          0.0162,
+          0.0306
+        ],
+        "half_width": 0.0072
+      }
+    },
+    "exploratory_without_verbatim_duplicates": {
+      "time": {
+        "false_match": {
+          "k": 17,
+          "n": 821,
+          "rate": 0.0207,
+          "wilson95": [
+            0.013,
+            0.0329
+          ],
+          "half_width": 0.01
+        }
+      },
+      "holdout": {
+        "false_match": {
+          "k": 77,
+          "n": 669,
+          "rate": 0.1151,
+          "wilson95": [
+            0.0931,
+            0.1415
+          ],
+          "half_width": 0.0242
+        }
+      },
+      "deletion": {
+        "false_match": {
+          "k": 91,
+          "n": 750,
+          "rate": 0.1213,
+          "wilson95": [
+            0.0999,
+            0.1467
+          ],
+          "half_width": 0.0234
+        }
+      }
+    }
+  },
+  "lexical_at_GRAPH_THRESHOLDS": {
+    "thresholds": {
+      "tau_cov": 0.2526,
+      "delta_margin": 0.2658
+    },
+    "whole_arms": {
+      "positive": {
+        "answered": {
+          "k": 4,
+          "n": 1206,
+          "rate": 0.0033,
+          "wilson95": [
+            0.0013,
+            0.0085
+          ],
+          "half_width": 0.0036
+        },
+        "precision": {
+          "k": 2,
+          "n": 4,
+          "rate": 0.5,
+          "wilson95": [
+            0.15,
+            0.85
+          ],
+          "half_width": 0.35
+        }
+      },
+      "time": {
+        "false_match": {
+          "k": 5,
+          "n": 1660,
+          "rate": 0.003,
+          "wilson95": [
+            0.0013,
+            0.007
+          ],
+          "half_width": 0.0029
+        }
+      },
+      "holdout": {
+        "false_match": {
+          "k": 2,
+          "n": 1602,
+          "rate": 0.0012,
+          "wilson95": [
+            0.0003,
+            0.0045
+          ],
+          "half_width": 0.0021
+        }
+      },
+      "deletion": {
+        "false_match": {
+          "k": 3,
+          "n": 1660,
+          "rate": 0.0018,
+          "wilson95": [
+            0.0006,
+            0.0053
+          ],
+          "half_width": 0.0023
+        }
+      },
+      "time_vs_shipped_idx_mathlib": {
+        "false_match": {
+          "k": 5,
+          "n": 1660,
+          "rate": 0.003,
+          "wilson95": [
+            0.0013,
+            0.007
+          ],
+          "half_width": 0.0029
+        }
+      }
+    }
+  },
+  "kill_test_survives": false,
+  "struct_rerank_changed_top1": 276,
+  "audit": {
+    "file": "timesplit-audit.csv",
+    "false_match_pairs": 165,
+    "distinct_queries": 161,
+    "sampled": 60,
+    "labels": "pending: two raters, 'equivalent or generalising' vs 'genuinely new'"
+  }
+}
