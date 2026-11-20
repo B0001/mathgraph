@@ -145,8 +145,17 @@ gc bd update "$WORK_BEAD_ID" \
   --set-metadata gc.work_branch="$WORK_BRANCH" \
   --set-metadata gc.work_verification="<commands you ran>" \
   --status=closed \
-  --append-notes "Done: <what you did and found>. Verification: <commands run and results>. Pushed to main at ${COMMIT:-none}; worktree $WT (remove it once done: git -C "$REPO" worktree remove "$WT"). Open questions: <or none>."
+  --append-notes "Done: <what you did and found>. Verification: <commands run and results>. Pushed to main at ${COMMIT:-none}. Open questions: <or none>."
 gc mail send {{escalation_target}} -s "DONE $WORK_BEAD_ID" -m "main at $COMMIT. <one-line summary>"
+```
+
+Then remove your worktree. Everything in it is on main or rebuildable (venvs,
+caches); if `git status --porcelain` shows anything untracked that is not, copy
+it into the main checkout's `mathgraph-data/` first:
+```bash
+cd "$REPO"
+git -C "$WT" status --porcelain
+git worktree remove --force "$WT" && rmdir "$(dirname "$WT")" 2>/dev/null || true
 ```
 
 **No-op** (the bead needed no change — already satisfied / duplicate):
