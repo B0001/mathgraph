@@ -200,6 +200,36 @@ def _binders(toks, i, j, out, types):
         i += 1
 
 
+def _named(toks, j, out, types):
+    """What `have`, `obtain`, `let`, `set`, `suffices`, ... bind at toks[j]: a
+    ⟨..⟩ pattern, or one name followed by `:`, `:=`, `|` or binder groups
+    (`have h (x : T) : P`), alternatives joined by `|`. Anything else is an
+    anonymous proposition (`suffices 2 * a ≤ b by`, `by_cases p`) and binds
+    nothing."""
+    n = len(toks)
+    while j < n:
+        if toks[j][1] == "⟨":
+            e = _close(toks, j, n)
+            out.update(x.lstrip("@") for kk, x, _ in toks[j + 1:e] if kk == "id" and atomic(x))
+            j = e + 1
+        elif j + 1 < n and toks[j][0] == "id" and atomic(toks[j][1]) and \
+                toks[j + 1][1] in (":", ":=", "|", "(", "{", "[", "⦃"):
+            name = toks[j][1].lstrip("@")
+            out.add(name)
+            e = _end(toks, j + 1, {":", ":="}) if toks[j + 1][1] in "({[⦃" else j + 1
+            if e is not None and e > j + 1:
+                _binders(toks, j + 1, e, out, types)
+            if e is not None and toks[e][1] == ":" and e + 1 < n and toks[e + 1][0] == "id":
+                types[name] = toks[e + 1][1].lstrip("@")
+            j += 1
+        else:
+            return
+        if j < n and toks[j][1] == "|":
+            j += 1
+        else:
+            return
+
+
 def binders(toks, start=0):
     """(locals, {local: type head}) bound anywhere in toks[start:]."""
     out, types = set(), {}
@@ -215,14 +245,7 @@ def binders(toks, start=0):
             e = len(toks) if e is None else e
             out.update(x.lstrip("@") for kk, x, _ in toks[k + 1:e] if kk == "id" and atomic(x))
         elif t in ASSIGN:
-            e = _end(toks, k + 1, {":=", ":", "\n", "from", "by", "|"} - ({"|"} if t == "obtain" else set()))
-            if e is not None and toks[e][1] == ":" and e + 1 < len(toks) and toks[e + 1][0] == "id":
-                for kk, x, _ in toks[k + 1:e]:
-                    if kk == "id" and atomic(x):
-                        types[x.lstrip("@")] = toks[e + 1][1].lstrip("@")
-            for kk, x, _ in toks[k + 1:len(toks) if e is None else e]:
-                if kk == "id" and atomic(x):
-                    out.add(x.lstrip("@"))
+            _named(toks, k + 1, out, types)
         elif t == "|" and (k == 0 or toks[k - 1][0] == "nl" or toks[k - 1][1] == "fun"):
             e = _end(toks, k + 1, {"=>", "\n"})
             if e is not None and toks[e][1] == "=>":
