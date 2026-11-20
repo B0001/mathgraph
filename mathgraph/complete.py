@@ -17,14 +17,20 @@ cites; `up` keeps the candidates that cite an upstream anchor, the realistic
 case of a statement whose dependants are not tagged yet. Results and the
 pre-registered kill test: sandbox-handoffs/mathgraph-fxh.md.
 
+References come from Lean name resolution (leanrefs, mathgraph-ydf); `--pilot`
+swaps in fxh's last-component matcher (PilotRefs). Each candidate set is also
+paired against the whole project with exact sign tests, for ydf's kill rule:
+sandbox-handoffs/mathgraph-ydf.md.
+
 Prints the summary; the optional path also gets per-statement records.
-    uv run --with sentence-transformers python -m mathgraph.complete [records.json]
+    uv run --with sentence-transformers python -m mathgraph.complete [records.json] [--pilot]
 """
 
 from __future__ import annotations
 
 import collections
 import json
+import math
 import os
 import re
 import statistics
@@ -35,6 +41,7 @@ import numpy as np
 from .bench_pretrained import QUERY_PREFIX, precision_at_coverage, wilson
 from .harvest import find_lean, find_tex
 from .latex import parse
+from .leanrefs import Mathlib, Project
 
 DATA = os.environ.get("MATHGRAPH_DATA", "./mathgraph-data")
 IDENT = re.compile(r"[A-Za-z_][\w'.₀-₉ᵢ]*")   # the pilot's identifier pattern
@@ -46,15 +53,22 @@ def short(name: str) -> str:
     return name.rsplit(".", 1)[-1]
 
 
-def lean_bodies(bp_dir: str, decls: list[dict]) -> dict[str, tuple[str, str]]:
-    """{name: (project, source)}: a declaration's lines up to the next scanned
-    declaration of its module. ponytail: line slicing, not a Lean parser; the
-    hand check in the results file bounds what it gets wrong."""
+def lean_files(bp_dir: str) -> dict[str, tuple[str, str]]:
+    """{module: (project, path)} over every blueprint checkout."""
     where = {}
     for proj in sorted(os.listdir(bp_dir)):
         root = os.path.join(bp_dir, proj)
         for path in find_lean(root):
             where.setdefault(os.path.relpath(path, root)[:-5].replace(os.sep, "."), (proj, path))
+    return where
+
+
+def lean_bodies(bp_dir: str, decls: list[dict]) -> dict[str, tuple[str, str]]:
+    """{name: (project, source)}: a declaration's lines up to the next scanned
+    declaration of its module. ponytail: line slicing, not a Lean parser; the
+    hand check in the results file bounds what it gets wrong. Its keys are the
+    population of in-project declarations for both matchers."""
+    where = lean_files(bp_dir)
     bymod = collections.defaultdict(list)
     for d in decls:
         bymod[d["module"]].append(d)
@@ -71,7 +85,7 @@ def lean_bodies(bp_dir: str, decls: list[dict]) -> dict[str, tuple[str, str]]:
     return out
 
 
-class Refs:
+class PilotRefs:
     """Who mentions whom inside one project. The pilot's matcher: a body
     mentions every declaration whose last name component equals the last
     component of one of its identifiers, so `Foo.bar`, `bar` and `h.bar`
@@ -96,6 +110,36 @@ class Refs:
         return set(self.mentions.get(short(name), ())) if name in self.toks else set()
 
 
+class Refs:
+    """Who cites whom inside one project, name-resolved: `cites` maps each of
+    the project's declarations to the declarations its command references
+    (leanrefs.Project.refs, self excluded)."""
+
+    def __init__(self, cites: dict[str, set]):
+        self._cites = cites
+        self._by = collections.defaultdict(set)
+        for n, cs in cites.items():
+            for c in cs:
+                self._by[c].add(n)
+
+    def __contains__(self, name: str) -> bool:
+        return name in self._cites
+
+    def cites(self, name: str) -> set:
+        return set(self._cites.get(name, ()))
+
+    def cited_by(self, name: str) -> set:
+        return set(self._by.get(name, ()))
+
+
+def project_refs(p: str, own: dict, rows: list, where: dict, ml: Mathlib) -> Refs:
+    """Name-resolved Refs over project p's declarations `own` (lean_bodies'
+    keys, so the population matches the pilot's)."""
+    cites = Project({m: f for m, (q, f) in where.items() if q == p}, ml).refs(
+        [d for d in rows if d["name"] in own and where.get(d["module"], ("",))[0] == p])
+    return Refs({n: cites.get(n, set()) for n in own})
+
+
 def blueprint(proj_dir: str):
     """A leanblueprint's statement graph: ({id: \\lean names}, {id: ids it
     \\uses}, {id: first tagged block}). A proof's \\uses count for its statement."""
@@ -115,7 +159,7 @@ def blueprint(proj_dir: str):
     return tags, uses, block
 
 
-def neighbourhoods(tags: dict, uses: dict, refs: Refs) -> list[dict]:
+def neighbourhoods(tags: dict, uses: dict, refs) -> list[dict]:
     """Leave-one-out records for every statement with an in-project tag.
 
     `links[split]` counts, per candidate, the anchors it is linked to:
@@ -296,6 +340,34 @@ def summarize(recs: list) -> dict:
     return out
 
 
+def sign_test(recs: list, a: str, b: str) -> dict:
+    """Exact two-sided sign test of r@1, system a against b on the same
+    records: plus = a right and b wrong, minus = the reverse."""
+    ok = lambda r, k: r["top"][k][0] in r["gold"]   # noqa: E731
+    plus = sum(ok(r, a) and not ok(r, b) for r in recs)
+    minus = sum(ok(r, b) and not ok(r, a) for r in recs)
+    tail = sum(math.comb(plus + minus, i) for i in range(min(plus, minus) + 1))
+    return {"plus": plus, "minus": minus, "p": min(1.0, 2 * tail / 2 ** (plus + minus))}
+
+
+def paired(recs: list) -> dict:
+    """Each text ranker inside a candidate set against the same ranker over
+    the whole project, per split."""
+    return {f"{k}/{split}": sign_test([r for r in recs if has(r)], f"{k}/{split}", f"{k}/project")
+            for split, has in SPLITS.items() for k in ("lexical", "bge")}
+
+
+def kill_test_ydf(t: dict) -> dict:
+    """mathgraph-ydf's pre-registered rule, read off the n1 split outside PFR:
+    the graph-over-project claim survives only if a text ranker in N1 beats
+    the same ranker over the project with p < 0.05 (Bonferroni over the two
+    rankers: p < 0.025)."""
+    ahead = {k: t[f"{k}/n1"]["plus"] > t[f"{k}/n1"]["minus"] for k in ("lexical", "bge")}
+    p = {k: t[f"{k}/n1"]["p"] for k in ahead}
+    return {"n1_ahead": ahead, "p": p, "killed": not any(ahead[k] and p[k] < 0.05 for k in ahead),
+            "killed_bonferroni": not any(ahead[k] and p[k] < 0.025 for k in ahead)}
+
+
 def kill_test(s: dict) -> dict:
     """The bead's pre-registered criteria, read off the pooled summary. A text
     ranker must beat graph on r@1 and on P@10% both (point estimates)."""
@@ -316,21 +388,28 @@ def kill_test(s: dict) -> dict:
             "killed": low or big or flat, "realistic_use_killed": up}
 
 
-def main(out_path: str | None = None) -> dict:
-    art_dir, bp_dir = os.path.join(DATA, "artifacts"), os.path.join(DATA, "blueprints")
+def load_rows(art_dir: str) -> list[dict]:
     rows = []
     for f in ("blueprint_decls.jsonl", "pfr.jsonl"):
         with open(os.path.join(art_dir, f), encoding="utf-8") as fh:
             rows.extend(json.loads(line) for line in fh)
+    return rows
+
+
+def main(out_path: str | None = None, pilot: bool = False) -> dict:
+    art_dir, bp_dir = os.path.join(DATA, "artifacts"), os.path.join(DATA, "blueprints")
+    rows = load_rows(art_dir)
     decls = {d["name"]: d for d in rows}
-    bodies = lean_bodies(bp_dir, rows)
+    bodies, where = lean_bodies(bp_dir, rows), lean_files(bp_dir)
+    ml = None if pilot else Mathlib(os.path.join(art_dir, "mathlib.jsonl"))
     projects, recs, noanchor = {}, [], collections.Counter()
     for p in sorted({p for p, _ in bodies.values()}):
         own = {n: b for n, (q, b) in bodies.items() if q == p}
         names = sorted(own)
         projects[p] = {"names": names, "pos": {n: i for i, n in enumerate(names)}}
         tags, uses, block = blueprint(os.path.join(bp_dir, p))
-        for r in neighbourhoods(tags, uses, Refs(own)):
+        refs = PilotRefs(own) if pilot else project_refs(p, own, rows, where, ml)
+        for r in neighbourhoods(tags, uses, refs):
             if not r["anchors"]["up"] + r["anchors"]["down"]:
                 noanchor[p] += 1
                 continue
@@ -343,10 +422,15 @@ def main(out_path: str | None = None) -> dict:
             recs.append(r)
     lexical(recs, art_dir, projects)
     bge(recs, art_dir, projects, decls)
-    res = {"statements": len(recs), "no_anchor": dict(noanchor), "pooled": summarize(recs),
-           "pfr": summarize([r for r in recs if r["project"] == "pfr"]),
-           "by_project": {p: summarize([r for r in recs if r["project"] == p])["n1"] for p in projects}}
+    groups = {"pooled": recs, "pfr": [r for r in recs if r["project"] == "pfr"],
+              "non_pfr": [r for r in recs if r["project"] != "pfr"],
+              **{p: [r for r in recs if r["project"] == p] for p in projects}}
+    res = {"matcher": "pilot" if pilot else "resolved", "statements": len(recs), "no_anchor": dict(noanchor),
+           "pooled": summarize(recs), "pfr": summarize(groups["pfr"]), "non_pfr": summarize(groups["non_pfr"]),
+           "by_project": {p: summarize(groups[p])["n1"] for p in projects},
+           "set_vs_project": {g: paired(rs) for g, rs in groups.items()}}
     res["kill_test"] = kill_test(res["pooled"])
+    res["kill_test_ydf"] = kill_test_ydf(res["set_vs_project"]["non_pfr"])
     res["records"] = [{k: r[k] for k in ("project", "id", "gold", "anchors", "n", "hit", "top")} for r in recs]
     if out_path:
         with open(out_path, "w", encoding="utf-8") as fh:
@@ -355,5 +439,6 @@ def main(out_path: str | None = None) -> dict:
 
 
 if __name__ == "__main__":
-    res = main(sys.argv[1] if len(sys.argv) > 1 else None)
+    args = [a for a in sys.argv[1:] if a != "--pilot"]
+    res = main(args[0] if args else None, pilot="--pilot" in sys.argv[1:])
     print(json.dumps({k: v for k, v in res.items() if k != "records"}, indent=1))

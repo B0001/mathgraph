@@ -483,8 +483,8 @@ class NeighbourAnchoredCompletion(unittest.TestCase):
     """mathgraph-fxh: candidates one Lean reference from a neighbour's tag."""
 
     def test_candidates_split_by_edge_direction(self):
-        from mathgraph.complete import Refs, graph_top, neighbourhoods
-        refs = Refs({"A.up": "theorem A.up : True := trivial",
+        from mathgraph.complete import PilotRefs, graph_top, neighbourhoods
+        refs = PilotRefs({"A.up": "theorem A.up : True := trivial",
                      "B.tgt": "theorem B.tgt : True := A.up",     # cites its upstream anchor
                      "C.down": "theorem C.down : True := B.tgt",  # its downstream anchor cites it
                      "D.sib": "theorem D.sib : True := X.up"})    # `X.up` mentions every `*.up`
@@ -516,6 +516,120 @@ class NeighbourAnchoredCompletion(unittest.TestCase):
         self.assertEqual(pick(names, s, s, np.array([1, 2]), 0.0), ("b", 0.5))
         self.assertIsNone(pick(names, np.zeros(3), s, np.arange(3), 0.0)[0])  # nothing above the floor
         self.assertIsNone(pick(names, s, s, np.array([], dtype=int), 0.0)[0])
+
+    def test_resolved_refs_invert_cites(self):
+        from mathgraph.complete import Refs
+        refs = Refs({"a": {"b"}, "b": set(), "c": {"b"}})
+        self.assertEqual((refs.cites("a"), refs.cited_by("b"), refs.cited_by("a")), ({"b"}, {"a", "c"}, set()))
+        self.assertIn("b", refs)                 # in the population even though it cites nothing
+        self.assertNotIn("z", refs)
+
+    def test_sign_test_is_exact_and_two_sided(self):
+        from mathgraph.complete import sign_test
+        rec = lambda a, b: {"gold": ["g"], "top": {"a": (a, 1.0), "b": (b, 1.0)}}   # noqa: E731
+        recs = [rec("g", None)] * 5 + [rec("g", "g")] * 3 + [rec(None, "x")] * 2     # concordant pairs drop out
+        self.assertEqual(sign_test(recs, "a", "b"), {"plus": 5, "minus": 0, "p": 0.0625})   # 2 / 2**5
+        self.assertEqual(sign_test(recs, "b", "a")["p"], 0.0625)
+        self.assertEqual(sign_test(recs[5:], "a", "b")["p"], 1.0)                 # no discordant pair
+
+    def test_handcheck_scores_each_matcher_on_the_shared_candidates(self):
+        from mathgraph.handcheck import score
+        c = lambda new, pilot, genuine: {"new": new, "pilot": pilot, "genuine": genuine}   # noqa: E731
+        s = score({"bodies": [{"candidates": {"a": c(True, True, True), "b": c(False, True, False),
+                                              "c": c(True, False, True)}},
+                              {"candidates": {"d": c(True, False, False)}}]})
+        self.assertEqual((s["new"]["genuine"], s["new"]["extracted"], s["new"]["bodies_with_spurious"]), (2, 3, 1))
+        self.assertEqual((s["pilot"]["genuine"], s["pilot"]["extracted"], s["pilot"]["bodies_with_spurious"]),
+                         (1, 2, 1))
+        self.assertEqual((s["genuine_new_only"], s["genuine_pilot_only"]), (1, 0))
+        self.assertTrue(s["recall_not_lower"])
+        self.assertFalse(s["precision_at_least_70"])          # 2/3
+
+
+def lean_refs(files: dict, mathlib=()) -> dict:
+    """leanrefs.Project(...).refs over Lean sources {module: text}, every
+    named declaration a row; `mathlib` names the Mathlib declarations."""
+    from mathgraph.leanrefs import Mathlib, Project
+    with tempfile.TemporaryDirectory() as d:
+        ml = os.path.join(d, "mathlib.jsonl")
+        with open(ml, "w", encoding="utf-8") as fh:
+            fh.writelines(json.dumps({"name": n, "head": ""}) + "\n" for n in mathlib)
+        paths = {}
+        for m, src in files.items():
+            paths[m] = os.path.join(d, m + ".lean")
+            with open(paths[m], "w", encoding="utf-8") as fh:
+                fh.write(src)
+        proj = Project(paths, Mathlib(ml))
+    return proj.refs([{"name": x.name, "module": x.module, "line": x.line} for x in proj.decls if x.name])
+
+
+class LeanRefs(unittest.TestCase):
+    """mathgraph-ydf: an identifier links to the declaration Lean's name
+    resolution would pick, not to every namesake (the pilot's 39.5%)."""
+
+    def test_strip_blanks_comments_and_strings_but_keeps_positions(self):
+        from mathgraph.leanrefs import strip
+        src = 'theorem a : True := by\n  -- uses b\n  /- nested /- c -/ d -/\n  exact "e" ▸ trivial\n'
+        out = strip(src)
+        self.assertEqual((len(out), out.count("\n")), (len(src), src.count("\n")))
+        self.assertEqual(out.split(), ["theorem", "a", ":", "True", ":=", "by", "exact", "▸", "trivial"])
+
+    def test_body_ends_at_the_next_column0_command(self):
+        r = lean_refs({"M": "def b : Nat := 1\ntheorem a : True := trivial\nattribute [simp] b\n"
+                            "/-- see `b` -/\ntheorem c : b = 1 := rfl\n"})
+        self.assertEqual((r["a"], r["c"]), (set(), {"b"}))   # neither the attribute nor the docstring is a's
+
+    def test_innermost_namespace_first_and_own_name_opens_its_namespace(self):
+        r = lean_refs({"M": "def foo : Nat := 0\nnamespace A\ndef foo : Nat := 1\nnamespace B\n"
+                            "theorem t : foo = 1 := rfl\nend B\nend A\ntheorem u : foo = 0 := rfl\n"
+                            "def Foo.baz : Nat := 0\ntheorem Foo.bar : baz = 0 := rfl\n"
+                            "theorem other : baz = 0 := rfl\n"})
+        self.assertEqual((r["A.B.t"], r["u"]), ({"A.foo"}, {"foo"}))
+        self.assertEqual((r["Foo.bar"], r["other"]), ({"Foo.baz"}, set()))
+
+    def test_open_in_explicit_hiding_and_renaming(self):
+        r = lean_refs({"M": "namespace X\ndef f : Nat := 0\ndef g : Nat := 1\nend X\n"
+                            "open X in\ntheorem t1 : f = 0 := rfl\ntheorem t2 : f = 0 := rfl\n"
+                            "section\nopen X (g)\ntheorem t3 : g = f := rfl\nend\n"
+                            "section\nopen X hiding f\ntheorem t4 : g = f := rfl\nend\n"
+                            "section\nopen X renaming g → gg\ntheorem t5 : gg = 1 := rfl\nend\n"})
+        self.assertEqual([r[t] for t in ("t1", "t2", "t3", "t4", "t5")],
+                         [{"X.f"}, set(), {"X.g"}, {"X.g"}, {"X.g"}])   # `open X in` covers t1 only
+
+    def test_protected_private_and_export(self):
+        r = lean_refs({"A": "namespace Y\nprotected def p : Nat := 0\nend Y\nopen Y\n"
+                            "theorem t5 : p = 0 := rfl\ntheorem t6 : Y.p = 0 := rfl\n"
+                            "private def h : Nat := 0\ntheorem ta : h = 0 := rfl\n"
+                            "namespace Z\ndef e : Nat := 0\nend Z\nnamespace W\nexport Z (e)\nend W\n"
+                            "theorem t7 : W.e = 0 := rfl\n",
+                       "B": "theorem tb : h = 0 := rfl\n"})
+        self.assertEqual((r["t5"], r["t6"]), (set(), {"Y.p"}))      # a protected name needs its qualifier
+        self.assertEqual((r["ta"], r["tb"]), ({"h"}, set()))        # private stays in its file
+        self.assertEqual(r["t7"], {"Z.e"})                          # the export alias is the original
+
+    def test_locals_shadow_globals_and_anonymous_suffices_binds_nothing(self):
+        r = lean_refs({"M": "def x : Nat := 0\ntheorem t8 (x : Nat) : x = x := rfl\n"
+                            "theorem t9 : ∀ x : Nat, x = x := fun x => rfl\n"
+                            "section\nvariable (x : Nat)\ntheorem t10 : x = x := rfl\nend\n"
+                            "theorem t11 : x = 0 := rfl\n"
+                            "def s : Prop := True\ntheorem t12 : s ∧ True := by\n  suffices s by exact ⟨this, trivial⟩\n"
+                            "  exact trivial\ntheorem t13 : True := by\n  obtain ⟨s, hs⟩ : ∃ n : Nat, n = n := ⟨0, rfl⟩\n"
+                            "  exact trivial\n"})
+        self.assertEqual([r[t] for t in ("t8", "t9", "t10", "t11")], [set(), set(), set(), {"x"}])
+        self.assertEqual((r["t12"], r["t13"]), ({"s"}, set()))
+
+    def test_dot_notation(self):
+        r = lean_refs({"M": "structure S where\n  n : Nat\ndef S.double (a : S) : Nat := 2 * a.n\n"
+                            "theorem t14 (a : S) : a.double = 2 * a.n := rfl\n"
+                            "def Foo.go : Nat := 0\ndef Bar.go : Nat := 0\ndef Baz.solo : Nat := 0\n"
+                            "theorem t15 (h) : h.solo = h.go ∧ True := sorry\n"})
+        self.assertEqual(r["t14"], {"S", "S.double"})               # the written binder type picks S.double
+        self.assertEqual(r["t15"], {"Baz.solo"})                    # untyped: only a field with one owner
+
+    def test_a_mathlib_name_shadows_a_project_namesake(self):
+        r = lean_refs({"M": "def card_le : Nat := 0\nnamespace Finset\ntheorem t : card_le = card_le := rfl\n"
+                            "end Finset\ntheorem u : card_le = 0 := rfl\n"}, mathlib=["Finset.card_le"])
+        self.assertEqual((r["Finset.t"], r["u"]), (set(), {"card_le"}))
 
 
 if __name__ == "__main__":

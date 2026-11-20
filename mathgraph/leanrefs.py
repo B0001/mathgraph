@@ -466,7 +466,7 @@ class Project:
             if toks[k][0] == "id":
                 ids.append(toks[k][1])
             k += 1
-        rest = [x for kk, x, _ in toks[k:] if kk == "id"]
+        rest = [x for kk, x, _ in toks[k + 1:] if kk == "id"]
         out = []
         if k < len(toks) and toks[k][1] == "(" and ids:
             for c in self._namespaces(ids[-1], ns, opens):
