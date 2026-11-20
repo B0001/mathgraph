@@ -1,0 +1,18 @@
+[pack]
+name = "mathgraph"
+schema = 2
+
+[imports]
+[imports.bd]
+source = "https://github.com/gastownhall/gascity/tree/main/examples/bd"
+version = "sha:2e643dc2eb5ff84d9853ecaa6961a87a8e4043ae"
+[imports.core]
+source = "https://github.com/gastownhall/gascity/tree/main/internal/bootstrap/packs/core"
+version = "sha:2e643dc2eb5ff84d9853ecaa6961a87a8e4043ae"
+[imports.gc]
+source = "https://github.com/gastownhall/gascity-packs/tree/main/gascity"
+version = "sha:3b3b89f2011e06d84459aa7bea1552382f13930a"
+
+[[named_session]]
+template = "mayor"
+mode = "always"

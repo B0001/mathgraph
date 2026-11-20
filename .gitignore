@@ -35,3 +35,18 @@ mathgraph-data/artifacts/*
 # handoff is the only durable account of how a bead was actually done, and the
 # container that wrote it is disposable.
 .sandbox.lock/
+
+# Gas City
+.gc/
+.beads/*
+!.beads/identity.toml
+hooks/
+
+# Beads / Dolt files (added by bd init)
+*.gate.lock*
+# gc city runtime (mathgraph city, 2026-11-20)
+.dolt-backup/
+.claude/skills/core.*
+.claude/skills/gc.*
+.claude/skills/.gc-skill-ownership.json
+.beads/dolt-backup*.json

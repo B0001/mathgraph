@@ -1,7 +1,9 @@
 {
   "database": "dolt",
   "backend": "dolt",
-  "dolt_mode": "embedded",
+  "dolt_mode": "server",
+  "dolt_server_host": "127.0.0.1",
+  "dolt_server_port": 52749,
   "dolt_database": "mathgraph",
   "project_id": "eaf0ca87-1367-4612-a2f2-2829db032d2a"
 }
