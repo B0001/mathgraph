@@ -4,7 +4,8 @@ import os
 import tempfile
 import unittest
 
-from mathgraph.timesplit import absent_set, clean_doc, scan, score_system
+from mathgraph.index import translation
+from mathgraph.timesplit import absent_set, auroc, clean_doc, scan, score_system
 
 NOV = """namespace Foo
 
@@ -64,6 +65,20 @@ class KillTest(unittest.TestCase):
 
     def test_negatives_no_harder_than_controls_are_killed(self):
         self.assertFalse(score_system(self.recs(lambda i: 0.0))["survives"])
+
+
+class CrossFit(unittest.TestCase):
+    def test_a_withheld_docstring_teaches_the_table_nothing(self):
+        rows = ([{"name": f"frob_{i}", "doc": "Frobnicate the widget.", "tokens": ["frob", str(i)]}
+                 for i in range(8)]
+                + [{"name": f"quux_{i}", "doc": "Quux the gadget.", "tokens": ["quux", str(i)]}
+                   for i in range(8)])
+        table = translation(rows, {id(r) for r in rows[8:]})
+        self.assertEqual(table["widget"], [("frob", 1.0)])
+        self.assertNotIn("gadget", table)
+
+    def test_auroc_counts_ties_half(self):
+        self.assertEqual(auroc([2, 3], [1, 2]), 0.875)
 
 
 if __name__ == "__main__":

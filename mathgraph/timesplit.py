@@ -218,6 +218,11 @@ def _jsonl(path, rows=None):
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 
+def _query(arm: str, r: dict) -> dict:
+    return {"arm": arm, "name": r["name"], "module": r["module"],
+            "line": r["line"], "query": clean_doc(r["doc"]), "head": r["head"]}
+
+
 def build_arms(data: str, nov_tree: str, out: str, frac: float = 0.06,
                seed: int = 0) -> dict:
     from .index import build, find_ground_truth, load
@@ -239,11 +244,7 @@ def build_arms(data: str, nov_tree: str, out: str, frac: float = 0.06,
     rows = load(ctrl)["rows"]
     present = {r["name"] for r in rows}
     docs = Counter(clean_doc(r["doc"]) for r in rows if r.get("doc"))
-
-    def q(arm, r):
-        return {"arm": arm, "name": r["name"], "module": r["module"],
-                "line": r["line"], "query": clean_doc(r["doc"]), "head": r["head"]}
-
+    q = _query
     theorems = lambda rs: [r for r in rs if r["kind"] == "theorem" and clean_doc(r["doc"])]
     arms = ([q("time", r) for r in time_rows]
             + [q("holdout", r) for r in theorems(_jsonl(os.path.join(ctrl, "holdout.jsonl")))]
@@ -298,6 +299,25 @@ def run_lexical(data: str, out: str) -> None:
     _jsonl(os.path.join(out, "lexical.jsonl"), recs)
 
 
+def row_text(r: dict) -> str:
+    """A row's dense text without its docstring: name and head."""
+    return ". ".join(x for x in (r["name"], r.get("head") or "") if x)
+
+
+def _top2(Q, M, names) -> list[tuple[float, float, str]]:
+    """(top-1 cosine, top-1 minus top-2, top-1 name) for every row of Q."""
+    import numpy as np
+    res = []
+    for s in range(0, len(Q), 256):
+        S = Q[s:s + 256] @ M.T
+        r = np.arange(len(S))
+        i = S.argmax(1)
+        s1 = S[r, i].copy()
+        S[r, i] = -np.inf
+        res += [(float(a), float(a - b), names[k]) for a, b, k in zip(s1, S.max(1), i)]
+    return res
+
+
 def run_dense(data: str, out: str, model_name: str = MODEL) -> None:
     """Top-1 cosine against the cached corpus embedding, restricted to the rows
     the control index (or idx_mathlib) holds. Needs sentence-transformers."""
@@ -323,30 +343,18 @@ def run_dense(data: str, out: str, model_name: str = MODEL) -> None:
     ctrl = {r["name"] for r in load(os.path.join(out, "idx_ctrl"))["rows"]}
     mathlib = {r["name"] for r in load(os.path.join(art, "idx_mathlib"))["rows"]}
 
-    def top2(mask, sel):
-        sub, nm = M[mask], names[mask]
-        res = []
-        for s in range(0, len(sel), 256):
-            S = Q[sel[s:s + 256]] @ sub.T
-            r = np.arange(len(S))
-            i = S.argmax(1)
-            s1 = S[r, i].copy()
-            S[r, i] = -np.inf
-            res += [(float(a), float(a - b), nm[k]) for a, b, k in zip(s1, S.max(1), i)]
-        return res
-
     recs = []
     time_sel = [k for k, a in enumerate(arms) if a["arm"] == "time"]
-    for k, (s, mg, t) in zip(time_sel, top2(np.array([n in mathlib for n in names]), time_sel)):
+    ml = np.array([n in mathlib for n in names])
+    for k, (s, mg, t) in zip(time_sel, _top2(Q[time_sel], M[ml], names[ml])):
         recs.append({"corpus": "idx_mathlib", "arm": "time", "name": arms[k]["name"],
                      "score": s, "margin": mg, "top1": t})
     # a positive's corpus text contains its own docstring; drop it
     pos = {a["name"] for a in arms if a["arm"] == "positive"}
     rows = [i for i, r in enumerate(full) if r["name"] in pos]
-    M[rows] = enc([". ".join(x for x in (full[i]["name"], full[i].get("head") or "") if x)
-                   for i in rows])
-    every = list(range(len(arms)))
-    for a, (s, mg, t) in zip(arms, top2(np.array([n in ctrl for n in names]), every)):
+    M[rows] = enc([row_text(full[i]) for i in rows])
+    ct = np.array([n in ctrl for n in names])
+    for a, (s, mg, t) in zip(arms, _top2(Q, M[ct], names[ct])):
         recs.append({"corpus": "ctrl", "arm": a["arm"], "name": a["name"],
                      "score": s, "margin": mg, "top1": t})
     _jsonl(os.path.join(out, "dense.jsonl"), recs)
@@ -489,25 +497,218 @@ def write_audit(arms: list[dict], pin: dict, fm: dict, path: str, n: int, seed: 
             "labels": "pending: two raters, 'equivalent or generalising' vs 'genuinely new'"}
 
 
+# -- the cross-fitted positive arm (mathgraph-42z) ----------------------------
+#
+# The positives above are scored by bge against their own row re-embedded
+# without its docstring, while every row a negative can hit keeps its
+# docstring: the gold row is the one row built differently, and correct
+# positives score below holdout negatives (AUROC 0.375). Here every eligible
+# docstring theorem of the same control index is a positive, against the same
+# negatives. Lexical rows hold no docstring text, so the only leak is the PMI
+# table, which is cross-fitted. Every dense row is embedded as `row_text`, so
+# no row holds a docstring. Pre-registered in sandbox-handoffs/mathgraph-42z.md.
+
+FOLDS = 10
+
+
+def pmi_folds(rows: list[dict], k: int = FOLDS, seed: int = 0) -> dict[int, int]:
+    """Row index -> fold, over the rows that carry a docstring."""
+    docd = [i for i, r in enumerate(rows) if r.get("doc")]
+    random.Random(seed).shuffle(docd)
+    return {i: n % k for n, i in enumerate(docd)}
+
+
+def build_positives(src: str, out: str, k: int = FOLDS, seed: int = 0) -> dict:
+    """`src`'s control index and negative arms, unchanged, plus a positive arm of
+    every control theorem the old filters admit whose name is unique. Every
+    query is tagged with the fold whose PMI table will score it."""
+    import hashlib
+    import shutil
+    from .index import load
+    os.makedirs(out, exist_ok=True)
+    shutil.copytree(os.path.join(src, "idx_ctrl"), os.path.join(out, "idx_ctrl"),
+                    dirs_exist_ok=True)
+    for f in ("lexical.jsonl", "dense.jsonl"):        # the before column
+        shutil.copyfile(os.path.join(src, f), os.path.join(out, "hctz_" + f))
+    rows = load(os.path.join(out, "idx_ctrl"))["rows"]
+    fold = pmi_folds(rows, k, seed)
+    docs = Counter(clean_doc(r["doc"]) for r in rows if r.get("doc"))
+    names = Counter(r["name"] for r in rows)
+    pos = [dict(_query("positive", r), fold=fold[i]) for i, r in enumerate(rows)
+           if r["kind"] == "theorem" and clean_doc(r.get("doc"))
+           and r.get("provenance", "source") == "source"
+           and "to_additive" not in r.get("attrs", "")
+           and docs[clean_doc(r["doc"])] == 1 and names[r["name"]] == 1]
+    rng = random.Random(seed)
+    arms = [dict(a, fold=rng.randrange(k)) for a in _jsonl(os.path.join(src, "arms.jsonl"))
+            if a["arm"] != "positive"] + pos
+    _jsonl(os.path.join(out, "arms.jsonl"), arms)
+    sha = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
+    info = {"folds": k, "seed": seed,
+            "idx_ctrl_sha256": sha(os.path.join(out, "idx_ctrl", "index.pkl.gz")),
+            "src_arms_sha256": sha(os.path.join(src, "arms.jsonl")),
+            "docstring_rows": len(fold),
+            "arm_sizes": dict(Counter(a["arm"] for a in arms))}
+    with open(os.path.join(out, "arms_meta.json"), "w", encoding="utf-8") as fh:
+        json.dump(info, fh, indent=2)
+    return info
+
+
+def run_lexical_xfit(out: str) -> None:
+    """Coverage, margin and top-1 for every query, scored with its fold's table:
+    PMI over the control docstrings outside that fold."""
+    from .align import Aligner
+    from .cli import LEX
+    from .index import load, translation
+    meta = json.load(open(os.path.join(out, "arms_meta.json")))
+    art = load(os.path.join(out, "idx_ctrl"))
+    rows = art["rows"]
+    fold = pmi_folds(rows, meta["folds"], meta["seed"])
+    al = Aligner(art, tau_cov=0.0, delta_margin=0.0, **LEX)
+    arms = _jsonl(os.path.join(out, "arms.jsonl"))
+    recs = []
+    for f in range(meta["folds"]):
+        al.trans = translation(rows, {id(rows[i]) for i, g in fold.items() if g == f})
+        for a in arms:
+            if a["fold"] != f:
+                continue
+            r = al.align(a["query"], topk=5)
+            recs.append({"arm": a["arm"], "name": a["name"], "fold": f,
+                         "score": r.coverage, "margin": r.margin,
+                         "top1": r.best.name if r.best else None})
+        print(f"fold {f}: {len(recs)} queries scored", flush=True)
+    _jsonl(os.path.join(out, "lexical.jsonl"), recs)
+
+
+def run_dense_xfit(out: str, model_name: str = MODEL) -> None:
+    """Top-1 cosine over every control row embedded as `row_text`. Needs
+    sentence-transformers; the corpus embedding is cached in `out`."""
+    import numpy as np
+    import torch
+    from sentence_transformers import SentenceTransformer
+    from .bench_pretrained import QUERY_PREFIX
+    from .index import load
+    rows = load(os.path.join(out, "idx_ctrl"))["rows"]
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    model = SentenceTransformer(model_name, device=device)
+    enc = lambda xs, bar=False: model.encode(
+        xs, batch_size=128, normalize_embeddings=True, convert_to_numpy=True,
+        show_progress_bar=bar).astype(np.float32)
+    cache = os.path.join(out, f"emb_{model_name.replace('/', '__')}.npy")
+    if os.path.exists(cache):
+        M = np.load(cache)
+    else:
+        M = enc([row_text(r) for r in rows], bar=True)
+        np.save(cache, M)
+    assert M.shape[0] == len(rows)
+    arms = _jsonl(os.path.join(out, "arms.jsonl"))
+    prefix = next((p for k, p in QUERY_PREFIX.items() if model_name.startswith(k)), "")
+    Q = enc([prefix + a["query"] for a in arms], bar=True)
+    names = np.array([r["name"] for r in rows], dtype=object)
+    _jsonl(os.path.join(out, "dense.jsonl"),
+           [{"arm": a["arm"], "name": a["name"], "score": s, "margin": mg, "top1": t}
+            for a, (s, mg, t) in zip(arms, _top2(Q, M, names))])
+    with open(os.path.join(out, "dense_meta.json"), "w") as fh:
+        json.dump({"model": model_name, "device": device, "corpus_rows": len(rows),
+                   "row_text": "name. head"}, fh, indent=2)
+
+
+def auroc(pos: list[float], neg: list[float]) -> float:
+    """P(a positive outscores a negative), ties counted half."""
+    import bisect
+    neg = sorted(neg)
+    s = 0.0
+    for x in pos:
+        lo, hi = bisect.bisect_left(neg, x), bisect.bisect_right(neg, x)
+        s += lo + (hi - lo) / 2
+    return s / (len(pos) * len(neg))
+
+
+def report_positives(out: str, results: str, seed: int = 0) -> dict:
+    """The pre-registered T1 and T2 for each system, and the descriptive numbers."""
+    import statistics
+    from .index import doc_words, load
+    med = statistics.median
+    meta = json.load(open(os.path.join(out, "arms_meta.json")))
+    arms = _jsonl(os.path.join(out, "arms.jsonl"))
+    rows = load(os.path.join(out, "idx_ctrl"))["rows"]
+    fold = pmi_folds(rows, meta["folds"], meta["seed"])
+    at = {r["name"]: i for i, r in enumerate(rows)}
+    chars = {r["name"]: len(row_text(r)) for r in rows}
+    res = {"bead": "mathgraph-42z", "protocol": "sandbox-handoffs/mathgraph-42z.md",
+           **meta, "dense": json.load(open(os.path.join(out, "dense_meta.json"))),
+           "query_content_words_median": {
+               x: med(len(doc_words(a["query"])) for a in arms if a["arm"] == x)
+               for x in ARMS}}
+    for system, f in (("lexical", "lexical.jsonl"), ("bge-small", "dense.jsonl")):
+        recs = _jsonl(os.path.join(out, f))
+        old = [r for r in _jsonl(os.path.join(out, "hctz_" + f)) if r["corpus"] == "ctrl"]
+        pos = [r for r in recs if r["arm"] == "positive"]
+        fit, ev = halves([r["name"] for r in pos], seed)
+        ok = [r for r in pos if r["top1"] == r["name"]]
+        half = {"fit": sum(r["name"] in fit for r in ok), "eval": sum(r["name"] in ev for r in ok)}
+        if system == "lexical":    # T1(b)
+            t1 = {"positives_scored_by_a_table_holding_their_docstring":
+                  sum(fold[at[r["name"]]] != r["fold"] for r in pos)}
+        else:                      # T1(a)
+            t1 = {"rows_whose_text_holds_their_docstring":
+                  sum(bool(d := clean_doc(r.get("doc"))) and d in row_text(r) for r in rows)}
+        score = lambda rs, arm=None: [r["score"] for r in rs if arm is None or r["arm"] == arm]
+        old_ok = [r for r in old if r["arm"] == "positive" and r["top1"] == r["name"]]
+        s = {"t1": t1, "t1_pass": not any(t1.values()),
+             "correct_top1_per_half": half, "t2_pass": min(half.values()) >= 400,
+             "recall@1": _rate(len(ok), len(pos)),
+             "auroc_correct_positives_vs": {
+                 a: {"rebuilt": round(auroc(score(ok), score(recs, a)), 4),
+                     "hctz": round(auroc(score(old_ok), score(old, a)), 4)}
+                 for a in ARMS[1:]}}
+        if system == "bge-small":
+            s["median_text_chars"] = {"correct_positive_gold": med(chars[r["name"]] for r in ok),
+                                      **{f"{a}_top1": med(chars[r["top1"]] for r in recs
+                                                          if r["arm"] == a) for a in ARMS[1:]}}
+        s["pass"] = s["t1_pass"] and s["t2_pass"]
+        res[system] = s
+    with open(results, "w", encoding="utf-8") as fh:
+        json.dump(res, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+    return res
+
+
 def main(argv=None) -> None:
     import argparse
     p = argparse.ArgumentParser(prog="python -m mathgraph.timesplit")
-    p.add_argument("stage", choices=["arms", "lexical", "dense", "report"])
+    p.add_argument("stage", choices=["arms", "lexical", "dense", "report",
+                                     "pos-arms", "pos-lexical", "pos-dense", "pos-report"])
     p.add_argument("--data", default=os.environ.get("MATHGRAPH_DATA", "./mathgraph-data"))
     p.add_argument("--nov", help="mathlib4 checkout at NOV holding PIN's objects too")
-    p.add_argument("--out", default="./mathgraph-data/timesplit")
-    p.add_argument("--results", default="results/timesplit.json")
+    p.add_argument("--src", default="./mathgraph-data/timesplit",
+                   help="pos-arms: the build whose control index and negatives are reused")
+    p.add_argument("--out")
+    p.add_argument("--results")
     p.add_argument("--audit", default="results/timesplit-audit.csv")
     a = p.parse_args(argv)
+    pos = a.stage.startswith("pos-")
+    out = a.out or f"./mathgraph-data/timesplit{'-xfit' if pos else ''}"
+    results = a.results or f"results/timesplit{'-positive' if pos else ''}.json"
     if a.stage == "arms":
-        print(json.dumps(build_arms(a.data, a.nov, a.out), indent=2))
+        print(json.dumps(build_arms(a.data, a.nov, out), indent=2))
     elif a.stage == "lexical":
-        run_lexical(a.data, a.out)
+        run_lexical(a.data, out)
     elif a.stage == "dense":
-        run_dense(a.data, a.out)
-    else:
-        r = report(a.out, a.results, a.audit)
+        run_dense(a.data, out)
+    elif a.stage == "report":
+        r = report(out, results, a.audit)
         print(json.dumps({k: r[k] for k in ("arm_sizes", "kill_test_survives")}, indent=2))
+    elif a.stage == "pos-arms":
+        print(json.dumps(build_positives(a.src, out), indent=2))
+    elif a.stage == "pos-lexical":
+        run_lexical_xfit(out)
+    elif a.stage == "pos-dense":
+        run_dense_xfit(out)
+    else:
+        r = report_positives(out, results)
+        print(json.dumps({s: {k: r[s][k] for k in ("correct_top1_per_half", "t1", "pass")}
+                          for s in ("lexical", "bge-small")}, indent=2))
 
 
 if __name__ == "__main__":

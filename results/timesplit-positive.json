@@ -1,0 +1,105 @@
+{
+  "bead": "mathgraph-42z",
+  "protocol": "sandbox-handoffs/mathgraph-42z.md",
+  "folds": 10,
+  "seed": 0,
+  "idx_ctrl_sha256": "a66ddccb15ee986ff99fcd4a6bd36c7e50d8d97f900847bcadf2e0967fa77d1a",
+  "src_arms_sha256": "2a5a1a40a17deb5dc2592c67054ed60c3aef0e04c4dfb808e523fbaa227079f2",
+  "docstring_rows": 64266,
+  "arm_sizes": {
+    "time": 1660,
+    "holdout": 1602,
+    "deletion": 1660,
+    "positive": 20667
+  },
+  "dense": {
+    "model": "BAAI/bge-small-en-v1.5",
+    "device": "mps",
+    "corpus_rows": 244361,
+    "row_text": "name. head"
+  },
+  "query_content_words_median": {
+    "positive": 6,
+    "time": 7.0,
+    "holdout": 6.0,
+    "deletion": 6.0
+  },
+  "lexical": {
+    "t1": {
+      "positives_scored_by_a_table_holding_their_docstring": 0
+    },
+    "t1_pass": true,
+    "correct_top1_per_half": {
+      "fit": 1267,
+      "eval": 1340
+    },
+    "t2_pass": true,
+    "recall@1": {
+      "k": 2607,
+      "n": 20667,
+      "rate": 0.1261,
+      "wilson95": [
+        0.1217,
+        0.1307
+      ],
+      "half_width": 0.0045
+    },
+    "auroc_correct_positives_vs": {
+      "time": {
+        "rebuilt": 0.6366,
+        "hctz": 0.6227
+      },
+      "holdout": {
+        "rebuilt": 0.5832,
+        "hctz": 0.5756
+      },
+      "deletion": {
+        "rebuilt": 0.5964,
+        "hctz": 0.5846
+      }
+    },
+    "pass": true
+  },
+  "bge-small": {
+    "t1": {
+      "rows_whose_text_holds_their_docstring": 0
+    },
+    "t1_pass": true,
+    "correct_top1_per_half": {
+      "fit": 2051,
+      "eval": 2066
+    },
+    "t2_pass": true,
+    "recall@1": {
+      "k": 4117,
+      "n": 20667,
+      "rate": 0.1992,
+      "wilson95": [
+        0.1938,
+        0.2047
+      ],
+      "half_width": 0.0054
+    },
+    "auroc_correct_positives_vs": {
+      "time": {
+        "rebuilt": 0.7999,
+        "hctz": 0.6999
+      },
+      "holdout": {
+        "rebuilt": 0.6737,
+        "hctz": 0.3747
+      },
+      "deletion": {
+        "rebuilt": 0.6753,
+        "hctz": 0.3636
+      }
+    },
+    "median_text_chars": {
+      "correct_positive_gold": 172,
+      "time_top1": 126.0,
+      "holdout_top1": 138.5,
+      "deletion_top1": 140.0
+    },
+    "pass": true
+  }
+}

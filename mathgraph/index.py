@@ -270,6 +270,51 @@ def expand_to_additive(rows: list[dict],
     return rows + extra, dict(stats)
 
 
+def translation(rows: list[dict], blocked=frozenset()) -> dict:
+    """English word -> [(name token, weight)], by PMI over the docstrings of
+    `rows`, skipping the rows whose id() is in `blocked`."""
+    pair: Counter = Counter()
+    wcount: Counter = Counter()
+    tcount: Counter = Counter()
+    total = 0
+    for r in rows:
+        if not r.get("doc") or id(r) in blocked:
+            continue
+        ws = set(doc_words(r["doc"]))
+        ts = set(r["tokens"])
+        if not ws or not ts:
+            continue
+        for w in ws:
+            wcount[w] += 1
+        for t in ts:
+            tcount[t] += 1
+        for w in ws:
+            for t in ts:
+                pair[(w, t)] += 1
+                total += 1
+
+    trans: dict[str, list[tuple[str, float]]] = defaultdict(list)
+    for (w, t), c in pair.items():
+        if c < 5:
+            continue
+        pw = wcount[w]
+        pt = tcount[t]
+        if pw < 4 or pt < 4:
+            continue
+        pmi = math.log((c * total) / (pw * pt) + 1e-12)
+        if pmi <= 0:
+            continue
+        # shrink toward zero for pairs seen only a handful of times; raw PMI
+        # otherwise ranks one-off coincidences above the real translation
+        trans[w].append((t, pmi * (c / (c + 25.0))))
+    for w in trans:
+        trans[w].sort(key=lambda x: -x[1])
+        del trans[w][12:]
+        mx = trans[w][0][1] or 1.0
+        trans[w] = [(t, s / mx) for t, s in trans[w]]
+    return dict(trans)
+
+
 def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
           pmi_holdout_frac: float = 0.0, seed: int = 0,
           truth: "GroundTruth | None" = None) -> dict:
@@ -342,46 +387,7 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
         for t in set(r["typ_tokens"]) - toks:
             typ_postings[t].append(i)
 
-    # --- English -> token translation, PMI over docstrings ----------------
-    pair: Counter = Counter()
-    wcount: Counter = Counter()
-    tcount: Counter = Counter()
-    total = 0
-    for r in rows:
-        if not r.get("doc") or id(r) in pmi_blocked:
-            continue
-        ws = set(doc_words(r["doc"]))
-        ts = set(r["tokens"])
-        if not ws or not ts:
-            continue
-        for w in ws:
-            wcount[w] += 1
-        for t in ts:
-            tcount[t] += 1
-        for w in ws:
-            for t in ts:
-                pair[(w, t)] += 1
-                total += 1
-
-    trans: dict[str, list[tuple[str, float]]] = defaultdict(list)
-    for (w, t), c in pair.items():
-        if c < 5:
-            continue
-        pw = wcount[w]
-        pt = tcount[t]
-        if pw < 4 or pt < 4:
-            continue
-        pmi = math.log((c * total) / (pw * pt) + 1e-12)
-        if pmi <= 0:
-            continue
-        # shrink toward zero for pairs seen only a handful of times; raw PMI
-        # otherwise ranks one-off coincidences above the real translation
-        trans[w].append((t, pmi * (c / (c + 25.0))))
-    for w in trans:
-        trans[w].sort(key=lambda x: -x[1])
-        del trans[w][12:]
-        mx = trans[w][0][1] or 1.0
-        trans[w] = [(t, s / mx) for t, s in trans[w]]
+    trans = translation(rows, pmi_blocked)
 
     art = {
         "rows": rows,
@@ -389,7 +395,7 @@ def build(raw_path: str, out_dir: str, holdout_frac: float = 0.0,
         "postings": dict(postings),
         "mod_postings": dict(mod_postings),
         "typ_postings": dict(typ_postings),
-        "trans": dict(trans),
+        "trans": trans,
         "meta": {
             "n_decls": len(rows),
             "n_holdout": len(holdout),
