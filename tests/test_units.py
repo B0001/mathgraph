@@ -479,5 +479,44 @@ class PrecisionAtCoverageTest(unittest.TestCase):
         self.assertAlmostEqual(lo, 0.5958, places=3)  # standard Wilson 95% for 9/10
 
 
+class NeighbourAnchoredCompletion(unittest.TestCase):
+    """mathgraph-fxh: candidates one Lean reference from a neighbour's tag."""
+
+    def test_candidates_split_by_edge_direction(self):
+        from mathgraph.complete import Refs, graph_top, neighbourhoods
+        refs = Refs({"A.up": "theorem A.up : True := trivial",
+                     "B.tgt": "theorem B.tgt : True := A.up",     # cites its upstream anchor
+                     "C.down": "theorem C.down : True := B.tgt",  # its downstream anchor cites it
+                     "D.sib": "theorem D.sib : True := X.up"})    # `X.up` mentions every `*.up`
+        tags = {"u": {"A.up"}, "t": {"B.tgt"}, "d": {"C.down"}}
+        (r,) = [x for x in neighbourhoods(tags, {"t": {"u"}, "d": {"t"}}, refs) if x["id"] == "t"]
+        self.assertEqual(r["gold"], ["B.tgt"])
+        self.assertEqual(dict(r["links"]["n1"]), {"B.tgt": 2, "D.sib": 1})   # anchors excluded
+        self.assertEqual(set(r["links"]["up"]), {"B.tgt", "D.sib"})
+        self.assertEqual(set(r["links"]["down"]), {"B.tgt"})
+        self.assertEqual(graph_top(r["links"]["n1"], 2)[0], "B.tgt")
+        self.assertIsNone(graph_top(r["links"]["up"], 1)[0])                 # flat: abstain
+
+    def test_proof_uses_count_for_its_statement_and_unlabelled_ids_stay_apart(self):
+        from mathgraph.complete import blueprint
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, "blueprint"))
+            for f, lean in (("a.tex", "A.x"), ("b.tex", "B.y")):
+                with open(os.path.join(d, "blueprint", f), "w") as fh:
+                    fh.write("\\begin{lemma}\\lean{%s} x \\end{lemma}\n"
+                             "\\begin{proof}\\uses{dep-%s} \\end{proof}\n" % (lean, f))
+            tags, uses, _ = blueprint(d)
+        self.assertEqual(sorted(map(sorted, tags.values())), [["A.x"], ["B.y"]])
+        self.assertEqual(sorted(map(sorted, uses.values())), [["dep-a.tex"], ["dep-b.tex"]])
+
+    def test_tied_or_empty_ranking_abstains(self):
+        from mathgraph.complete import pick
+        names, s = ["a", "b", "c"], np.array([0.5, 0.5, 0.1])
+        self.assertIsNone(pick(names, s, s, np.arange(3), 0.0)[0])
+        self.assertEqual(pick(names, s, s, np.array([1, 2]), 0.0), ("b", 0.5))
+        self.assertIsNone(pick(names, np.zeros(3), s, np.arange(3), 0.0)[0])  # nothing above the floor
+        self.assertIsNone(pick(names, s, s, np.array([], dtype=int), 0.0)[0])
+
+
 if __name__ == "__main__":
     unittest.main()
