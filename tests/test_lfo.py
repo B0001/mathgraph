@@ -73,5 +73,35 @@ class Family(unittest.TestCase):
         self.assertEqual(self.fam.of("Multiset.sum_comm", "Mathlib.Other"), set())
 
 
+class KillTest(unittest.TestCase):
+    """The pre-registered criteria on synthetic per-query false-match values."""
+
+    @staticmethod
+    def arms(fam_rate, rand_rate, sib_rate):
+        import numpy as np
+        hit = lambda rate, n=800: (np.arange(n) < round(rate * n)).astype(float)
+        neg = {"base": hit(0.14), "fam": hit(fam_rate), "rand": hit(rand_rate)}
+        return {"holdout": neg, "deletion": neg,
+                "time": {"base": hit(0.02), "fam": hit(0.02), "sib": hit(sib_rate)}}
+
+    def verdict(self, *rates):
+        from mathgraph.lfo import kill_stats, verdict
+        k = kill_stats(self.arms(*rates))
+        return verdict({"bge-small": {"kill_test": k}, "bge-base": {"kill_test": k}})
+
+    def test_family_driven_gap_survives(self):
+        v = self.verdict(0.03, 0.135, 0.12)
+        self.assertFalse(v["strict"]["killed"])
+        self.assertFalse(v["strict"]["time_half_falsified"])
+
+    def test_no_better_than_random_removal_is_killed(self):
+        self.assertTrue(self.verdict(0.03, 0.03, 0.12)["strict"]["killed"])
+
+    def test_small_closure_is_killed_and_flat_siblings_falsify(self):
+        v = self.verdict(0.10, 0.14, 0.03)
+        self.assertTrue(v["strict"]["killed"])            # closes 4/12 of the gap
+        self.assertTrue(v["strict"]["time_half_falsified"])  # +1 pp < 4 pp
+
+
 if __name__ == "__main__":
     unittest.main()
