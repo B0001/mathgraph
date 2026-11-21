@@ -11,7 +11,8 @@ been done:
 - The oracle had been probed on synthetic pairs only. These were H's written
   into the probe file itself, plus near-miss pairs of control-index theorems
   that are in no arm (probe evidence below).
-- Names had been resolved.
+- Names had not been resolved yet. `#kresolve` runs as the first pipeline
+  stage, before any check.
 - The unit counts and thresholds had been checked against
   `results/timesplit.json`.
 

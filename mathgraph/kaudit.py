@@ -587,7 +587,8 @@ def main(argv=None) -> None:
         print(json.dumps(resolve(units, name_modules(a.src), a.work, a.mathlib)))
     elif a.stage == "check":
         cmds, _ = plan(units, _facts(a.work), which)
-        _save(a.work, "checks.json", run_batches(cmds, a.work, "check", a.mathlib, a.jobs))
+        _save(a.work, "checks.json", run_batches(cmds, a.work, "check", a.mathlib, a.jobs,
+                                                 timeout=3 * 3600))    # pre-registered bound
     elif a.stage == "followup":
         facts = _facts(a.work)
         plan(units, facts, which)
