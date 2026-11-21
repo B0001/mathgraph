@@ -1,0 +1,6310 @@
+{
+ "P": 724,
+ "dev": [
+  "ZHat",
+  "close_smooth_approx_periodic",
+  "ConNF.Litter",
+  "ProbabilityTheory.exists_isUniform",
+  "ent_sub_zsmul_sub_ent_le",
+  "dist_of_U_add_le",
+  "averaged_construct_good",
+  "Subgraph.Equation14_implies_Equation29",
+  "diff_rdist_le_4",
+  "TileStructure.Forest.pairwiseDisjoint_rowDecomp",
+  "multiDist_of_perm",
+  "PFR_conjecture_aux",
+  "ent_bsg",
+  "I3_prop_3_2",
+  "QHat.rat_join_zHat",
+  "I_one_le",
+  "Eq1729.parent",
+  "rdist_add_rdist_add_condMutual_eq",
+  "ProbabilityTheory.entropy_comp_le",
+  "forest_separation",
+  "young_convolution",
+  "ordConnected_C",
+  "InfModel.Finite.Equation3994_implies_Equation3588",
+  "Subgraph.Equation1571_implies_Equation8",
+  "Equation1648_not_implies_Equation206",
+  "Eq1323.Equation1323_not_implies_Equation2744",
+  "tile_sum_operator",
+  "TileStructure.Forest.biUnion_rowDecomp",
+  "diff_ent_le_rdist'",
+  "john_nirenberg",
+  "FermatLastTheorem.of_p_ge_5",
+  "TileStructure.Forest.lower_oscillation_bound",
+  "condRho_sum_le'",
+  "Subgraph.Equation387_implies_Equation43",
+  "pairwiseDisjoint_L0'",
+  "rho_continuous",
+  "NumberField.InfiniteAdeleRing.instIsModuleTopology_fLT",
+  "integer_ball_cover",
+  "condRuzsaDist_le",
+  "exceptional_set",
+  "ProbabilityTheory.exists_isUniform_measureSpace",
+  "ConNF.Tree",
+  "homomorphism_pfr",
+  "BohrSet.regularity",
+  "Eq1729.enlarge_op",
+  "antichain_decomposition",
+  "sum_of_conditional_distance_le",
+  "rdist_of_neg_le",
+  "AffineSpace.finrank",
+  "partialFourierSum_bound"
+ ],
+ "test": [
+  "diff_rdist_le_1",
+  "rdist_triangle",
+  "isUniform_sub_const_of_rdist_eq_zero",
+  "boundary_measure",
+  "Subgraph.Equation2_implies_Equation1689",
+  "ProbabilityTheory.IdentDistrib.tau_eq",
+  "IsDedekindDomain.FiniteAdeleRing.baseChangeAlgEquiv",
+  "condRuzsaDist_of_sums_ge",
+  "GaloisRepresentation.IsHardlyRamified.three_adic",
+  "continuous_carlesonOperatorIntegrand",
+  "InfModel.Finite.Equation28770_implies_Equation2",
+  "Hurwitz.starRing",
+  "TileStructure.Forest.adjoint_tree_estimate",
+  "ProbabilityTheory.chain_rule",
+  "enorm_Ks_sub_Ks_le",
+  "ZHat.nontrivial",
+  "TileStructure.Forest.local_dens2_tree_bound",
+  "KLDiv",
+  "rdist_of_sums_ge'",
+  "Θ.finite_and_mk_le_of_le_dist",
+  "multiTau_continuous",
+  "Tile.correlation",
+  "Eq1729.not_817",
+  "ConNF.StrSet",
+  "Hurwitz.left_ideal_princ",
+  "TileStructure.Forest.tree_projection_estimate",
+  "rdist_def",
+  "condRho_le",
+  "ZHat.torsionfree",
+  "TileStructure.Forest.correlation_near_tree_parts",
+  "approx_hom_pfr'",
+  "ZHat.multiples",
+  "ConNF.Atom",
+  "rhoMinus_of_subgroup",
+  "ProbabilityTheory.entropy_pair_eq_add",
+  "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.distribMulAction",
+  "ProbabilityTheory.condMutual_comp_comp_le",
+  "cover_big_ball",
+  "forest_inner",
+  "ConNF.Support",
+  "construct_good_improved'",
+  "ConNF.StrAction.approximates_of_flexApprox_exactlyApproximates",
+  "smul_C2_1_2",
+  "iter_multiDist_chainRule",
+  "kvm_ineq_I",
+  "TileStructure.Forest.correlation_separated_trees",
+  "entropy_of_W_le",
+  "dyadic_property",
+  "entropic_PFR_conjecture_improv",
+  "boringEnergy"
+ ],
+ "bodies": [
+  {
+   "name": "diff_rdist_le_1",
+   "project": "pfr",
+   "module": "PFR.FirstEstimate",
+   "path": "pfr/PFR/FirstEstimate.lean",
+   "line": 103,
+   "end": 112,
+   "candidates": {
+    "ProbabilityTheory.IdentDistrib.entropy_congr": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 77,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L108 h₂.entropy_congr, h₂ : IdentDistrib X₂ X₂' (section variable)",
+     "judge": 4
+    },
+    "ProbabilityTheory.IdentDistrib.rdist_congr_right": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 144,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L107 h₂.rdist_congr_right, h₂ : IdentDistrib X₂ X₂'",
+     "judge": 4
+    },
+    "ProbabilityTheory.Kernel.entropy_congr": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.Basic",
+     "line": 49,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L108 h₂.entropy_congr resolves to ProbabilityTheory.IdentDistrib.entropy_congr (receiver is IdentDistrib); Kernel not open",
+     "judge": 4
+    },
+    "ProbabilityTheory.entropy_congr": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 70,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L108 h₂.entropy_congr resolves to ProbabilityTheory.IdentDistrib.entropy_congr (dot on IdentDistrib)",
+     "judge": 4
+    },
+    "condRuzsaDist_diff_le'": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 1404,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L106 condRuzsaDist_diff_le' (root lemma, RuzsaDist.lean:1404)",
+     "judge": 4
+    }
+   },
+   "id": "B01"
+  },
+  {
+   "name": "rdist_triangle",
+   "project": "pfr",
+   "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+   "path": "pfr/PFR/ForMathlib/Entropy/RuzsaDist.lean",
+   "line": 440,
+   "end": 469,
+   "candidates": {
+    "FiniteRange": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.FiniteRange.Defs",
+     "line": 8,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L443 [FiniteRange X] [FiniteRange Y] [FiniteRange Z]",
+     "judge": 3
+    },
+    "ProbabilityTheory.IdentDistrib.rdist_congr": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 133,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L448 HX.rdist_congr HY, HX : IdentDistrib X' X μA μ (from independent_copies3_nondep_finiteRange)",
+     "judge": 3
+    },
+    "ProbabilityTheory.IndepFun.rdist_eq": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 175,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L453 ProbabilityTheory.IndepFun.rdist_eq (also L460, L461)",
+     "judge": 3
+    },
+    "ProbabilityTheory.Kernel.ent_of_diff_le": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.RuzsaDist",
+     "line": 176,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L456 ent_of_diff_le resolves to root ent_of_diff_le (RuzsaDist.lean:403); ProbabilityTheory.Kernel is not open",
+     "judge": 3
+    },
+    "ProbabilityTheory.Kernel.rdist": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.RuzsaDist",
+     "line": 31,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: d[..] notation (L444, L447, L452, L459) expands to root rdist; the Kernel notation is dk[..]",
+     "judge": 3
+    },
+    "ProbabilityTheory.Kernel.rdist_eq": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.RuzsaDist",
+     "line": 50,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L453/L460/L461 write the fully qualified ProbabilityTheory.IndepFun.rdist_eq",
+     "judge": 3
+    },
+    "ProbabilityTheory.Kernel.rdist_triangle": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.RuzsaDist",
+     "line": 350,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: only B's own declared name rdist_triangle (root); Kernel.rdist_triangle never named",
+     "judge": 3
+    },
+    "ProbabilityTheory.independent_copies3_nondep_finiteRange": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.FiniteRange.IdentDistrib",
+     "line": 73,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L446 independent_copies3_nondep_finiteRange via open ProbabilityTheory",
+     "judge": 3
+    },
+    "ent_of_diff_le": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 403,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L456 ent_of_diff_le _ _ _ hX' hZ' hY' IndepLem",
+     "judge": 3
+    },
+    "rdist": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 66,
+     "kind": "def",
+     "genuine": true,
+     "note": "notation: L444 d[X ; μ # Z ; μ''] (notation3 \"d[\" .. => rdist X Y μ μ')",
+     "judge": 3
+    }
+   },
+   "id": "B02"
+  },
+  {
+   "name": "isUniform_sub_const_of_rdist_eq_zero",
+   "project": "pfr",
+   "module": "PFR.HundredPercent",
+   "path": "pfr/PFR/HundredPercent.lean",
+   "line": 117,
+   "end": 141,
+   "candidates": {
+    "ProbabilityTheory.IsUniform": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Uniform",
+     "line": 24,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L118 IsUniform (symmGroup X hX) ... via open ProbabilityTheory",
+     "judge": 3
+    },
+    "mem_symmGroup": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.HundredPercent",
+     "line": 51,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L127 (mem_symmGroup hX).1",
+     "judge": 3
+    },
+    "sub_mem_symmGroup": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.HundredPercent",
+     "line": 65,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L139 sub_mem_symmGroup hX hdist hx hx₀",
+     "judge": 3
+    },
+    "symmGroup": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.HundredPercent",
+     "line": 25,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L118 symmGroup X hX (also L122, L127)",
+     "judge": 3
+    }
+   },
+   "id": "B03"
+  },
+  {
+   "name": "boundary_measure",
+   "project": "carleson",
+   "module": "Carleson.TileExistence",
+   "path": "carleson/Carleson/TileExistence.lean",
+   "line": 1384,
+   "end": 1509,
+   "candidates": {
+    "BallsCoverBalls.mono": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 87,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L1403 volume.mono -> MeasureTheory.OuterMeasure.mono (volume : Measure X, Measure extends OuterMeasure)",
+     "judge": 2
+    },
+    "BallsCoverBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 91,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L1394 htD.trans -> LE.le.trans (htD : _ ≤ _)",
+     "judge": 2
+    },
+    "CoveredByBalls.ball": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 55,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L1411 ball -> Metric.ball (open Metric); CoveredByBalls.ball is protected and its namespace is not open",
+     "judge": 2
+    },
+    "CoveredByBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 65,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L1394 htD.trans -> LE.le.trans; L1430 hxb'.trans_lt -> LE.le.trans_lt",
+     "judge": 2
+    },
+    "I3_prop_3_2": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 448,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1412 apply I3_prop_3_2",
+     "judge": 2
+    },
+    "K'": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 37,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: every K' in B (L1388 ...) is the ShortVariables scoped notation K' => @const_K a; the candidate is a private def in ForestOperator/L2Estimate.lean",
+     "judge": 2
+    },
+    "K_pos": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 912,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1479 K_pos.ne', L1495 (K_pos)",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport.mono": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 270,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L1403 volume.mono -> MeasureTheory.OuterMeasure.mono",
+     "judge": 2
+    },
+    "MeasureTheory.DoublingMeasure.mono": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 173,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L1403 volume.mono -> MeasureTheory.OuterMeasure.mono (receiver is a Measure, not a DoublingMeasure)",
+     "judge": 2
+    },
+    "MeasureTheory.IsDoubling.mono": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Measure.IsDoubling",
+     "line": 77,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L1403 volume.mono -> MeasureTheory.OuterMeasure.mono",
+     "judge": 2
+    },
+    "Yk": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 180,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L1384 (y : Yk X k), L1401 Yk X (k - ...)",
+     "judge": 2
+    },
+    "boundary_sum_eq": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 1171,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1453 rw [boundary_sum_eq hk hconst_n y]",
+     "judge": 2
+    },
+    "const_K": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 905,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L1444 ↑const_K (also every K' notation expands to @const_K a)",
+     "judge": 2
+    },
+    "const_n": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 1291,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L1388 const_n a ht",
+     "judge": 2
+    },
+    "const_n_prop_2": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 1313,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1394 const_n_prop_2 X ht k, L1434",
+     "judge": 2
+    },
+    "const_n_prop_3": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 1330,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1488 const_n_prop_3 X ht",
+     "judge": 2
+    },
+    "cover_by_cubes": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 653,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1408 cover_by_cubes hconst_n hconst_n_k hk y hxi3",
+     "judge": 2
+    },
+    "dyadic_property": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 670,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1415 apply dyadic_property hconst_n hconst_n_k hk y y'",
+     "judge": 2
+    },
+    "k": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Classical.HilbertKernel",
+     "line": 14,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L1384 binder {k : ℤ}",
+     "judge": 2
+    },
+    "kappa_le_log2D_inv_mul_K_inv": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 1349,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1508 kappa_le_log2D_inv_mul_K_inv X",
+     "judge": 2
+    },
+    "one_lt_realD": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 101,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1391 one_lt_realD X (root lemma, DoublingMeasure.lean)",
+     "judge": 2
+    },
+    "realD_nonneg": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 58,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1475 realD_nonneg a",
+     "judge": 2
+    },
+    "realD_pos": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 56,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1419 realD_pos a",
+     "judge": 2
+    },
+    "smaller_boundary": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 1187,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L1454 apply smaller_boundary",
+     "judge": 2
+    }
+   },
+   "id": "B04"
+  },
+  {
+   "name": "Subgraph.Equation2_implies_Equation1689",
+   "project": "equational_theories",
+   "module": "equational_theories.Subgraph",
+   "path": "equational_theories/equational_theories/Subgraph.lean",
+   "line": 87,
+   "end": 90,
+   "candidates": {
+    "Eq1323.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1323",
+     "line": 565,
+     "kind": "inductive",
+     "genuine": false,
+     "note": "local: L87 binder (G: Type*)",
+     "judge": 2
+    },
+    "Eq1516.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 1330,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L87 binder (G: Type*)",
+     "judge": 2
+    },
+    "Eq63.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation63",
+     "line": 19,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L87 binder (G: Type*)",
+     "judge": 2
+    },
+    "FreeMagmaWithLaws.Magma": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Completeness",
+     "line": 78,
+     "kind": "instance",
+     "genuine": false,
+     "note": "namesake: L87 Magma -> class Magma (Magma.lean:10)",
+     "judge": 2
+    },
+    "G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1692",
+     "line": 16,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L87 binder (G: Type*)",
+     "judge": 2
+    },
+    "M.Magma": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Z3GenNonImp",
+     "line": 70,
+     "kind": "instance",
+     "genuine": false,
+     "note": "namesake: L87 Magma -> class Magma (Magma.lean:10)",
+     "judge": 2
+    },
+    "Magma": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.Magma",
+     "line": 10,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L87 [Magma G]",
+     "judge": 2
+    },
+    "Refutation_854.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation854",
+     "line": 12,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L87 binder (G: Type*)",
+     "judge": 2
+    }
+   },
+   "id": "B05"
+  },
+  {
+   "name": "ProbabilityTheory.IdentDistrib.tau_eq",
+   "project": "pfr",
+   "module": "PFR.TauFunctional",
+   "path": "pfr/PFR/TauFunctional.lean",
+   "line": 97,
+   "end": 110,
+   "candidates": {
+    "ProbabilityTheory.IdentDistrib.rdist_congr": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 133,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L106 h₁.rdist_congr h₂, h₁ : IdentDistrib X₁ X₁' μ₁ μ'₁",
+     "judge": 1
+    },
+    "ProbabilityTheory.IdentDistrib.rdist_congr_right": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 144,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L104/L105 h₁.rdist_congr_right, h₂.rdist_congr_right, h₁ h₂ : IdentDistrib",
+     "judge": 1
+    },
+    "is_tau_min": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.TauFunctional",
+     "line": 170,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "outside: only in the docstring at L108-110 of the next def tau_minimizes; B ends at L106",
+     "judge": 1
+    },
+    "tau": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TauFunctional",
+     "line": 68,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L103 simp only [tau]; also L102 τ[.. | p] notation expands to tau",
+     "judge": 1
+    }
+   },
+   "id": "B06"
+  },
+  {
+   "name": "IsDedekindDomain.FiniteAdeleRing.baseChangeAlgEquiv",
+   "project": "FLT",
+   "module": "FLT.DedekindDomain.FiniteAdeleRing.BaseChange",
+   "path": "FLT/FLT/DedekindDomain/FiniteAdeleRing/BaseChange.lean",
+   "line": 256,
+   "end": 261,
+   "candidates": {
+    "Dickson.K": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.KnownIn1980s.PGL2.Defs",
+     "line": 32,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: K (L257-259) is the section variable (A K L B : Type*) at L44",
+     "judge": 4
+    },
+    "IsDedekindDomain.FiniteAdeleRing.baseChange_bijective": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.DedekindDomain.FiniteAdeleRing.BaseChange",
+     "line": 228,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L259 FiniteAdeleRing.baseChange_bijective, resolved inside namespace IsDedekindDomain",
+     "judge": 4
+    },
+    "IsDedekindDomain.FiniteAdeleRing.mapSemialgHom": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.DedekindDomain.FiniteAdeleRing.BaseChange",
+     "line": 82,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L258 FiniteAdeleRing.mapSemialgHom, resolved inside namespace IsDedekindDomain",
+     "judge": 4
+    },
+    "IsDedekindDomain.HeightOneSpectrum.adicCompletion.baseChangeAlgEquiv": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.DedekindDomain.Completion.BaseChange",
+     "line": 778,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: baseChangeAlgEquiv is only B's own name; never referenced in L256-259",
+     "judge": 4
+    },
+    "IsDedekindDomain.HeightOneSpectrum.adicCompletion.baseChange_bijective": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.DedekindDomain.Completion.BaseChange",
+     "line": 770,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L259 FiniteAdeleRing.baseChange_bijective resolves to IsDedekindDomain.FiniteAdeleRing.baseChange_bijective",
+     "judge": 4
+    },
+    "IsIdempotentElem.Corner.algebra": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.HenselianLocalRing.Stuff",
+     "line": 23,
+     "kind": "instance",
+     "genuine": false,
+     "note": "absent: not named in B (at most an instance)",
+     "judge": 4
+    },
+    "NumberField.AdeleRing.baseChangeAlgEquiv": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.NumberField.AdeleRing",
+     "line": 117,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: not named in B",
+     "judge": 4
+    },
+    "NumberField.InfiniteAdeleRing.baseChangeAlgEquiv": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.NumberField.InfiniteAdeleRing",
+     "line": 126,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: not named in B",
+     "judge": 4
+    },
+    "SemialgHom.baseChangeOfAlgebraMap": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Mathlib.Algebra.Algebra.Bilinear",
+     "line": 42,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L258 SemialgHom.baseChangeOfAlgebraMap (root, FLT/Mathlib/Algebra/Algebra/Bilinear.lean:42)",
+     "judge": 4
+    },
+    "UniformSpace.Completion.mapSemialgHom": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.Topology.Algebra.UniformRing",
+     "line": 28,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L258 FiniteAdeleRing.mapSemialgHom resolves to IsDedekindDomain.FiniteAdeleRing.mapSemialgHom",
+     "judge": 4
+    }
+   },
+   "id": "B07"
+  },
+  {
+   "name": "condRuzsaDist_of_sums_ge",
+   "project": "pfr",
+   "module": "PFR.FirstEstimate",
+   "path": "pfr/PFR/FirstEstimate.lean",
+   "line": 93,
+   "end": 102,
+   "candidates": {
+    "condRuzsaDistance_ge_of_min": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TauFunctional",
+     "line": 212,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L97 condRuzsaDistance_ge_of_min (root, TauFunctional.lean:212)",
+     "judge": 4
+    }
+   },
+   "id": "B08"
+  },
+  {
+   "name": "GaloisRepresentation.IsHardlyRamified.three_adic",
+   "project": "FLT",
+   "module": "FLT.GaloisRepresentation.HardlyRamified.Threeadic",
+   "path": "FLT/FLT/GaloisRepresentation/HardlyRamified/Threeadic.lean",
+   "line": 31,
+   "end": 41,
+   "candidates": {
+    "Deformation.ProartinianCat.of": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Deformations.Categories",
+     "line": 93,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "absent: no `of`/ProartinianCat in L31-39",
+     "judge": 4
+    },
+    "GaloisRep": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Deformations.RepresentationTheory.GaloisRep",
+     "line": 49,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L35 {ρ : GaloisRep ℚ R V} (root def)",
+     "judge": 4
+    },
+    "GaloisRep.toLocal": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Deformations.RepresentationTheory.GaloisRep",
+     "line": 313,
+     "kind": "abbrev",
+     "genuine": true,
+     "note": "dot: L39 ρ.toLocal v, ρ : GaloisRep ℚ R V",
+     "judge": 4
+    },
+    "GaloisRepresentation.IsHardlyRamified": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.GaloisRepresentation.HardlyRamified.Defs",
+     "line": 96,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L36 IsHardlyRamified (show Odd 3 by decide) hV ρ, via enclosing namespace GaloisRepresentation",
+     "judge": 4
+    },
+    "IsDedekindDomain.HeightOneSpectrum.Extension.finite": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.DedekindDomain.IntegralClosure",
+     "line": 133,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: only Module.Finite (L31, L34; Mathlib class) appears, no `finite`",
+     "judge": 4
+    },
+    "Module.UniformlyBoundedRank.rank": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Patching.Module",
+     "line": 134,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L35 Module.rank R V is Mathlib's Module.rank",
+     "judge": 4
+    },
+    "Nat.Prime.toHeightOneSpectrumRingOfIntegersRat": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas",
+     "line": 59,
+     "kind": "def",
+     "genuine": true,
+     "note": "dot: L38 hp.toHeightOneSpectrumRingOfIntegersRat, hp : Nat.Prime p",
+     "judge": 4
+    }
+   },
+   "id": "B09"
+  },
+  {
+   "name": "continuous_carlesonOperatorIntegrand",
+   "project": "carleson",
+   "module": "Carleson.MetricCarleson.Basic",
+   "path": "carleson/Carleson/MetricCarleson/Basic.lean",
+   "line": 454,
+   "end": 473,
+   "candidates": {
+    "As": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Measure.IsDoubling",
+     "line": 18,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L464 As (defaultA a) (...); L465 unfold C₁ As",
+     "judge": 3
+    },
+    "BallsCoverBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 91,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L460/L462 hR₁.trans hR₂ is LT.lt.trans (hR₁ : 0 < R₁)",
+     "judge": 3
+    },
+    "CoveredByBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 65,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L460/L462 hR₁.trans hR₂ is LT.lt.trans (hR₁ : 0 < R₁)",
+     "judge": 3
+    },
+    "K": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Classical.HilbertKernel",
+     "line": 33,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L455 K is the section variable {K : X → X → ℂ} (L15)",
+     "judge": 3
+    },
+    "MetricΘ.cdist_le_dist": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.MetricCarleson.Basic",
+     "line": 36,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L470 apply cdist_le_dist via open MetricΘ (L46)",
+     "judge": 3
+    },
+    "Set.Annulus.oo_eq_empty": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.Annulus",
+     "line": 67,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L457 Annulus.oo_eq_empty via open Set",
+     "judge": 3
+    },
+    "Set.EAnnulus.oo_eq_empty": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.Annulus",
+     "line": 404,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L457 Annulus.oo_eq_empty resolves to Set.Annulus.oo_eq_empty",
+     "judge": 3
+    },
+    "carlesonOperatorIntegrand": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Defs",
+     "line": 216,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L455 carlesonOperatorIntegrand K · R₁ R₂ f x; L457 unfold carlesonOperatorIntegrand",
+     "judge": 3
+    },
+    "defaultA": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Defs",
+     "line": 235,
+     "kind": "abbrev",
+     "genuine": true,
+     "note": "direct: L464 defaultA a",
+     "judge": 3
+    },
+    "dist_carlesonOperatorIntegrand_le": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.MetricCarleson.Basic",
+     "line": 446,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L469 dist_carlesonOperatorIntegrand_le mf nf hR₁",
+     "judge": 3
+    },
+    "mf": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Discrete.ForestUnion",
+     "line": 498,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L454 binder (mf : Measurable f), used L469",
+     "judge": 3
+    }
+   },
+   "id": "B10"
+  },
+  {
+   "name": "InfModel.Finite.Equation28770_implies_Equation2",
+   "project": "equational_theories",
+   "module": "equational_theories.InfModel",
+   "path": "equational_theories/equational_theories/InfModel.lean",
+   "line": 116,
+   "end": 135,
+   "candidates": {
+    "Asterix.PartialSolution.g": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Asterix",
+     "line": 27,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L121 let g (x : G) := ..., used L122",
+     "judge": 2
+    },
+    "Eq1323.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1323",
+     "line": 565,
+     "kind": "inductive",
+     "genuine": false,
+     "note": "local: L116 binder (G : Type*)",
+     "judge": 2
+    },
+    "Eq1516.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 1330,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L116 binder (G : Type*)",
+     "judge": 2
+    },
+    "Eq1516.f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 1220,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L120 let f (x : G) := ...",
+     "judge": 2
+    },
+    "Eq1516.x": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 44,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L120 let-binder (x : G); L130 intro x u",
+     "judge": 2
+    },
+    "Eq1518.Greedy.f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1518",
+     "line": 239,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L120 let f",
+     "judge": 2
+    },
+    "Eq1526.Greedy.f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1526",
+     "line": 232,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L120 let f",
+     "judge": 2
+    },
+    "Eq63.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation63",
+     "line": 19,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L116 binder (G : Type*)",
+     "judge": 2
+    },
+    "Eq73.Greedy.f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation73",
+     "line": 222,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L120 let f",
+     "judge": 2
+    },
+    "Eq917.Greedy.f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation917",
+     "line": 235,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L120 let f",
+     "judge": 2
+    },
+    "FreeMagmaWithLaws.Magma": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Completeness",
+     "line": 78,
+     "kind": "instance",
+     "genuine": false,
+     "note": "namesake: L116 Magma -> class Magma (Magma.lean:10)",
+     "judge": 2
+    },
+    "G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1692",
+     "line": 16,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L116 binder (G : Type*)",
+     "judge": 2
+    },
+    "M.Magma": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Z3GenNonImp",
+     "line": 70,
+     "kind": "instance",
+     "genuine": false,
+     "note": "namesake: L116 Magma -> class Magma (Magma.lean:10)",
+     "judge": 2
+    },
+    "Magma": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.Magma",
+     "line": 10,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L116 [Magma G]",
+     "judge": 2
+    },
+    "Refutation_854.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation854",
+     "line": 12,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L116 binder (G : Type*)",
+     "judge": 2
+    },
+    "Subgraph.Eq1689.f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Subgraph",
+     "line": 292,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L120 let f",
+     "judge": 2
+    },
+    "Subgraph.Eq1689.g": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Subgraph",
+     "line": 293,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L121 let g",
+     "judge": 2
+    },
+    "ThreeC2.f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ThreeC2",
+     "line": 324,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L120 let f",
+     "judge": 2
+    },
+    "ThreeC2.g": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ThreeC2",
+     "line": 374,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L121 let g",
+     "judge": 2
+    },
+    "f": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1692",
+     "line": 2076,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L120 let f (uses L122, L129 simp [f, ...])",
+     "judge": 2
+    },
+    "u": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ShefferAlgebra",
+     "line": 93,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L118 ∀ (y z u : G); L130 intro x u",
+     "judge": 2
+    },
+    "z": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ShefferAlgebra",
+     "line": 91,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L118 ∀ (y z u : G); L132 have z := x",
+     "judge": 2
+    }
+   },
+   "id": "B11"
+  },
+  {
+   "name": "Hurwitz.starRing",
+   "project": "FLT",
+   "module": "FLT.Data.Hurwitz",
+   "path": "FLT/FLT/Data/Hurwitz.lean",
+   "line": 377,
+   "end": 382,
+   "candidates": {
+    "GaloisRep.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Deformations.RepresentationTheory.GaloisRep",
+     "line": 63,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L379-L381 ext is the ext tactic (it uses the @[ext] Hurwitz.ext); no identifier names GaloisRep.ext",
+     "judge": 5
+    },
+    "Hurwitz.ring": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.Hurwitz",
+     "line": 326,
+     "kind": "instance",
+     "genuine": false,
+     "note": "implicit: Ring 𝓞 is only found by instance search; ring at L379-L381 is the ring tactic, not an identifier",
+     "judge": 5
+    },
+    "IsDedekindDomain.FiniteAdeleRing.GL2.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.QuaternionAlgebra.NumberField",
+     "line": 604,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L379-L381 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "MulAction.FixedPoints.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.Algebra.FixedPoints.Basic",
+     "line": 57,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L379-L381 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.LevelStruct.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 648,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L379-L381 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 135,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L379-L381 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "ZHat.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 84,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L379-L381 ext is the ext tactic, not an identifier",
+     "judge": 5
+    }
+   },
+   "id": "B12"
+  },
+  {
+   "name": "TileStructure.Forest.adjoint_tree_estimate",
+   "project": "carleson",
+   "module": "Carleson.ForestOperator.AlmostOrthogonality",
+   "path": "carleson/Carleson/ForestOperator/AlmostOrthogonality.lean",
+   "line": 132,
+   "end": 144,
+   "candidates": {
+    "BoundedFiniteSupport.memLp": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedFiniteSupport",
+     "line": 58,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 bcs.memLp -> MeasureTheory.BoundedCompactSupport.memLp (bcs : BoundedCompactSupport _)",
+     "judge": 2
+    },
+    "Function.Periodic.eLpNorm": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Integral.IntervalIntegral.Periodic",
+     "line": 44,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L134 eLpNorm -> MeasureTheory.eLpNorm",
+     "judge": 2
+    },
+    "MeasureTheory.AEStronglyMeasurable.adjointCarlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 267,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L138 hg.adjointCarlesonSum -> MeasureTheory.BoundedCompactSupport.adjointCarlesonSum (hg : BoundedCompactSupport g)",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 81,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L133 BoundedCompactSupport g via open MeasureTheory; also L138",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport.adjointCarlesonSum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 323,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L138 hg.adjointCarlesonSum, hg : BoundedCompactSupport g",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport.memLp": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 133,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L139 bcs.memLp 2 (also L140), bcs : BoundedCompactSupport (adjointCarlesonSum (t u) g)",
+     "judge": 2
+    },
+    "MeasureTheory.HasBoundedStrongType.memLp": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.WeakType",
+     "line": 590,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 bcs.memLp -> MeasureTheory.BoundedCompactSupport.memLp",
+     "judge": 2
+    },
+    "MeasureTheory.HasStrongType.memLp": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.WeakType",
+     "line": 542,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 bcs.memLp -> MeasureTheory.BoundedCompactSupport.memLp",
+     "judge": 2
+    },
+    "MeasureTheory.StronglyMeasurable.adjointCarlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 263,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L138 hg.adjointCarlesonSum -> MeasureTheory.BoundedCompactSupport.adjointCarlesonSum",
+     "judge": 2
+    },
+    "MeasureTheory.eLpNorm_two_eq_enorm_integral_mul_conj": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.Misc",
+     "line": 319,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L140 eLpNorm_two_eq_enorm_integral_mul_conj via open MeasureTheory",
+     "judge": 2
+    },
+    "MemLorentz.memLp": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Function.LorentzSeminorm.Basic",
+     "line": 656,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 bcs.memLp -> MeasureTheory.BoundedCompactSupport.memLp",
+     "judge": 2
+    },
+    "TileStructure.Forest.adjoint_density_tree_bound1": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.AlmostOrthogonality",
+     "line": 125,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L143 adjoint_density_tree_bound1 (inside namespace TileStructure.Forest)",
+     "judge": 2
+    },
+    "adjointCarlesonSum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 215,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L134 adjointCarlesonSum (t u) g",
+     "judge": 2
+    },
+    "dens₁": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 343,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L135 dens₁ (t u)",
+     "judge": 2
+    },
+    "g": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.TwoSidedCarleson.WeakCalderonZygmund",
+     "line": 1283,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L133 g is the section variable {g : X → ℂ}",
+     "judge": 2
+    }
+   },
+   "id": "B13"
+  },
+  {
+   "name": "ProbabilityTheory.chain_rule",
+   "project": "pfr",
+   "module": "PFR.ForMathlib.Entropy.Basic",
+   "path": "pfr/PFR/ForMathlib/Entropy/Basic.lean",
+   "line": 574,
+   "end": 579,
+   "candidates": {
+    "FiniteRange": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.FiniteRange.Defs",
+     "line": 8,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L575 [FiniteRange X] [FiniteRange Y] (root class)",
+     "judge": 4
+    },
+    "ProbabilityTheory.Kernel.chain_rule": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.Basic",
+     "line": 324,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: B writes only chain_rule' (L577); chain_rule is just B's own name",
+     "judge": 4
+    },
+    "ProbabilityTheory.Kernel.chain_rule'": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.Basic",
+     "line": 333,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L577 chain_rule' resolves to ProbabilityTheory.chain_rule' (Kernel not open)",
+     "judge": 4
+    },
+    "ProbabilityTheory.chain_rule'": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 547,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L577 rw [.., chain_rule' μ hY hX], namespace ProbabilityTheory",
+     "judge": 4
+    },
+    "ProbabilityTheory.entropy_comm": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 338,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L577 rw [entropy_comm hX hY, ..], namespace ProbabilityTheory",
+     "judge": 4
+    }
+   },
+   "id": "B14"
+  },
+  {
+   "name": "enorm_Ks_sub_Ks_le",
+   "project": "carleson",
+   "module": "Carleson.Psi",
+   "path": "carleson/Carleson/Psi.lean",
+   "line": 820,
+   "end": 831,
+   "candidates": {
+    "CoveredByBalls.ball": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 55,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L822 ball -> Metric.ball (open Metric); CoveredByBalls.ball is protected",
+     "judge": 2
+    },
+    "D2_1_3": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Psi",
+     "line": 390,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L822 D2_1_3 a",
+     "judge": 2
+    },
+    "Ks": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Psi",
+     "line": 329,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L821 Ks s x y, L823",
+     "judge": 2
+    },
+    "enorm_Ks_sub_Ks_le_of_nonzero": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Psi",
+     "line": 812,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L825 enorm_Ks_sub_Ks_le_of_nonzero hy, L827",
+     "judge": 2
+    }
+   },
+   "id": "B15"
+  },
+  {
+   "name": "ZHat.nontrivial",
+   "project": "FLT",
+   "module": "FLT.Data.QHat",
+   "path": "FLT/FLT/Data/QHat.lean",
+   "line": 103,
+   "end": 105,
+   "candidates": {
+    "ZHat": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 41,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L103 Nontrivial ZHat",
+     "judge": 3
+    },
+    "ZHat.zeroNeOne": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 97,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L103 zeroNeOne inside namespace ZHat",
+     "judge": 3
+    }
+   },
+   "id": "B16"
+  },
+  {
+   "name": "TileStructure.Forest.local_dens2_tree_bound",
+   "project": "carleson",
+   "module": "Carleson.ForestOperator.QuantativeEstimate",
+   "path": "carleson/Carleson/ForestOperator/QuantativeEstimate.lean",
+   "line": 215,
+   "end": 274,
+   "candidates": {
+    "BallsCoverBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 91,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: every .trans in B (L220, 249, 250, 257, 260, 265) is Eq.trans / LE.le.trans / HasSubset.Subset.trans",
+     "judge": 4
+    },
+    "CoveredByBalls.ball": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 55,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: `ball` (L229 etc.) is Metric.ball via open Metric; CoveredByBalls.ball is protected",
+     "judge": 4
+    },
+    "CoveredByBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 65,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .trans receivers are equalities, ≤ and ⊆ facts (Eq/LE.le/Subset.trans)",
+     "judge": 4
+    },
+    "Grid.c_mem_Grid": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 178,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L234 J.c_mem_Grid, J : Grid X",
+     "judge": 4
+    },
+    "Grid.eq_topCube_of_S_eq_zero": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 193,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L220 (𝓘 p).eq_topCube_of_S_eq_zero S0, 𝓘 p : Grid X",
+     "judge": 4
+    },
+    "Grid.exists_scale_succ": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 324,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L223 J.exists_scale_succ, J : Grid X",
+     "judge": 4
+    },
+    "Grid.nonempty": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 182,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L218/L219 t.nonempty hu resolves to TileStructure.Forest.nonempty (t : Forest X n)",
+     "judge": 4
+    },
+    "Grid.scale_lt_scale_topCube": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 188,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L223 J.scale_lt_scale_topCube J_top, J : Grid X",
+     "judge": 4
+    },
+    "Lemma6_1_3.p": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Antichain.Basic",
+     "line": 259,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: p is bound by have ⟨p, hpu⟩ (L218) / obtain ⟨p, hpu, hp⟩ (L227), also a section variable",
+     "judge": 4
+    },
+    "MeasureTheory.measure_ball_two_le_same_iterate": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Measure.IsDoubling",
+     "line": 84,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L243 apply measure_ball_two_le_same_iterate, via open MeasureTheory",
+     "judge": 4
+    },
+    "TileStructure.Forest.S_eq_zero_of_topCube_mem_": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 66,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L219 S_eq_zero_of_topCube_mem_𝓙₀ (the decl at PointwiseEstimate.lean:66), namespace TileStructure.Forest",
+     "judge": 4
+    },
+    "TileStructure.Forest.adjoint_tree_estimate": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.AlmostOrthogonality",
+     "line": 132,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "outside: only in the L270 docstring of the next decl C7_3_1_1; B ends at L268",
+     "judge": 4
+    },
+    "TileStructure.Forest.c": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 277,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: candidate is c𝓑 (PointwiseEstimate.lean:277), never written; `c J`/`c J'` (L229, 231, 253...) is root c (GridStructure.lean:61)",
+     "judge": 4
+    },
+    "TileStructure.Forest.density_tree_bound1": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.QuantativeEstimate",
+     "line": 460,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "outside: only in the L270 docstring of the next decl C7_3_1_1",
+     "judge": 4
+    },
+    "TileStructure.Forest.le_C7_3_3_exponent": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.QuantativeEstimate",
+     "line": 181,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L268 le_C7_3_3_exponent (four_le_a X) 10 .., private lemma in same namespace",
+     "judge": 4
+    },
+    "TileStructure.Forest.local_dens2_tree_bound_aux": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.QuantativeEstimate",
+     "line": 186,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L260 apply local_dens2_tree_bound_aux hpu ..",
+     "judge": 4
+    },
+    "TileStructure.Forest.local_dens2_tree_bound_aux'": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.QuantativeEstimate",
+     "line": 199,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L221, L249 local_dens2_tree_bound_aux' hpu ..",
+     "judge": 4
+    },
+    "TileStructure.Forest.nonempty": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Forest",
+     "line": 49,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L218/L219 t.nonempty hu, t : Forest X n",
+     "judge": 4
+    },
+    "URel.rfl": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Discrete.ForestUnion",
+     "line": 147,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L247/L259 rfl is the root rfl",
+     "judge": 4
+    },
+    "defaultA": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Defs",
+     "line": 235,
+     "kind": "abbrev",
+     "genuine": true,
+     "note": "direct: L241 (defaultA a), L246 simp_rw [defaultA, ..]",
+     "judge": 4
+    },
+    "defaultD": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 39,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L240 rw [pow_add, defaultD, ← pow_mul]; also via ShortVariables notation D => defaultD a",
+     "judge": 4
+    },
+    "dens₂": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 365,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L216 dens₂ (t u)",
+     "judge": 4
+    },
+    "one_le_realD": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 60,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L259 one_le_realD _",
+     "judge": 4
+    },
+    "one_lt_realD": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 101,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L239 nlinarith [one_lt_realD X]",
+     "judge": 4
+    },
+    "realD_pos": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 56,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L228 have d0 := realD_pos a",
+     "judge": 4
+    }
+   },
+   "id": "B17"
+  },
+  {
+   "name": "KLDiv",
+   "project": "pfr",
+   "module": "PFR.Kullback",
+   "path": "pfr/PFR/Kullback.lean",
+   "line": 35,
+   "end": 42,
+   "candidates": {
+    "ProbabilityTheory.Kernel.AEFiniteKernelSupport.map": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 738,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L37 μ.map X / μ'.map Y is MeasureTheory.Measure.map (μ : Measure Ω)",
+     "judge": 3
+    },
+    "ProbabilityTheory.Kernel.FiniteKernelSupport.map": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 719,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L37 μ.map X / μ'.map Y is MeasureTheory.Measure.map (μ : Measure Ω)",
+     "judge": 3
+    }
+   },
+   "id": "B18"
+  },
+  {
+   "name": "rdist_of_sums_ge'",
+   "project": "pfr",
+   "module": "PFR.SecondEstimate",
+   "path": "pfr/PFR/SecondEstimate.lean",
+   "line": 62,
+   "end": 74,
+   "candidates": {
+    "ProbabilityTheory.IdentDistrib.entropy_congr": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 77,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L68/L70 h₁.entropy_congr, h₂.entropy_congr, h₁ h₂ : IdentDistrib (section variables)",
+     "judge": 1
+    },
+    "ProbabilityTheory.IdentDistrib.rdist_congr": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 133,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L69/L71 (IdentDistrib.refl hX₁.aemeasurable).rdist_congr h₁, receiver : IdentDistrib",
+     "judge": 1
+    },
+    "ProbabilityTheory.Kernel.entropy_congr": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.Basic",
+     "line": 49,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L68/L70 .entropy_congr on h₁ : IdentDistrib resolves to ProbabilityTheory.IdentDistrib.entropy_congr",
+     "judge": 1
+    },
+    "ProbabilityTheory.entropy_congr": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 70,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L68/L70 .entropy_congr on h₁ : IdentDistrib resolves to ProbabilityTheory.IdentDistrib.entropy_congr",
+     "judge": 1
+    },
+    "condRuzsaDist_diff_le'": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 1404,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L66/L67 condRuzsaDist_diff_le' ℙ p.hmeas1 ...",
+     "judge": 1
+    },
+    "distance_ge_of_min": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TauFunctional",
+     "line": 186,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L63 distance_ge_of_min p h_min ...",
+     "judge": 1
+    },
+    "hmeas2": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Endgame",
+     "line": 80,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L67 p.hmeas2 is the structure field refPackage.hmeas2 (p : refPackage); the private Endgame lemma is not named",
+     "judge": 1
+    }
+   },
+   "id": "B19"
+  },
+  {
+   "name": "Θ.finite_and_mk_le_of_le_dist",
+   "project": "carleson",
+   "module": "Carleson.ProofData",
+   "path": "carleson/Carleson/ProofData.lean",
+   "line": 207,
+   "end": 248,
+   "candidates": {
+    "AllBallsCoverBalls.mk": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 110,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: no AllBallsCoverBalls/.mk written in L207-247",
+     "judge": 1
+    },
+    "BallsCoverBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 91,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L220 h𝓩.trans u𝓩', h𝓩 : 𝓩 ⊆ ball_{..} .., so HasSubset.Subset.trans",
+     "judge": 1
+    },
+    "C2_1_1": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ProofData",
+     "line": 204,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L210 C2_1_1 k a; L247 rw [C2_1_1, ..]",
+     "judge": 1
+    },
+    "ChoiceScale.d": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Misc",
+     "line": 161,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L211 (d := R) is a named-argument label of ballsCoverBalls_iterate_nat, not a reference",
+     "judge": 1
+    },
+    "CoveredByBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 65,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L220 h𝓩.trans on a set inclusion is HasSubset.Subset.trans",
+     "judge": 1
+    },
+    "TileStructure.Forest.c": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 277,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: c only as binders (L216 fun c, L220 obtain ⟨c, hc⟩, L222 use c) and the local c𝓩'; c𝓑 is not named",
+     "judge": 1
+    },
+    "TileStructure.Forest.r": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 280,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: r is the binder {r R : ℝ} at L207; r𝓑 is not named",
+     "judge": 1
+    },
+    "WithFunctionDistance": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Defs",
+     "line": 137,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L217 mem_ball_comm (α := WithFunctionDistance x₀ R); also via the ball_{x₀, R} notation at L208/L209/L214",
+     "judge": 1
+    },
+    "ball_": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 87,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L208/L209/L214 ball_{x₀, R} is the DoublingMeasure notation for @ball (WithFunctionDistance x₀ R) _ (Metric.ball); lemma ball_𝓘 is not named",
+     "judge": 1
+    },
+    "ballsCoverBalls_iterate_nat": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 533,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L211 ballsCoverBalls_iterate_nat (x := x₀) (n := k) ...",
+     "judge": 1
+    },
+    "d": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.TwoSidedCarleson.WeakCalderonZygmund",
+     "line": 1250,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L211 (d := R) is a named-argument label; the private WeakCalderonZygmund def d is not named",
+     "judge": 1
+    },
+    "g": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.TwoSidedCarleson.WeakCalderonZygmund",
+     "line": 1283,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L214 let g : Θ X → Finset (Θ X); every later g is this local",
+     "judge": 1
+    },
+    "k": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Classical.HilbertKernel",
+     "line": 14,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: k is the binder {k : ℕ} at L207",
+     "judge": 1
+    }
+   },
+   "id": "B20"
+  },
+  {
+   "name": "multiTau_continuous",
+   "project": "pfr",
+   "module": "PFR.MultiTauFunctional",
+   "path": "pfr/PFR/MultiTauFunctional.lean",
+   "line": 96,
+   "end": 120,
+   "candidates": {
+    "FiniteRange.mul": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.FiniteRange.Defs",
+     "line": 69,
+     "kind": "instance",
+     "genuine": false,
+     "note": "namesake: L108/L113 Continuous.mul is Mathlib's Continuous.mul",
+     "judge": 3
+    },
+    "Mathlib.Tactic.RPowRing.ExBase.id": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Tactic.RPowSimp",
+     "line": 52,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L99 (fun _ ↦ id) is core id",
+     "judge": 3
+    },
+    "MeasurableFinGroup": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.MultiTauFunctional",
+     "line": 25,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L96 [MeasurableFinGroup G]",
+     "judge": 3
+    },
+    "ProbabilityTheory.IdentDistrib.mul": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.IdentDistrib",
+     "line": 164,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L108/L113 Continuous.mul is Mathlib's Continuous.mul",
+     "judge": 3
+    },
+    "ProbabilityTheory.IsUniform.comp": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Uniform",
+     "line": 68,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L106/L107/L111/L117 .comp on Continuous terms is Continuous.comp",
+     "judge": 3
+    },
+    "ProbabilityTheory.Kernel.AEFiniteKernelSupport.map": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 738,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L105 ProbabilityMeasure.map is MeasureTheory.ProbabilityMeasure.map; L100 Measure.map_id",
+     "judge": 3
+    },
+    "ProbabilityTheory.Kernel.FiniteKernelSupport.map": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 719,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L105 ProbabilityMeasure.map is MeasureTheory.ProbabilityMeasure.map; L100 Measure.map_id",
+     "judge": 3
+    },
+    "ProbabilityTheory.iIndepFun.pi": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Independence.Basic",
+     "line": 226,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L105 ProbabilityMeasure.pi is MeasureTheory.ProbabilityMeasure.pi",
+     "judge": 3
+    },
+    "Submodule.Quotient.finite": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.LinearAlgebra.Quotient.Basic",
+     "line": 7,
+     "kind": "instance",
+     "genuine": false,
+     "note": "absent: not named in B",
+     "judge": 3
+    },
+    "continuous_entropy_restrict_probabilityMeasure": {
+     "new": true,
+     "pilot": false,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 54,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L111 continuous_entropy_restrict_probabilityMeasure.comp",
+     "judge": 3
+    },
+    "continuous_measureEntropy_probabilityMeasure": {
+     "new": true,
+     "pilot": false,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 42,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L106 continuous_measureEntropy_probabilityMeasure.comp",
+     "judge": 3
+    },
+    "continuous_rdist_restrict_probabilityMeasure₁_left": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 247,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L117 continuous_rdist_restrict_probabilityMeasure₁_left p.X₀ volume p.hmeas",
+     "judge": 3
+    },
+    "multiDist": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.MoreRuzsaDist",
+     "line": 890,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L100 simp only [multiTau, multiDist, Measure.map_id]",
+     "judge": 3
+    },
+    "multiRefPackage": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.MultiTauFunctional",
+     "line": 35,
+     "kind": "structure",
+     "genuine": true,
+     "note": "direct: L97 (p : multiRefPackage G Ω₀)",
+     "judge": 3
+    },
+    "multiTau": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.MultiTauFunctional",
+     "line": 52,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L99 multiTau p ...; L100 simp only [multiTau, ...]",
+     "judge": 3
+    },
+    "tau": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.TauFunctional",
+     "line": 68,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: only multiTau is written; no τ notation in B",
+     "judge": 3
+    }
+   },
+   "id": "B21"
+  },
+  {
+   "name": "Tile.correlation",
+   "project": "carleson",
+   "module": "Carleson.Antichain.TileCorrelation",
+   "path": "carleson/Carleson/Antichain/TileCorrelation.lean",
+   "line": 38,
+   "end": 40,
+   "candidates": {
+    "Ks": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Psi",
+     "line": 329,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L38 conj (Ks s₁ x₁ y) * Ks s₂ x₂ y (root def from Psi.lean; Tile.Ks does not exist)",
+     "judge": 5
+    },
+    "MeasureTheory.BoundedCompactSupport.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 244,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L38 conj is the ComplexConjugate notation (starRingEnd _)",
+     "judge": 5
+    },
+    "_root_.MeasureTheory.Integrable.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Function.L1Integrable",
+     "line": 18,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L38 conj is the ComplexConjugate notation (starRingEnd _)",
+     "judge": 5
+    }
+   },
+   "id": "B22"
+  },
+  {
+   "name": "Eq1729.not_817",
+   "project": "equational_theories",
+   "module": "equational_theories.ManuallyProved.Equation1729",
+   "path": "equational_theories/equational_theories/ManuallyProved/Equation1729.lean",
+   "line": 15,
+   "end": 45,
+   "candidates": {
+    "Asterix.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Asterix",
+     "line": 16,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1112.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq1112",
+     "line": 637,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1113.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq1113",
+     "line": 547,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq118.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq118",
+     "line": 2441,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq124.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq124",
+     "line": 715,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1323.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1323",
+     "line": 565,
+     "kind": "inductive",
+     "genuine": false,
+     "note": "local: L15 `∃ (G: Type)` binder G",
+     "judge": 3
+    },
+    "Eq1323.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1323",
+     "line": 521,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1323.b": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1323",
+     "line": 620,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L32 intro sol b / L33 match b with",
+     "judge": 3
+    },
+    "Eq1516.ExtensionTask.s": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 225,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L17 fun s => match s with",
+     "judge": 3
+    },
+    "Eq1516.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 1330,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L15 `∃ (G: Type)` binder G",
+     "judge": 3
+    },
+    "Eq1516.GreedyAC.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 1874,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1516.GreedyB.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 1415,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1516.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 126,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1516.x": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1516",
+     "line": 44,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: x is a pattern/intro variable (L18 Sum.inl x, L26 intro x, L34, ...)",
+     "judge": 3
+    },
+    "Eq1648.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq1648",
+     "line": 222,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq1729.N": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.SmallMagma",
+     "line": 139,
+     "kind": "abbrev",
+     "genuine": true,
+     "note": "scope: L16 N ⊕ N ⊕ (N × N) inside namespace Eq1729",
+     "judge": 3
+    },
+    "Eq1729.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.MagmaConstruction",
+     "line": 12,
+     "kind": "class",
+     "genuine": true,
+     "note": "scope: L17 Set PartialSolution inside namespace Eq1729",
+     "judge": 3
+    },
+    "Eq1729.TrivialPartialSolution": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.MagmaConstruction",
+     "line": 56,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L21 exists_greedy_chain task ?_ TrivialPartialSolution; L25",
+     "judge": 3
+    },
+    "Eq1729.enlarge_L₀'": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.MagmaConstruction",
+     "line": 513,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L36 enlarge_L₀' sol x inside namespace Eq1729",
+     "judge": 3
+    },
+    "Eq1729.enlarge_S'": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.MagmaConstruction",
+     "line": 2043,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L40 enlarge_S' sol x inside namespace Eq1729",
+     "judge": 3
+    },
+    "Eq1729.enlarge_op": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.MagmaConstruction",
+     "line": 2054,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L43 enlarge_op sol x y inside namespace Eq1729",
+     "judge": 3
+    },
+    "Eq1729.fill": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.SmallMagma",
+     "line": 491,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L18 fill sol.Predom_L₀' inside namespace Eq1729",
+     "judge": 3
+    },
+    "Eq1729.use_chain": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1729.MagmaConstruction",
+     "line": 135,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L23 use_chain hchain inside namespace Eq1729",
+     "judge": 3
+    },
+    "Eq476.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq476",
+     "line": 831,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq503.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq503",
+     "line": 687,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq511.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq511",
+     "line": 2484,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq63.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation63",
+     "line": 19,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L15 `∃ (G: Type)` binder G",
+     "judge": 3
+    },
+    "Eq63.Greedy.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation63",
+     "line": 48,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq677.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq677",
+     "line": 522,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq707.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq707",
+     "line": 358,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq883.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq883",
+     "line": 464,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Eq906.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Greedy.Eq906",
+     "line": 538,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "FreeMagmaWithLaws.Magma": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Completeness",
+     "line": 78,
+     "kind": "instance",
+     "genuine": false,
+     "note": "namesake: L15 Magma G is the class Magma",
+     "judge": 3
+    },
+    "G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1692",
+     "line": 16,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L15 `∃ (G: Type)` binder G",
+     "judge": 3
+    },
+    "M.Magma": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Generated.Z3GenNonImp",
+     "line": 70,
+     "kind": "instance",
+     "genuine": false,
+     "note": "namesake: L15 Magma G is the class Magma",
+     "judge": 3
+    },
+    "Magma": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.Magma",
+     "line": 10,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L15 (_: Magma G)",
+     "judge": 3
+    },
+    "Obelix.PartialSolution": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.Obelix",
+     "line": 37,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L17 `Set PartialSolution` inside namespace Eq1729 resolves to Eq1729.PartialSolution",
+     "judge": 3
+    },
+    "Refutation_854.G": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation854",
+     "line": 12,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L15 `∃ (G: Type)` binder G",
+     "judge": 3
+    },
+    "exists_greedy_chain": {
+     "new": true,
+     "pilot": true,
+     "module": "equational_theories.Mathlib.Order.Greedy",
+     "line": 8,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L21 exists_greedy_chain task ?_ TrivialPartialSolution",
+     "judge": 3
+    },
+    "not_817": {
+     "new": false,
+     "pilot": true,
+     "module": "equational_theories.ManuallyProved.Equation1518",
+     "line": 315,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: root not_817 (Equation1518) never referenced; L15 declares Eq1729.not_817 itself",
+     "judge": 3
+    }
+   },
+   "id": "B23"
+  },
+  {
+   "name": "ConNF.StrSet",
+   "project": "con-nf",
+   "module": "ConNF.Levels.StrSet",
+   "path": "con-nf/ConNF/Levels/StrSet.lean",
+   "line": 22,
+   "end": 28,
+   "candidates": {
+    "ConNF.Atom": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Base.Atom",
+     "line": 31,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L23 | ⊥ => Atom inside namespace ConNF",
+     "judge": 1
+    },
+    "ConNF.TypeIndex": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Base.TypeIndex",
+     "line": 32,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L22 TypeIndex → Type u and L24 (β : TypeIndex) inside namespace ConNF",
+     "judge": 1
+    }
+   },
+   "id": "B24"
+  },
+  {
+   "name": "Hurwitz.left_ideal_princ",
+   "project": "FLT",
+   "module": "FLT.Data.Hurwitz",
+   "path": "FLT/FLT/Data/Hurwitz.lean",
+   "line": 565,
+   "end": 600,
+   "candidates": {
+    "AbstractHeckeOperator.comm": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.HeckeOperators.Abstract",
+     "line": 257,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L568 rw [Eq.comm] is core Eq.comm; L589 add_comm is Mathlib's root add_comm",
+     "judge": 5
+    },
+    "Hurwitz": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Data.Hurwitz",
+     "line": 29,
+     "kind": "structure",
+     "genuine": true,
+     "note": "notation: L565 (I : Submodule 𝓞 𝓞), ∃ a : 𝓞; L570 {a : 𝓞 // ...}; notation \"𝓞\" => Hurwitz",
+     "judge": 5
+    },
+    "Hurwitz.norm": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.Hurwitz",
+     "line": 406,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L574 fun i : S ↦ norm i and L579 norm a = ⨅ i : S, norm i; inside namespace Hurwitz, norm resolves to Hurwitz.norm before root Norm.norm",
+     "judge": 5
+    },
+    "Hurwitz.norm_nonneg": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.Hurwitz",
+     "line": 435,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L578 exact norm_nonneg _ resolves to Hurwitz.norm_nonneg through the namespace (the file writes _root_.norm_nonneg elsewhere when it wants Mathlib's)",
+     "judge": 5
+    },
+    "Hurwitz.quot_rem": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.Hurwitz",
+     "line": 541,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L586 obtain ⟨q, r, hqr⟩ := quot_rem i a a.2.2",
+     "judge": 5
+    },
+    "InverseLimit.lift": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Deformations.Algebra.InverseLimit.Basic",
+     "line": 446,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L593 lift r to S using ⟨hrI, hr⟩ is the lift tactic, not an identifier",
+     "judge": 5
+    },
+    "IsDirectLimit.Module.lift": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.Algebra.IsDirectLimit",
+     "line": 135,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L593 lift r to S using ... is the lift tactic",
+     "judge": 5
+    },
+    "IsDirectLimit.lift": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.Algebra.IsDirectLimit",
+     "line": 74,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L593 lift r to S using ... is the lift tactic",
+     "judge": 5
+    },
+    "PatchingAlgebra.lift": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Patching.Algebra",
+     "line": 217,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L593 lift r to S using ... is the lift tactic",
+     "judge": 5
+    },
+    "TensorProduct.RightActions.Algebra.TensorProduct.comm": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Hacks.RightActionInstances",
+     "line": 111,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L568 Eq.comm (core) and L589 add_comm (Mathlib root); no TensorProduct.comm in B",
+     "judge": 5
+    },
+    "TensorProduct.RightActions.Module.TensorProduct.comm": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Hacks.RightActionInstances",
+     "line": 124,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L568 Eq.comm (core) and L589 add_comm (Mathlib root); no TensorProduct.comm in B",
+     "judge": 5
+    },
+    "TwoSidedIdeal.mem_span_singleton": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Patching.Utils.Lemmas",
+     "line": 130,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L584 rw [Submodule.mem_span_singleton] is Mathlib's Submodule.mem_span_singleton",
+     "judge": 5
+    },
+    "TwoSidedIdeal.span_singleton_eq_bot": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.RingTheory.SimpleRing.TensorProduct",
+     "line": 55,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L569 Submodule.span_singleton_eq_bot is Mathlib's Submodule lemma",
+     "judge": 5
+    },
+    "WeierstrassCurve.q": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.KnownIn1980s.EllipticCurves.TateCurve",
+     "line": 212,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: q is bound by obtain ⟨q, r, hqr⟩ (L586), used at L589/L596",
+     "judge": 5
+    }
+   },
+   "id": "B25"
+  },
+  {
+   "name": "TileStructure.Forest.tree_projection_estimate",
+   "project": "carleson",
+   "module": "Carleson.ForestOperator.L2Estimate",
+   "path": "carleson/Carleson/ForestOperator/L2Estimate.lean",
+   "line": 874,
+   "end": 941,
+   "candidates": {
+    "Function.Periodic.eLpNorm": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Integral.IntervalIntegral.Periodic",
+     "line": 44,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: eLpNorm (L877, 932, 936...) is MeasureTheory.eLpNorm; Function.Periodic not open",
+     "judge": 4
+    },
+    "Lemma6_1_3.p": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Antichain.Basic",
+     "line": 259,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: p bound in ⋃ p ∈ t u (L885), ∃ p ∈ t u / have ⟨p, hp⟩ (L896)",
+     "judge": 4
+    },
+    "MeasureTheory.BoundedCompactSupport": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 81,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L875 (hf : BoundedCompactSupport f) (hg : ..), via open MeasureTheory",
+     "judge": 4
+    },
+    "MeasureTheory.BoundedCompactSupport.aestronglyMeasurable": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 97,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L905/L918 hg.restrict.aestronglyMeasurable, hg.restrict : BoundedCompactSupport g _",
+     "judge": 4
+    },
+    "MeasureTheory.BoundedCompactSupport.carlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 164,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: carlesonSum (L876 etc.) is root carlesonSum; no .carlesonSum dot in B",
+     "judge": 4
+    },
+    "MeasureTheory.BoundedCompactSupport.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 244,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: conj (L876, 883, 884) is the ComplexConjugate notation (starRingEnd)",
+     "judge": 4
+    },
+    "MeasureTheory.BoundedCompactSupport.enorm": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 157,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L905/L918 .enorm is on an AEStronglyMeasurable receiver -> MeasureTheory.AEStronglyMeasurable.enorm",
+     "judge": 4
+    },
+    "MeasureTheory.BoundedCompactSupport.mul_const": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 263,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L905 .mul_const is on AEMeasurable (from AEStronglyMeasurable.enorm) -> AEMeasurable.mul_const",
+     "judge": 4
+    },
+    "MeasureTheory.BoundedCompactSupport.restrict": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 121,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L905/L918 hg.restrict, hg : BoundedCompactSupport g",
+     "judge": 4
+    },
+    "TileStructure.Forest": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Forest",
+     "line": 21,
+     "kind": "structure",
+     "genuine": false,
+     "note": "absent: Forest not written in B; t : Forest X n is a section variable (L140)",
+     "judge": 4
+    },
+    "TileStructure.Forest.aeMeasurable_cS_bound": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 789,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L935 aeMeasurable_cS_bound",
+     "judge": 4
+    },
+    "TileStructure.Forest.approxOnCube": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 108,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L877, L878, L880 approxOnCube",
+     "judge": 4
+    },
+    "TileStructure.Forest.approxOnCube_nonneg": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 124,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L882 approxOnCube_nonneg (fun _ ↦ norm_nonneg _)",
+     "judge": 4
+    },
+    "TileStructure.Forest.approxOnCube_ofReal": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 187,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L920 simp_rw [.., approxOnCube_ofReal, ..]",
+     "judge": 4
+    },
+    "TileStructure.Forest.boundedCompactSupport_eI": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 773,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L910 boundedCompactSupport_eI𝒬u_mul u hf (decl at L2Estimate.lean:773)",
+     "judge": 4
+    },
+    "TileStructure.Forest.cS_bound": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 784,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L903, L913 simp only [cS_bound, ..], L922-937 cS_bound t u f",
+     "judge": 4
+    },
+    "TileStructure.Forest.eI": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 771,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L912 simp_rw [mul_neg, eI𝒬u_mul, ..] (decl eI𝒬u_mul at L2Estimate.lean:771)",
+     "judge": 4
+    },
+    "TileStructure.Forest.eLpNorm_two_cS_bound_le": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 828,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L939 mul_left_mono eLpNorm_two_cS_bound_le",
+     "judge": 4
+    },
+    "TileStructure.Forest.lintegral_eq_lintegral_approxOnCube": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 158,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L919 rw [lintegral_eq_lintegral_approxOnCube ..]",
+     "judge": 4
+    },
+    "TileStructure.Forest.norm_eI": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 779,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L913 norm_eI𝒬u_mul_eq u f (decl at L2Estimate.lean:779)",
+     "judge": 4
+    },
+    "TileStructure.Forest.pointwise_tree_estimate": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 1088,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L910 pointwise_tree_estimate hu hL hx hx' ..",
+     "judge": 4
+    },
+    "TileStructure.Forest.stronglyMeasurable_approxOnCube": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 111,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L917, L934 stronglyMeasurable_approxOnCube _ _",
+     "judge": 4
+    },
+    "URel.rfl": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Discrete.ForestUnion",
+     "line": 147,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L915 Finset.sum_congr rfl uses root rfl",
+     "judge": 4
+    },
+    "_root_.MeasureTheory.AEStronglyMeasurable.carlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 70,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: carlesonSum (L876 etc.) is root carlesonSum; no .carlesonSum on an AEStronglyMeasurable",
+     "judge": 4
+    },
+    "_root_.MeasureTheory.Integrable.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Function.L1Integrable",
+     "line": 18,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: conj (L876 etc.) is the ComplexConjugate notation (starRingEnd); no .conj dot",
+     "judge": 4
+    },
+    "carlesonSum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 54,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L876 carlesonSum (t u) f x (root def), also L883-925",
+     "judge": 4
+    },
+    "g": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.TwoSidedCarleson.WeakCalderonZygmund",
+     "line": 1283,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: g is the section variable {g : X → ℂ} (L141), e.g. L875 hg : BoundedCompactSupport g",
+     "judge": 4
+    },
+    "support_carlesonSum_subset": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 81,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L892 (hx <| support_carlesonSum_subset ·)",
+     "judge": 4
+    }
+   },
+   "id": "B26"
+  },
+  {
+   "name": "rdist_def",
+   "project": "pfr",
+   "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+   "path": "pfr/PFR/ForMathlib/Entropy/RuzsaDist.lean",
+   "line": 76,
+   "end": 80,
+   "candidates": {
+    "ProbabilityTheory.Kernel.AEFiniteKernelSupport.map": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 738,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L78 μ.map X -> MeasureTheory.Measure.map (μ : Measure Ω)",
+     "judge": 2
+    },
+    "ProbabilityTheory.Kernel.AEFiniteKernelSupport.prod": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 861,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L78 (μ.map X).prod -> MeasureTheory.Measure.prod",
+     "judge": 2
+    },
+    "ProbabilityTheory.Kernel.FiniteKernelSupport.map": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 719,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L78 μ.map X -> MeasureTheory.Measure.map",
+     "judge": 2
+    },
+    "ProbabilityTheory.Kernel.FiniteKernelSupport.prod": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 846,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L78 (μ.map X).prod -> MeasureTheory.Measure.prod",
+     "judge": 2
+    },
+    "ProbabilityTheory.iIndepFun.prod": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Independence.Basic",
+     "line": 293,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L78 .prod on a Measure -> MeasureTheory.Measure.prod",
+     "judge": 2
+    },
+    "prod": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Pair",
+     "line": 9,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "namesake: L78 (μ.map X).prod is dot notation -> MeasureTheory.Measure.prod, not the root abbrev prod (Pair.lean)",
+     "judge": 2
+    }
+   },
+   "id": "B27"
+  },
+  {
+   "name": "condRho_le",
+   "project": "pfr",
+   "module": "PFR.RhoFunctional",
+   "path": "pfr/PFR/RhoFunctional.lean",
+   "line": 986,
+   "end": 993,
+   "candidates": {
+    "condRhoMinus_le": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 932,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L991 condRhoMinus_le hX hZ hA (μ := μ)",
+     "judge": 1
+    },
+    "condRhoPlus_le": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 960,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L991 condRhoPlus_le hX hZ hA (μ := μ)",
+     "judge": 1
+    },
+    "condRho_eq": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 978,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L990 rw [condRho_eq, rho]",
+     "judge": 1
+    },
+    "rho": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 652,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L990 rw [condRho_eq, rho]; also L989 ρ[X ; μ # A] notation expands to rho",
+     "judge": 1
+    }
+   },
+   "id": "B28"
+  },
+  {
+   "name": "ZHat.torsionfree",
+   "project": "FLT",
+   "module": "FLT.Data.QHat",
+   "path": "FLT/FLT/Data/QHat.lean",
+   "line": 248,
+   "end": 253,
+   "candidates": {
+    "LinearEquiv.coe_mulLeft": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.Algebra.Algebra.Bilinear",
+     "line": 137,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L249/L251 AddMonoidHom.coe_mulLeft is the Mathlib lemma, not LinearEquiv.coe_mulLeft",
+     "judge": 5
+    },
+    "ZHat": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 41,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L248 fun z : ZHat ↦ N * z (no ZHat.ZHat, so it resolves to the root def)",
+     "judge": 5
+    },
+    "ZHat.eq_zero_of_mul_eq_zero": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 234,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L252 exact eq_zero_of_mul_eq_zero N a ha, inside namespace ZHat",
+     "judge": 5
+    }
+   },
+   "id": "B29"
+  },
+  {
+   "name": "TileStructure.Forest.correlation_near_tree_parts",
+   "project": "carleson",
+   "module": "Carleson.ForestOperator.RemainingTiles",
+   "path": "carleson/Carleson/ForestOperator/RemainingTiles.lean",
+   "line": 819,
+   "end": 865,
+   "candidates": {
+    "BoundedFiniteSupport.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedFiniteSupport",
+     "line": 74,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L843/L848/L854 hf₁.indicator and L842/L847 hf₂.adjointCarlesonSum.indicator have receivers of type BoundedCompactSupport, so they resolve to MeasureTheory.BoundedCompactSupport.indicator",
+     "judge": 5
+    },
+    "Function.Periodic.eLpNorm": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Integral.IntervalIntegral.Periodic",
+     "line": 44,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L823/L824/L844/L846/L850/L851 eLpNorm is MeasureTheory.eLpNorm (Mathlib); open Function would only expose Periodic.eLpNorm, and B never writes that",
+     "judge": 5
+    },
+    "MeasureTheory.AEStronglyMeasurable.adjointCarlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 267,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L842/L847 hf₂.adjointCarlesonSum, hf₂ : BoundedCompactSupport f₂, resolves to MeasureTheory.BoundedCompactSupport.adjointCarlesonSum",
+     "judge": 5
+    },
+    "MeasureTheory.AESubadditiveOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 175,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .indicator on BoundedCompactSupport resolves to BoundedCompactSupport.indicator; U.indicator is Set.indicator",
+     "judge": 5
+    },
+    "MeasureTheory.AESublinearOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 323,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .indicator on BoundedCompactSupport resolves to BoundedCompactSupport.indicator; U.indicator is Set.indicator",
+     "judge": 5
+    },
+    "MeasureTheory.BoundedCompactSupport": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 81,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L820 (hf₁ : BoundedCompactSupport f₁) (hf₂ : BoundedCompactSupport f₂), via open MeasureTheory",
+     "judge": 5
+    },
+    "MeasureTheory.BoundedCompactSupport.adjointCarlesonSum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 323,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L842/L847 hf₂.adjointCarlesonSum, hf₂ : BoundedCompactSupport f₂",
+     "judge": 5
+    },
+    "MeasureTheory.BoundedCompactSupport.carlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 164,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L841 carlesonSum is the root def carlesonSum; B has no .carlesonSum on a BoundedCompactSupport receiver",
+     "judge": 5
+    },
+    "MeasureTheory.BoundedCompactSupport.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 244,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: conj (L821/L827/L832/L835/L838/L840) is the ComplexConjugate notation conj (starRingEnd _); B has no hf.conj",
+     "judge": 5
+    },
+    "MeasureTheory.BoundedCompactSupport.indicator": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 394,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L843/L848/L854 hf₁.indicator coeGrid_measurable, hf₁ : BoundedCompactSupport f₁; L842/L847 hf₂.adjointCarlesonSum.indicator (protected theorem, reachable by dot notation)",
+     "judge": 5
+    },
+    "MeasureTheory.StronglyMeasurable.adjointCarlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 263,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L842/L847 hf₂.adjointCarlesonSum resolves to MeasureTheory.BoundedCompactSupport.adjointCarlesonSum",
+     "judge": 5
+    },
+    "MeasureTheory.SubadditiveOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 99,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .indicator on BoundedCompactSupport resolves to BoundedCompactSupport.indicator; U.indicator is Set.indicator",
+     "judge": 5
+    },
+    "MeasureTheory.SublinearOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 231,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .indicator on BoundedCompactSupport resolves to BoundedCompactSupport.indicator; U.indicator is Set.indicator",
+     "judge": 5
+    },
+    "Set.conj_indicator": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.Misc",
+     "line": 507,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L838 rw [..., conj_indicator, ...] via open Set (no namesake in other namespaces or in Mathlib)",
+     "judge": 5
+    },
+    "Set.indicator_eq_indicator_one_mul": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.Misc",
+     "line": 503,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L838/L839 indicator_eq_indicator_one_mul via open Set",
+     "judge": 5
+    },
+    "TileStructure.Forest": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Forest",
+     "line": 21,
+     "kind": "structure",
+     "genuine": false,
+     "note": "outside: Forest is only named in the section variable {t : Forest X n} (L11); B never writes Forest, it only applies t (coercion)",
+     "judge": 5
+    },
+    "TileStructure.Forest.adjointBoundaryOperator": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.AlmostOrthogonality",
+     "line": 25,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L823/L824 adjointBoundaryOperator t u₁ f₁, L860 simp only [..., adjointBoundaryOperator], inside namespace TileStructure.Forest",
+     "judge": 5
+    },
+    "TileStructure.Forest.adjoint_tile_support2_sum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.AlmostOrthogonality",
+     "line": 63,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L834 rw [adjoint_tile_support2_sum hu₁]",
+     "judge": 5
+    },
+    "TileStructure.Forest.approxOnCube": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 108,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L844 approxOnCube (𝓙 (t u₁)) ..., L846 approxOnCube (𝓛 (t u₁)) ...",
+     "judge": 5
+    },
+    "TileStructure.Forest.bound_for_tree_projection": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.RemainingTiles",
+     "line": 768,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L853 exact bound_for_tree_projection hu₁ hu₂ hu h2u hf₂",
+     "judge": 5
+    },
+    "TileStructure.Forest.c": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 277,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L850 c𝓑 in maximalFunction volume 𝓑 c𝓑 r𝓑 1 f₂ resolves to TileStructure.Forest.c𝓑, the def at PointwiseEstimate.lean:277 (the candidate name is that def's name cut off at 𝓑)",
+     "judge": 5
+    },
+    "TileStructure.Forest.cntp_approxOnCube_eq": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.RemainingTiles",
+     "line": 774,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L852 rw [cntp_approxOnCube_eq hu₁]",
+     "judge": 5
+    },
+    "TileStructure.Forest.eLpNorm_approxOnCube_two_le_self": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.QuantativeEstimate",
+     "line": 384,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L854 exact eLpNorm_approxOnCube_two_le_self (hf₁.indicator ...) pairwiseDisjoint_𝓛",
+     "judge": 5
+    },
+    "TileStructure.Forest.r": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 280,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L850 r𝓑 in maximalFunction volume 𝓑 c𝓑 r𝓑 1 f₂ resolves to TileStructure.Forest.r𝓑, the def at PointwiseEstimate.lean:280 (the candidate name is that def's name cut off at 𝓑)",
+     "judge": 5
+    },
+    "TileStructure.Forest.tree_projection_estimate": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.L2Estimate",
+     "line": 874,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L847 tree_projection_estimate (hf₂.adjointCarlesonSum.indicator ...) (hf₁.indicator ...) hu₁",
+     "judge": 5
+    },
+    "_root_.MeasureTheory.AEStronglyMeasurable.carlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 70,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L841 carlesonSum is the root def carlesonSum; B has no .carlesonSum on an AEStronglyMeasurable receiver",
+     "judge": 5
+    },
+    "_root_.MeasureTheory.Integrable.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Function.L1Integrable",
+     "line": 18,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: conj in B is the ComplexConjugate notation (starRingEnd _); B has no h.conj on an Integrable receiver",
+     "judge": 5
+    },
+    "adjointCarlesonSum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 215,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L821/L827/L832/L835/L841/L845 adjointCarlesonSum (t u₁) ...; root def, no TileStructure(.Forest).adjointCarlesonSum exists",
+     "judge": 5
+    },
+    "adjointCarlesonSum_adjoint": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 406,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L842 rw [← adjointCarlesonSum_adjoint ...] (root lemma, Operators.lean:406)",
+     "judge": 5
+    },
+    "carlesonSum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 54,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L841 carlesonSum (t u₁) (U.indicator ...) x (root def)",
+     "judge": 5
+    }
+   },
+   "id": "B30"
+  },
+  {
+   "name": "approx_hom_pfr'",
+   "project": "pfr",
+   "module": "PFR.ApproxHomPFR",
+   "path": "pfr/PFR/ApproxHomPFR.lean",
+   "line": 287,
+   "end": 312,
+   "candidates": {
+    "approx_hom_pfr": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ApproxHomPFR",
+     "line": 37,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L290 approx_hom_pfr f K hK hf",
+     "judge": 3
+    },
+    "card_of_slice": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ApproxHomPFR",
+     "line": 248,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L292 card_of_slice A",
+     "judge": 3
+    }
+   },
+   "id": "B31"
+  },
+  {
+   "name": "ZHat.multiples",
+   "project": "FLT",
+   "module": "FLT.Data.QHat",
+   "path": "FLT/FLT/Data/QHat.lean",
+   "line": 283,
+   "end": 311,
+   "candidates": {
+    "Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq'.": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.HenselianLocalRing.EtaleDecomposition",
+     "line": 109,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: not named in B",
+     "judge": 4
+    },
+    "Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux.": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.HenselianLocalRing.EtaleDecomposition",
+     "line": 25,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: not named in B",
+     "judge": 4
+    },
+    "FreyCurve.j": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.FreyCurve.Basic",
+     "line": 145,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "local: j bound by fun j (L291), intro j k hjk (L293), ext j (L307)",
+     "judge": 4
+    },
+    "GaloisRep.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Deformations.RepresentationTheory.GaloisRep",
+     "line": 63,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: L307 `ext j` is the ext tactic (uses @[ext] ZHat.ext implicitly), not a name",
+     "judge": 4
+    },
+    "InverseLimit.prop": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Deformations.Algebra.InverseLimit.Basic",
+     "line": 41,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L294/295/298 z.prop with z : ZHat resolves to ZHat.prop",
+     "judge": 4
+    },
+    "IsDedekindDomain.FiniteAdeleRing.GL2.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.QuaternionAlgebra.NumberField",
+     "line": 604,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: not named in B (L307 is the ext tactic)",
+     "judge": 4
+    },
+    "IsDedekindDomain.FiniteAdeleRing.prop": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing",
+     "line": 32,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: z.prop with z : ZHat resolves to ZHat.prop",
+     "judge": 4
+    },
+    "MulAction.FixedPoints.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.Algebra.FixedPoints.Basic",
+     "line": 57,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: not named in B (L307 is the ext tactic)",
+     "judge": 4
+    },
+    "Polynomial.IsSplittingField.finrank_le_factorial_aux.": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.FieldTheory.SplittingField.IsSplittingField",
+     "line": 16,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: not named in B",
+     "judge": 4
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.LevelStruct.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 648,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: not named in B (L307 is the ext tactic)",
+     "judge": 4
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 135,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: not named in B (L307 is the ext tactic)",
+     "judge": 4
+    },
+    "ZHat": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 41,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L283 (z : ZHat), (y : ZHat); L290 let y : ZHat",
+     "judge": 4
+    },
+    "ZHat.ext": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 84,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "implicit: only used by the ext tactic at L307 via its @[ext] attribute; never named",
+     "judge": 4
+    },
+    "ZHat.prop": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 81,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L294, L295, L298 z.prop .., z : ZHat",
+     "judge": 4
+    },
+    "ZHat.y_mul_N_eq_z": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 272,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L308 exact y_mul_N_eq_z N z h j, namespace ZHat",
+     "judge": 4
+    }
+   },
+   "id": "B32"
+  },
+  {
+   "name": "ConNF.Atom",
+   "project": "con-nf",
+   "module": "ConNF.Base.Atom",
+   "path": "con-nf/ConNF/Base/Atom.lean",
+   "line": 31,
+   "end": 45,
+   "candidates": {
+    "ConNF.BaseApprox.Total.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 536,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "absent: B is L31-33 (fields litter : Litter, index : κ); 'atoms' only in docstrings",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 177,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: B is L31-33 (fields litter : Litter, index : κ); 'atoms' only in docstrings",
+     "judge": 1
+    },
+    "ConNF.ExtensionalSet.Preference.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.NewTSet",
+     "line": 62,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: B is L31-33 (fields litter : Litter, index : κ); 'atoms' only in docstrings",
+     "judge": 1
+    },
+    "ConNF.Litter": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Base.Litter",
+     "line": 23,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L32 litter : Litter inside namespace ConNF",
+     "judge": 1
+    },
+    "ConNF.Params.inaccessible.": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Base.Params",
+     "line": 119,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L33 κ is the exported class field Params.κ; Params.inaccessible is not named",
+     "judge": 1
+    },
+    "ConNF.SuperA": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Base.Litter",
+     "line": 70,
+     "kind": "class",
+     "genuine": false,
+     "note": "outside: L41 instance : SuperA Litter (Set Atom) is a separate command after B (ends L33)",
+     "judge": 1
+    },
+    "ConNF.SuperL": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Base.Litter",
+     "line": 65,
+     "kind": "class",
+     "genuine": false,
+     "note": "outside: L36 instance : SuperL Atom Litter is a separate command after B (ends L33)",
+     "judge": 1
+    },
+    "ConNF.Tangle.set": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.Basic.Hypotheses",
+     "line": 84,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: not named in L31-33",
+     "judge": 1
+    },
+    "ConNF.membership": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.External.Basic",
+     "line": 237,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: not named in L31-33",
+     "judge": 1
+    }
+   },
+   "id": "B33"
+  },
+  {
+   "name": "rhoMinus_of_subgroup",
+   "project": "pfr",
+   "module": "PFR.RhoFunctional",
+   "path": "pfr/PFR/RhoFunctional.lean",
+   "line": 631,
+   "end": 642,
+   "candidates": {
+    "ProbabilityTheory.IsUniform": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Uniform",
+     "line": 24,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L632 IsUniform H U μ via open ProbabilityTheory",
+     "judge": 3
+    },
+    "Submodule.Quotient.finite": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.LinearAlgebra.Quotient.Basic",
+     "line": 7,
+     "kind": "instance",
+     "genuine": false,
+     "note": "absent: not named in B",
+     "judge": 3
+    },
+    "exists_card_inter_add_eq_sSup": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 439,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L636 exists_card_inter_add_eq_sSup (A := A) H hA",
+     "judge": 3
+    },
+    "hU": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Endgame",
+     "line": 157,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "local: L632 binder (hU : Measurable U), used L635/L639",
+     "judge": 3
+    },
+    "le_rhoMinus_of_subgroup": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 454,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L635 le_rhoMinus_of_subgroup hunif hA hU (private, same file)",
+     "judge": 3
+    },
+    "rho": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 652,
+     "kind": "def",
+     "genuine": false,
+     "note": "absent: L633 ρ⁻[U ; μ # A] is notation for rhoMinus, not rho (rho declared later, L652)",
+     "judge": 3
+    },
+    "rhoMinus_le_of_subgroup": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.RhoFunctional",
+     "line": 547,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L639 rhoMinus_le_of_subgroup t hunif hA .of_subtype hU (private, same file)",
+     "judge": 3
+    }
+   },
+   "id": "B34"
+  },
+  {
+   "name": "ProbabilityTheory.entropy_pair_eq_add",
+   "project": "pfr",
+   "module": "PFR.ForMathlib.Entropy.Basic",
+   "path": "pfr/PFR/ForMathlib/Entropy/Basic.lean",
+   "line": 769,
+   "end": 776,
+   "candidates": {
+    "FiniteRange": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.FiniteRange.Defs",
+     "line": 8,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L770 [FiniteRange X] [FiniteRange Y]",
+     "judge": 3
+    },
+    "ProbabilityTheory.mutualInfo_eq_zero": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 744,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L772 mutualInfo_eq_zero hX hY inside namespace ProbabilityTheory",
+     "judge": 3
+    }
+   },
+   "id": "B35"
+  },
+  {
+   "name": "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.distribMulAction",
+   "project": "FLT",
+   "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+   "path": "FLT/FLT/AutomorphicForm/QuaternionAlgebra/Basic.lean",
+   "line": 265,
+   "end": 270,
+   "candidates": {
+    "FiniteAdeleRing.Aux.g": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.HaarMeasure.HaarChar.FiniteAdeleRing",
+     "line": 160,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: g is the field binder in smul_zero g (L268) and smul_add g φ ψ (L269)",
+     "judge": 5
+    },
+    "GaloisRep.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Deformations.RepresentationTheory.GaloisRep",
+     "line": 63,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L268/L269 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "IsDedekindDomain.FiniteAdeleRing.GL2.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.QuaternionAlgebra.NumberField",
+     "line": 604,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L268/L269 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "MulAction.FixedPoints.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Mathlib.Algebra.FixedPoints.Basic",
+     "line": 57,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L268/L269 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "NumberField.AdeleRing.DivisionAlgebra.Aux.D": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.DivisionAlgebra.Finiteness",
+     "line": 180,
+     "kind": "abbrev",
+     "genuine": false,
+     "note": "local: L266 D in WeightTwoAutomorphicForm F D R is the section variable (D : Type*) (L75); the candidate (abbrev D𝔸Iso) is not named",
+     "judge": 5
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 109,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L266 (WeightTwoAutomorphicForm F D R), resolved through the namespace TotallyDefiniteQuaternionAlgebra",
+     "judge": 5
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.LevelStruct.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 648,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L268/L269 ext is the ext tactic, not an identifier",
+     "judge": 5
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.ext": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 135,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "implicit: the ext tactic at L268/L269 applies this @[ext] lemma through the attribute; it is never named",
+     "judge": 5
+    },
+    "TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm.mulAction": {
+     "new": true,
+     "pilot": true,
+     "module": "FLT.AutomorphicForm.QuaternionAlgebra.Basic",
+     "line": 259,
+     "kind": "instance",
+     "genuine": true,
+     "note": "scope: L267 __ := mulAction, inside namespace TotallyDefiniteQuaternionAlgebra.WeightTwoAutomorphicForm",
+     "judge": 5
+    },
+    "ZHat.ext": {
+     "new": false,
+     "pilot": true,
+     "module": "FLT.Data.QHat",
+     "line": 84,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L268/L269 ext is the ext tactic, not an identifier",
+     "judge": 5
+    }
+   },
+   "id": "B36"
+  },
+  {
+   "name": "ProbabilityTheory.condMutual_comp_comp_le",
+   "project": "pfr",
+   "module": "PFR.ForMathlib.Entropy.Basic",
+   "path": "pfr/PFR/ForMathlib/Entropy/Basic.lean",
+   "line": 1167,
+   "end": 1199,
+   "candidates": {
+    "FiniteRange": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.FiniteRange.Defs",
+     "line": 8,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L1169 [FiniteRange X] [FiniteRange Y] [FiniteRange Z] (root class)",
+     "judge": 5
+    },
+    "ProbabilityTheory.Kernel.chain_rule": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.Basic",
+     "line": 324,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "outside: chain_rule only appears at L1197, in the separate example after end ProbabilityTheory / end dataProcessing; B ends at L1181",
+     "judge": 5
+    },
+    "ProbabilityTheory.chain_rule": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 574,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "outside: chain_rule _ hX hY is at L1197 in a separate example in section MeasureSpace_example; B ends at L1181",
+     "judge": 5
+    },
+    "ProbabilityTheory.condMutualInfo_eq_sum": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 891,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L1171 rw [condMutualInfo_eq_sum hZ, condMutualInfo_eq_sum hZ], inside namespace ProbabilityTheory",
+     "judge": 5
+    },
+    "ProbabilityTheory.mutual_comp_comp_le": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 1155,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L1181 apply mutual_comp_comp_le _ hX hY f g hg",
+     "judge": 5
+    }
+   },
+   "id": "B37"
+  },
+  {
+   "name": "cover_big_ball",
+   "project": "carleson",
+   "module": "Carleson.TileExistence",
+   "path": "carleson/Carleson/TileExistence.lean",
+   "line": 197,
+   "end": 229,
+   "candidates": {
+    "CoveredByBalls.ball": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 55,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: ball (L197, L199, ..) is Metric.ball via open Metric; CoveredByBalls.ball is protected and its namespace is not open",
+     "judge": 1
+    },
+    "Yk": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 180,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L197 Yk X k (also L199, L203, L207)",
+     "judge": 1
+    },
+    "Yk_maximal": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 188,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L209 apply Yk_maximal",
+     "judge": 1
+    },
+    "Yk_pairwise": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 182,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L213 use Yk_pairwise k",
+     "judge": 1
+    },
+    "Yk_subset": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 185,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L211 use Yk_subset k",
+     "judge": 1
+    },
+    "k": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Classical.HilbertKernel",
+     "line": 14,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: k is the binder (k : ℤ) at L197",
+     "judge": 1
+    },
+    "o_mem_Yk_S": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 194,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L219 exact o_mem_Yk_S",
+     "judge": 1
+    },
+    "realD_pos": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 56,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L206 realD_pos a",
+     "judge": 1
+    }
+   },
+   "id": "B38"
+  },
+  {
+   "name": "forest_inner",
+   "project": "carleson",
+   "module": "Carleson.Discrete.ForestUnion",
+   "path": "carleson/Carleson/Discrete/ForestUnion.lean",
+   "line": 433,
+   "end": 484,
+   "candidates": {
+    "Antichain.p₆": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Antichain.AntichainTileCount",
+     "line": 925,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L444 obtain ⟨p₆, ...⟩ := hp (used L448, L459)",
+     "judge": 3
+    },
+    "BallsCoverBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 91,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: the .trans uses (L435, L440, L441, L449, L454, L461, L469) are HasSubset.Subset.trans / LE.le.trans / EquivalenceOn.trans",
+     "judge": 3
+    },
+    "C5_3_3_le": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 263,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L440 C5_3_3_le (X := X)",
+     "judge": 3
+    },
+    "CoveredByBalls.ball": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 55,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L434/L469 ball is Metric.ball (open Metric); CoveredByBalls.ball is protected and its namespace not open",
+     "judge": 3
+    },
+    "CoveredByBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 65,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: the .trans uses (L435, L440, L441, L449, L454, L461, L469) are HasSubset.Subset.trans / LE.le.trans / EquivalenceOn.trans",
+     "judge": 3
+    },
+    "Grid.c_mem_Grid": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 178,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L469 Grid.c_mem_Grid",
+     "judge": 3
+    },
+    "Grid.exists_sandwiched": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 307,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L454 Grid.exists_sandwiched",
+     "judge": 3
+    },
+    "Grid.lt_def": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 202,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L451 Grid.lt_def.mp qlu; L466 rw [Grid.lt_def, ...]",
+     "judge": 3
+    },
+    "Lemma6_1_3.p": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Antichain.Basic",
+     "line": 259,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: p is the section variable {p ... : 𝔓 X} (L19)",
+     "judge": 3
+    },
+    "Set.maxLayer_subset": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MinLayer",
+     "line": 62,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L438 maxLayer_subset mq via open Set",
+     "judge": 3
+    },
+    "T.smul": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.HardyLittlewood",
+     "line": 83,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L440 smul resolves to root smul (TileStructure.lean:171)",
+     "judge": 3
+    },
+    "TileStructure.Forest.c": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.PointwiseEstimate",
+     "line": 277,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L469 c (𝓘 p) / c I resolve to root c : Grid X → X (GridStructure.lean:60); TileStructure.Forest not open (the decl there is c𝓑)",
+     "judge": 3
+    },
+    "URel": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Discrete.ForestUnion",
+     "line": 144,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L445 URel k n j u' u''; L449",
+     "judge": 3
+    },
+    "URel.eq": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Discrete.ForestUnion",
+     "line": 196,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L450 URel.eq (𝔘₃_subset_𝔘₂ hu) hu'' ru''",
+     "judge": 3
+    },
+    "equivalenceOn_urel": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.Discrete.ForestUnion",
+     "line": 235,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L449 equivalenceOn_urel.trans",
+     "judge": 3
+    },
+    "exists_le_add_scale_of_mem_layersBelow": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.MinLayerTiles",
+     "line": 46,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L437 exists_le_add_scale_of_mem_layersBelow p₄",
+     "judge": 3
+    },
+    "four_le_realD": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 99,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L474 four_le_realD X",
+     "judge": 3
+    },
+    "k": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Classical.HilbertKernel",
+     "line": 14,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: k is the section variable {k n j l : ℕ} (L19), e.g. L433 𝔘₃ k n j",
+     "judge": 3
+    },
+    "one_le_realD": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 60,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L480 one_le_realD a",
+     "judge": 3
+    },
+    "realD_pos": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.DoublingMeasure",
+     "line": 56,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L477 (realD_pos _).ne'",
+     "judge": 3
+    },
+    "smul": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 171,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L440 smul 2 p (also L441, L442); Set.smul is protected",
+     "judge": 3
+    },
+    "smul_mono": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 225,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L442 smul_mono s2' le_rfl (by norm_num)",
+     "judge": 3
+    },
+    "wiggle_order_11_10": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 270,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L440 wiggle_order_11_10 lq (...)",
+     "judge": 3
+    }
+   },
+   "id": "B39"
+  },
+  {
+   "name": "ConNF.Support",
+   "project": "con-nf",
+   "module": "ConNF.ModelData.Support",
+   "path": "con-nf/ConNF/ModelData/Support.lean",
+   "line": 178,
+   "end": 192,
+   "candidates": {
+    "ConNF.Atom": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Base.Atom",
+     "line": 31,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L179 Enumeration (α ↝ ⊥ × Atom), namespace ConNF",
+     "judge": 4
+    },
+    "ConNF.BaseApprox.Total.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 536,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L179 `atoms` is the field being declared (ConNF.Support.atoms), not a reference",
+     "judge": 4
+    },
+    "ConNF.BaseApprox.Total.nearLitters": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 541,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L180 `nearLitters` is the field being declared (ConNF.Support.nearLitters)",
+     "judge": 4
+    },
+    "ConNF.BaseApprox.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 177,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L179 `atoms` is the field being declared (ConNF.Support.atoms); L187 use is outside B",
+     "judge": 4
+    },
+    "ConNF.BaseApprox.nearLitters": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 297,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L180 `nearLitters` is the field being declared; L190 use is outside B",
+     "judge": 4
+    },
+    "ConNF.Enumeration": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.ModelData.Enumeration",
+     "line": 23,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L179, L180 Enumeration (..), namespace ConNF",
+     "judge": 4
+    },
+    "ConNF.ExtensionalSet.Preference.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.NewTSet",
+     "line": 62,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L179 `atoms` is the field being declared (ConNF.Support.atoms)",
+     "judge": 4
+    },
+    "ConNF.NearLitter": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Base.NearLitter",
+     "line": 28,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L180 Enumeration (α ↝ ⊥ × NearLitter), namespace ConNF",
+     "judge": 4
+    },
+    "ConNF.SuperA": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Base.Litter",
+     "line": 70,
+     "kind": "class",
+     "genuine": false,
+     "note": "outside: L186 instance : SuperA (Support α) .. is after B ends at L180",
+     "judge": 4
+    },
+    "ConNF.SuperN": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Base.Litter",
+     "line": 75,
+     "kind": "class",
+     "genuine": false,
+     "note": "outside: L189 instance : SuperN (Support α) .. is after B ends at L180",
+     "judge": 4
+    },
+    "ConNF.TypeIndex": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Base.TypeIndex",
+     "line": 32,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L178 (α : TypeIndex), namespace ConNF",
+     "judge": 4
+    }
+   },
+   "id": "B40"
+  },
+  {
+   "name": "construct_good_improved'",
+   "project": "pfr",
+   "module": "PFR.ImprovedPFR",
+   "path": "pfr/PFR/ImprovedPFR.lean",
+   "line": 378,
+   "end": 407,
+   "candidates": {
+    "ProbabilityTheory.mutualInfo_comm": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 820,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L386/L387/L388 mutualInfo_comm hT₂ hT₁ _, via open ProbabilityTheory",
+     "judge": 5
+    },
+    "construct_good_prelim'": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ImprovedPFR",
+     "line": 323,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L389/L391/L393/L395/L397/L399 construct_good_prelim' h_min ...",
+     "judge": 5
+    }
+   },
+   "id": "B41"
+  },
+  {
+   "name": "ConNF.StrAction.approximates_of_flexApprox_exactlyApproximates",
+   "project": "con-nf",
+   "module": "ConNF.FOA.StrActionFOA",
+   "path": "con-nf/ConNF/FOA/StrActionFOA.lean",
+   "line": 28,
+   "end": 74,
+   "candidates": {
+    "ConNF.Atom.pos_litter_lt_pos": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Position.BasePositions",
+     "line": 48,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L67 N₁.pos_litter_lt_pos with N₁ : NearLitter resolves to ConNF.NearLitter.pos_litter_lt_pos",
+     "judge": 1
+    },
+    "ConNF.BaseAction.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.StrAction",
+     "line": 51,
+     "kind": "structure",
+     "genuine": false,
+     "note": "implicit: the goal after intro A comes from unfolding StrAction.Approximates; constructor (L32) uses it without naming it",
+     "judge": 1
+    },
+    "ConNF.BaseAction.flexApprox": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.FlexApprox",
+     "line": 383,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L29/L70/L72 ξ.flexApprox with ξ : StrAction β resolves to ConNF.StrAction.flexApprox",
+     "judge": 1
+    },
+    "ConNF.BaseAction.flexApprox_flexApprox": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.FlexApprox",
+     "line": 392,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L34/L41/L57/L68 (ξ A).flexApprox_flexApprox, ξ A : BaseAction",
+     "judge": 1
+    },
+    "ConNF.BaseAction.smul_nearLitter_of_smul_litter": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.FlexApprox",
+     "line": 53,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L40 apply BaseAction.smul_nearLitter_of_smul_litter (namespace ConNF)",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 627,
+     "kind": "structure",
+     "genuine": false,
+     "note": "implicit: L35/L59/L73 (hρ A).atoms/.nearLitters are its projections reached via toApproximates; the structure itself is not named",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.ExactlyApproximates": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 647,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L29 ξ.flexApprox.ExactlyApproximates has receiver : StrApprox β, so ConNF.StrApprox.ExactlyApproximates; the BaseApprox one only arises by unfolding",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.Total.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 536,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L35/L59 (hρ A).atoms, hρ A : BaseApprox.ExactlyApproximates .., is the inherited field BaseApprox.Approximates.atoms",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.Total.nearLitters": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 541,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L73 (hρ A).nearLitters is the inherited field BaseApprox.Approximates.nearLitters",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 177,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L35/L59 (hρ A).atoms, hρ A : BaseApprox.ExactlyApproximates .., is the inherited field BaseApprox.Approximates.atoms, not the def BaseApprox.atoms",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.litters_permutative": {
+     "new": true,
+     "pilot": false,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 51,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L72 (ξ.flexApprox A).litters_permutative, ξ.flexApprox A : BaseApprox",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.mem_dom_nearLitters": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 307,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L70 (ξ.flexApprox A).mem_dom_nearLitters, receiver : BaseApprox fills the implicit ψ",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.nearLitters": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.BaseApprox",
+     "line": 297,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L73 (hρ A).nearLitters is the inherited field BaseApprox.Approximates.nearLitters, not the def BaseApprox.nearLitters",
+     "judge": 1
+    },
+    "ConNF.BaseApprox.symm": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.Approx.BaseApprox",
+     "line": 75,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: .symm on equations (L50 smul_eq_of_coherentAt_inflexible .., L73 congr_arg ..) is Eq.symm; L37 symm is the tactic",
+     "judge": 1
+    },
+    "ConNF.BaseLAction.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.LAction.BaseLAction",
+     "line": 68,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L30 ξ.Approximates with ξ : StrAction β resolves to ConNF.StrAction.Approximates",
+     "judge": 1
+    },
+    "ConNF.BaseLAction.refine": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.LAction.ToApprox",
+     "line": 34,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L49 refine is the tactic",
+     "judge": 1
+    },
+    "ConNF.BaseNLAction.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.NLAction.BaseNLAction",
+     "line": 64,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L30 ξ.Approximates with ξ : StrAction β resolves to ConNF.StrAction.Approximates",
+     "judge": 1
+    },
+    "ConNF.BaseSupport.Subsupport.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.ModelData.Support",
+     "line": 508,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L64/L65 (pos_nearLitter_lt_pos ..).trans, (pos_fuzz ..).trans are LT.lt.trans",
+     "judge": 1
+    },
+    "ConNF.Equiv.rfl": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.CodeEquiv",
+     "line": 216,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L46 rfl is the tactic",
+     "judge": 1
+    },
+    "ConNF.Equiv.symm": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.CodeEquiv",
+     "line": 221,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .symm on equations (L50 smul_eq_of_coherentAt_inflexible .., L73 congr_arg ..) is Eq.symm; L37 symm is the tactic",
+     "judge": 1
+    },
+    "ConNF.Equiv.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.CodeEquiv",
+     "line": 254,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L64/L65 (pos_nearLitter_lt_pos ..).trans, (pos_fuzz ..).trans are LT.lt.trans",
+     "judge": 1
+    },
+    "ConNF.ExtensionalSet.Preference.atoms": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.NewTSet",
+     "line": 62,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L35/L59 (hρ A).atoms, hρ A : BaseApprox.ExactlyApproximates .., is the inherited field BaseApprox.Approximates.atoms",
+     "judge": 1
+    },
+    "ConNF.ExtensionalSet.intro": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.NewTSet",
+     "line": 273,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: intro (L31, L33, L36, L53, L55, L60) is the tactic",
+     "judge": 1
+    },
+    "ConNF.IsNear.symm": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.BaseType.Small",
+     "line": 124,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .symm on equations (L50 smul_eq_of_coherentAt_inflexible .., L73 congr_arg ..) is Eq.symm; L37 symm is the tactic",
+     "judge": 1
+    },
+    "ConNF.IsNear.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.BaseType.Small",
+     "line": 134,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L64/L65 (pos_nearLitter_lt_pos ..).trans, (pos_fuzz ..).trans are LT.lt.trans",
+     "judge": 1
+    },
+    "ConNF.MainInduction.FOA.smul_fuzz": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Model.FOA",
+     "line": 105,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L47 smul_fuzz resolves to ConNF.CoherentData.smul_fuzz (exported into ConNF)",
+     "judge": 1
+    },
+    "ConNF.MainInduction.smul_fuzz": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Model.MainInduction",
+     "line": 1629,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L47 smul_fuzz resolves to ConNF.CoherentData.smul_fuzz (exported into ConNF)",
+     "judge": 1
+    },
+    "ConNF.ModelData.TSet.Orbit.mk": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Counting.Twist",
+     "line": 21,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L48/L49/L69 BaseAction.litters.mk is the constructor ConNF.BaseAction.litters.mk",
+     "judge": 1
+    },
+    "ConNF.ModelData.TSet.induction": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Model.Basic",
+     "line": 179,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: L38 induction is the tactic",
+     "judge": 1
+    },
+    "ConNF.ModelData.TSet.mk": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Model.Basic",
+     "line": 64,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L48/L49/L69 BaseAction.litters.mk is the constructor ConNF.BaseAction.litters.mk",
+     "judge": 1
+    },
+    "ConNF.NearLitter.pos_litter_lt_pos": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Position.BasePositions",
+     "line": 58,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L67 N₁.pos_litter_lt_pos, N₁ : NearLitter (pos_induction case h)",
+     "judge": 1
+    },
+    "ConNF.NewPerm.smul_fuzz": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.Construction.NewModelData",
+     "line": 183,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L47 smul_fuzz resolves to ConNF.CoherentData.smul_fuzz (exported into ConNF)",
+     "judge": 1
+    },
+    "ConNF.NewTSet.intro": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Construction.NewTSet",
+     "line": 824,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: intro (L31, L33, L36, L53, L55, L60) is the tactic",
+     "judge": 1
+    },
+    "ConNF.Path.deriv_scoderiv": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Levels.Path",
+     "line": 245,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L51 simp only [.., Path.deriv_scoderiv, ..]",
+     "judge": 1
+    },
+    "ConNF.StrAction": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.StrAction",
+     "line": 22,
+     "kind": "abbrev",
+     "genuine": true,
+     "note": "scope: L28 {ξ : StrAction β}",
+     "judge": 1
+    },
+    "ConNF.StrAction.Approximates": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.StrAction",
+     "line": 71,
+     "kind": "def",
+     "genuine": true,
+     "note": "dot: L30 ξ.Approximates ρ, ξ : StrAction β",
+     "judge": 1
+    },
+    "ConNF.StrAction.Coherent": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.StrAction",
+     "line": 29,
+     "kind": "def",
+     "genuine": true,
+     "note": "dot: L28 hξ : ξ.Coherent, ξ : StrAction β",
+     "judge": 1
+    },
+    "ConNF.StrAction.flexApprox": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.StrAction",
+     "line": 75,
+     "kind": "def",
+     "genuine": true,
+     "note": "dot: L29 ξ.flexApprox; L70/L72 ξ.flexApprox A",
+     "judge": 1
+    },
+    "ConNF.StrAction.mapFlexible_of_coherent": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.StrAction",
+     "line": 37,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L34/L41/L68 ξ.mapFlexible_of_coherent hξ A; also L58 mapFlexible_of_coherent hξ _ (own namespace)",
+     "judge": 1
+    },
+    "ConNF.StrApprox.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.StrApproxFOA",
+     "line": 33,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L30 ξ.Approximates with ξ : StrAction β resolves to ConNF.StrAction.Approximates",
+     "judge": 1
+    },
+    "ConNF.StrApprox.Coherent": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.StrApprox",
+     "line": 153,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L28 ξ.Coherent with ξ : StrAction β resolves to ConNF.StrAction.Coherent",
+     "judge": 1
+    },
+    "ConNF.StrApprox.ExactlyApproximates": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.FOA.StrApproxFOA",
+     "line": 36,
+     "kind": "def",
+     "genuine": true,
+     "note": "dot: L29 ξ.flexApprox.ExactlyApproximates ρ, ξ.flexApprox : StrApprox β",
+     "judge": 1
+    },
+    "ConNF.StructApprox.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.Approx.StructApprox",
+     "line": 31,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L30 ξ.Approximates with ξ : StrAction β resolves to ConNF.StrAction.Approximates",
+     "judge": 1
+    },
+    "ConNF.StructApprox.ExactlyApproximates": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.Approx.StructApprox",
+     "line": 34,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L29 .ExactlyApproximates on ξ.flexApprox : StrApprox β resolves to ConNF.StrApprox.ExactlyApproximates",
+     "judge": 1
+    },
+    "ConNF.StructLAction.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.LAction.StructLAction",
+     "line": 37,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L30 ξ.Approximates with ξ : StrAction β resolves to ConNF.StrAction.Approximates",
+     "judge": 1
+    },
+    "ConNF.StructLAction.Coherent": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.Corollaries",
+     "line": 46,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L28 ξ.Coherent with ξ : StrAction β resolves to ConNF.StrAction.Coherent",
+     "judge": 1
+    },
+    "ConNF.StructLAction.refine": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.LAction.ToApprox",
+     "line": 72,
+     "kind": "def",
+     "genuine": false,
+     "note": "other: L49 refine is the tactic",
+     "judge": 1
+    },
+    "ConNF.StructNLAction.Approximates": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.NLAction.StructNLAction",
+     "line": 37,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L30 ξ.Approximates with ξ : StrAction β resolves to ConNF.StrAction.Approximates",
+     "judge": 1
+    },
+    "ConNF.StructNLAction.Coherent": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.FOA.Corollaries",
+     "line": 194,
+     "kind": "structure",
+     "genuine": false,
+     "note": "namesake: L28 ξ.Coherent with ξ : StrAction β resolves to ConNF.StrAction.Coherent",
+     "judge": 1
+    },
+    "ConNF.Support.Interferes.symm": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Counting.StrongSupport",
+     "line": 270,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .symm on equations (L50 smul_eq_of_coherentAt_inflexible .., L73 congr_arg ..) is Eq.symm; L37 symm is the tactic",
+     "judge": 1
+    },
+    "ConNF.Support.Subsupport.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "ConNF.ModelData.Support",
+     "line": 551,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L64/L65 (pos_nearLitter_lt_pos ..).trans, (pos_fuzz ..).trans are LT.lt.trans",
+     "judge": 1
+    },
+    "ConNF.SupportOrbit.mk": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Counting.SupportOrbit",
+     "line": 22,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L48/L49/L69 BaseAction.litters.mk is the constructor ConNF.BaseAction.litters.mk",
+     "judge": 1
+    },
+    "ConNF.Tree.deriv_apply": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Levels.Tree",
+     "line": 31,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L51 simp only [.., Tree.deriv_apply, ..]",
+     "judge": 1
+    },
+    "ConNF.Tree.sderiv_apply": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Levels.Tree",
+     "line": 51,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L51 simp only [.., Tree.sderiv_apply, ..]",
+     "judge": 1
+    },
+    "ConNF.allPermDeriv_forget": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.ModelData.CoherentData",
+     "line": 109,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L45 rw [← this, allPermDeriv_forget]; L52",
+     "judge": 1
+    },
+    "ConNF.fuzz": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.ModelData.Fuzz",
+     "line": 27,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L44 fuzz P.hδε t",
+     "judge": 1
+    },
+    "ConNF.inflexible_cases": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.Inflexible",
+     "line": 72,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L42 inflexible_cases A N₁ᴸ",
+     "judge": 1
+    },
+    "ConNF.pos_fuzz": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.ModelData.Fuzz",
+     "line": 54,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L65 pos_fuzz P.hδε t",
+     "judge": 1
+    },
+    "ConNF.pos_induction": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.Position.Position",
+     "line": 35,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L38 induction N₁ using pos_induction",
+     "judge": 1
+    },
+    "ConNF.smul_eq_of_coherentAt_inflexible": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.Coherent",
+     "line": 156,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L49 smul_eq_of_coherentAt_inflexible hA ht ..",
+     "judge": 1
+    },
+    "ConNF.smul_support_eq_smul_iff": {
+     "new": true,
+     "pilot": true,
+     "module": "ConNF.FOA.Coherent",
+     "line": 113,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L51 simp only [smul_support_eq_smul_iff, ..]",
+     "judge": 1
+    },
+    "PartialPerm.IsStable.symm": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Mathlib.Logic.Equiv.PartialPerm",
+     "line": 172,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: .symm on equations (L50 smul_eq_of_coherentAt_inflexible .., L73 congr_arg ..) is Eq.symm; L37 symm is the tactic",
+     "judge": 1
+    },
+    "PartialPerm.symm": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Mathlib.Logic.Equiv.PartialPerm",
+     "line": 48,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: .symm on equations (L50 smul_eq_of_coherentAt_inflexible .., L73 congr_arg ..) is Eq.symm; L37 symm is the tactic",
+     "judge": 1
+    },
+    "PartialPerm.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Old.ConNF.Mathlib.Logic.Equiv.PartialPerm",
+     "line": 332,
+     "kind": "def",
+     "genuine": false,
+     "note": "namesake: L64/L65 (pos_nearLitter_lt_pos ..).trans, (pos_fuzz ..).trans are LT.lt.trans",
+     "judge": 1
+    }
+   },
+   "id": "B42"
+  },
+  {
+   "name": "smul_C2_1_2",
+   "project": "carleson",
+   "module": "Carleson.TileStructure",
+   "path": "carleson/Carleson/TileStructure.lean",
+   "line": 231,
+   "end": 245,
+   "candidates": {
+    "Antichain.p'": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Antichain.AntichainTileCount",
+     "line": 526,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L231 p' is the section variable {p p' : 𝔓 X}",
+     "judge": 2
+    },
+    "Grid._root_.C2_1_2": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 371,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L232 C2_1_2 a (constant declared as def _root_.C2_1_2, i.e. root C2_1_2); also L234, L238, L240 rw [C2_1_2]",
+     "judge": 2
+    },
+    "Grid.dist_strictMono": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.GridStructure",
+     "line": 397,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L239 Grid.dist_strictMono hp",
+     "judge": 2
+    },
+    "Lemma6_1_3.p": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Antichain.Basic",
+     "line": 259,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L231 p is the section variable {p p' : 𝔓 X}",
+     "judge": 2
+    },
+    "T.smul": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.HardyLittlewood",
+     "line": 83,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L231 smul -> root def smul (TileStructure.lean:171); T.smul is private in HardyLittlewood.lean",
+     "judge": 2
+    },
+    "ball_": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 87,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L234 ball_(p') is the TileStructure notation -> @Metric.ball (WithFunctionDistance ..); the lemma at L87 is ball_𝓘, not named",
+     "judge": 2
+    },
+    "dist_": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 85,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L237 dist_(p) is the notation -> @dist (WithFunctionDistance ..); the lemma at L85 is dist_𝓘, not named",
+     "judge": 2
+    },
+    "k": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Classical.HilbertKernel",
+     "line": 14,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L231 binder {n k : ℝ}",
+     "judge": 2
+    },
+    "smul": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileStructure",
+     "line": 171,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L231 smul n p, smul k p'; L232",
+     "judge": 2
+    }
+   },
+   "id": "B43"
+  },
+  {
+   "name": "iter_multiDist_chainRule",
+   "project": "pfr",
+   "module": "PFR.MoreRuzsaDist",
+   "path": "pfr/PFR/MoreRuzsaDist.lean",
+   "line": 2016,
+   "end": 2062,
+   "candidates": {
+    "Fin.Iio_succ_eq_Iic_castSucc": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.Mathlib.Order.Interval.Finset.Fin",
+     "line": 11,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L2041 rw [..., Fin.Iio_succ_eq_Iic_castSucc, ...] (project lemma in namespace Fin)",
+     "judge": 5
+    },
+    "ProbabilityTheory.IsUniform.comp": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Uniform",
+     "line": 68,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L2056 h_indep.comp, h_indep : iIndepFun X, is ProbabilityTheory.iIndepFun.comp (Mathlib); L2054 Measurable.comp",
+     "judge": 5
+    },
+    "ProbabilityTheory.Kernel.AEFiniteKernelSupport.prod": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 861,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L2049 dsimp [g, prod] resolves prod to the root abbrev prod (PFR Pair.lean); no .prod on an AEFiniteKernelSupport receiver",
+     "judge": 5
+    },
+    "ProbabilityTheory.Kernel.FiniteKernelSupport.prod": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Kernel.Disintegration",
+     "line": 846,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L2049 prod is the root abbrev prod; no .prod on a FiniteKernelSupport receiver",
+     "judge": 5
+    },
+    "ProbabilityTheory.iIndepFun.prod": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Independence.Basic",
+     "line": 293,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L2049 prod is the root abbrev prod; the only dot call on h_indep is .comp (L2056)",
+     "judge": 5
+    },
+    "condMultiDist_of_inj": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.MoreRuzsaDist",
+     "line": 1543,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L2046 convert (condMultiDist_of_inj (f := g) (fun _ ↦ hΩ) X ...).symm",
+     "judge": 5
+    },
+    "cond_multiDist_chainRule": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.MoreRuzsaDist",
+     "line": 1854,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L2044 convert! cond_multiDist_chainRule (Y := ...) (π n.succ) hX ?_ ?_",
+     "judge": 5
+    },
+    "prod": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Pair",
+     "line": 9,
+     "kind": "abbrev",
+     "genuine": true,
+     "note": "direct: L2049 dsimp [g, prod] (Function.prod and Measure.prod are protected, so prod is unambiguous); also notation ⟨_, _⟩ => prod at L2027/L2033",
+     "judge": 5
+    }
+   },
+   "id": "B44"
+  },
+  {
+   "name": "kvm_ineq_I",
+   "project": "pfr",
+   "module": "PFR.MoreRuzsaDist",
+   "path": "pfr/PFR/MoreRuzsaDist.lean",
+   "line": 301,
+   "end": 341,
+   "candidates": {
+    "FiniteRange": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.FiniteRange.Defs",
+     "line": 8,
+     "kind": "class",
+     "genuine": true,
+     "note": "direct: L302 [∀ i, FiniteRange (Y i)]",
+     "judge": 2
+    },
+    "ProbabilityTheory.Kernel.iIndepFun.finsets_comp": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Independence.Kernel.IndepFun",
+     "line": 137,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L327 h_indep.finsets_comp -> ProbabilityTheory.iIndepFun.finsets_comp (h_indep : ProbabilityTheory.iIndepFun Y μ)",
+     "judge": 2
+    },
+    "ProbabilityTheory.iIndepFun.finsets_comp": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Independence.Basic",
+     "line": 62,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L327 h_indep.finsets_comp S h_dis hY φ hφ, h_indep : iIndepFun Y μ (ProbabilityTheory via open)",
+     "judge": 2
+    },
+    "kaimanovich_vershik": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 1114,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L332 kaimanovich_vershik h_ind measSum (hY i₀) (hY i)",
+     "judge": 2
+    }
+   },
+   "id": "B45"
+  },
+  {
+   "name": "TileStructure.Forest.correlation_separated_trees",
+   "project": "carleson",
+   "module": "Carleson.ForestOperator.Forests",
+   "path": "carleson/Carleson/ForestOperator/Forests.lean",
+   "line": 135,
+   "end": 155,
+   "candidates": {
+    "BoundedFiniteSupport.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedFiniteSupport",
+     "line": 74,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 (𝓘 u₁ ∩ 𝓘 u₂ : Set X).indicator -> Set.indicator",
+     "judge": 2
+    },
+    "Function.Periodic.eLpNorm": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Integral.IntervalIntegral.Periodic",
+     "line": 44,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 eLpNorm -> MeasureTheory.eLpNorm",
+     "judge": 2
+    },
+    "MeasureTheory.AEStronglyMeasurable.adjointCarlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 267,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L137 adjointCarlesonSum (applied as a function) -> root def adjointCarlesonSum",
+     "judge": 2
+    },
+    "MeasureTheory.AESubadditiveOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 175,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 .indicator on a Set X -> Set.indicator",
+     "judge": 2
+    },
+    "MeasureTheory.AESublinearOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 323,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 .indicator on a Set X -> Set.indicator",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 81,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L136 BoundedCompactSupport g₁ via open MeasureTheory",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport.adjointCarlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 323,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L137 adjointCarlesonSum is the root def applied to (t u₁) g₁ x; no dot on hg₁/hg₂",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 244,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L137 conj -> ComplexConjugate scoped notation (starRingEnd _)",
+     "judge": 2
+    },
+    "MeasureTheory.BoundedCompactSupport.indicator": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.BoundedCompactSupport",
+     "line": 394,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 .indicator on a Set X -> Set.indicator",
+     "judge": 2
+    },
+    "MeasureTheory.StronglyMeasurable.adjointCarlesonSum": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 263,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L137 adjointCarlesonSum -> root def adjointCarlesonSum",
+     "judge": 2
+    },
+    "MeasureTheory.SubadditiveOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 99,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 .indicator on a Set X -> Set.indicator",
+     "judge": 2
+    },
+    "MeasureTheory.SublinearOn.indicator": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.RealInterpolation.Main",
+     "line": 231,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L139 .indicator on a Set X -> Set.indicator",
+     "judge": 2
+    },
+    "TileStructure.Forest.adjointBoundaryOperator": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.AlmostOrthogonality",
+     "line": 25,
+     "kind": "def",
+     "genuine": true,
+     "note": "scope: L139 adjointBoundaryOperator t u₁ g₁ (inside namespace TileStructure.Forest)",
+     "judge": 2
+    },
+    "TileStructure.Forest.correlation_separated_trees_of_subset": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.Forests",
+     "line": 92,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L152 exact correlation_separated_trees_of_subset ...",
+     "judge": 2
+    },
+    "TileStructure.Forest.cst_disjoint": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.ForestOperator.Forests",
+     "line": 126,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L142 simp [cst_disjoint hd hu₁ hu₂]",
+     "judge": 2
+    },
+    "_root_.MeasureTheory.Integrable.conj": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.MeasureTheory.Function.L1Integrable",
+     "line": 18,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L137 conj -> ComplexConjugate notation (starRingEnd _); no .conj on an Integrable",
+     "judge": 2
+    },
+    "adjointCarlesonSum": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.Operators",
+     "line": 215,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L137 adjointCarlesonSum (t u₁) g₁ x",
+     "judge": 2
+    },
+    "le_or_ge_or_disjoint": {
+     "new": true,
+     "pilot": false,
+     "module": "Carleson.GridStructure",
+     "line": 92,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L144 le_or_ge_or_disjoint.resolve_left h2u (root lemma, GridStructure.lean:92)",
+     "judge": 2
+    }
+   },
+   "id": "B46"
+  },
+  {
+   "name": "entropy_of_W_le",
+   "project": "pfr",
+   "module": "PFR.TorsionEndgame",
+   "path": "pfr/PFR/TorsionEndgame.lean",
+   "line": 288,
+   "end": 321,
+   "candidates": {
+    "ProbabilityTheory.IdentDistrib.entropy_congr": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 77,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "dot: L313 ← this.entropy_congr, this : IdentDistrib (Q 0) (Q j) ℙ ℙ (L308)",
+     "judge": 1
+    },
+    "ProbabilityTheory.IndepFun.rdist_eq": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 175,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L312 IndepFun.rdist_eq via open ProbabilityTheory",
+     "judge": 1
+    },
+    "ProbabilityTheory.Kernel.entropy_congr": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.Basic",
+     "line": 49,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L313 this.entropy_congr is ProbabilityTheory.IdentDistrib.entropy_congr",
+     "judge": 1
+    },
+    "ProbabilityTheory.Kernel.iIndepFun.finsets_comp": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Independence.Kernel.IndepFun",
+     "line": 137,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L300 iIndepFun.finsets_comp resolves to ProbabilityTheory.iIndepFun.finsets_comp (Kernel not open)",
+     "judge": 1
+    },
+    "ProbabilityTheory.Kernel.rdist_eq": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.RuzsaDist",
+     "line": 50,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L312 IndepFun.rdist_eq is ProbabilityTheory.IndepFun.rdist_eq",
+     "judge": 1
+    },
+    "ProbabilityTheory.entropy_congr": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Basic",
+     "line": 70,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L313 this.entropy_congr is ProbabilityTheory.IdentDistrib.entropy_congr",
+     "judge": 1
+    },
+    "ProbabilityTheory.iIndepFun.finsets_comp": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.Mathlib.Probability.Independence.Basic",
+     "line": 62,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "scope: L300 iIndepFun.finsets_comp S _ h_indep .. via open ProbabilityTheory",
+     "judge": 1
+    },
+    "Q_dist": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TorsionEndgame",
+     "line": 251,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L316 Q_dist _ h_mes h_indep hident _ _",
+     "judge": 1
+    },
+    "Q_ent": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TorsionEndgame",
+     "line": 263,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L306 Q_ent _ h_mes h_indep hident _",
+     "judge": 1
+    },
+    "Q_ident": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TorsionEndgame",
+     "line": 226,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L308 Q_ident _ h_mes h_indep hident _ _",
+     "judge": 1
+    },
+    "Q_indep": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TorsionEndgame",
+     "line": 276,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L315 Q_indep h_mes h_indep (by order)",
+     "judge": 1
+    },
+    "Q_mes": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TorsionEndgame",
+     "line": 246,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L309 Q_mes h_mes _",
+     "judge": 1
+    },
+    "kvm_ineq_I": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.MoreRuzsaDist",
+     "line": 301,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L295 grw [← sub_le_iff_le_add', kvm_ineq_I (Y := Q)]",
+     "judge": 1
+    }
+   },
+   "id": "B47"
+  },
+  {
+   "name": "dyadic_property",
+   "project": "carleson",
+   "module": "Carleson.TileExistence",
+   "path": "carleson/Carleson/TileExistence.lean",
+   "line": 670,
+   "end": 800,
+   "candidates": {
+    "BallsCoverBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 91,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L694 this.trans (this : _ ⊆ _) is HasSubset.Subset.trans; L739 hv.trans hu is LT.lt.trans; L711 Subset.trans is Set.Subset.trans",
+     "judge": 5
+    },
+    "CoveredByBalls.trans": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.ToMathlib.CoveredByBalls",
+     "line": 65,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L694 this.trans is HasSubset.Subset.trans; L739 hv.trans is LT.lt.trans; L711 Subset.trans is Set.Subset.trans",
+     "judge": 5
+    },
+    "I1_subset_I3": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 318,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L711 apply Subset.trans _ (I1_subset_I3 _ _)",
+     "judge": 5
+    },
+    "I_induction_proof": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 278,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L683/L684/L690/L691/L744/L759/L797 I_induction_proof hk hk_not_neg_s",
+     "judge": 5
+    },
+    "URel.rfl": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Discrete.ForestUnion",
+     "line": 147,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "other: rfl only occurs as the rcases pattern in obtain rfl : ... (L743, L759); nothing names URel.rfl",
+     "judge": 5
+    },
+    "Yk": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 180,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L671 ∀ (y : Yk X k), ∀ (y' : Yk X l); also L683, L716",
+     "judge": 5
+    },
+    "cover_by_cubes": {
+     "new": true,
+     "pilot": true,
+     "module": "Carleson.TileExistence",
+     "line": 653,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L684 cover_by_cubes (I_induction_proof hk hk_not_neg_s) (by linarith) hk y hxk",
+     "judge": 5
+    },
+    "k": {
+     "new": false,
+     "pilot": true,
+     "module": "Carleson.Classical.HilbertKernel",
+     "line": 14,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: k is B's own binder {k : ℤ} (L670); every k in B is that local",
+     "judge": 5
+    }
+   },
+   "id": "B48"
+  },
+  {
+   "name": "entropic_PFR_conjecture_improv",
+   "project": "pfr",
+   "module": "PFR.ImprovedPFR",
+   "path": "pfr/PFR/ImprovedPFR.lean",
+   "line": 810,
+   "end": 827,
+   "candidates": {
+    "ProbabilityTheory.IsUniform": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Uniform",
+     "line": 24,
+     "kind": "structure",
+     "genuine": true,
+     "note": "scope: L813 IsUniform H U, via open ProbabilityTheory",
+     "judge": 4
+    },
+    "ProbabilityTheory.Kernel.rdist_symm": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.RuzsaDist",
+     "line": 76,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L820 rdist_symm resolves to root rdist_symm (Kernel not open)",
+     "judge": 4
+    },
+    "ProbabilityTheory.Kernel.rdist_triangle": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.Kernel.RuzsaDist",
+     "line": 350,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L821/L822 rdist_triangle resolves to root rdist_triangle",
+     "judge": 4
+    },
+    "entropic_PFR_conjecture_improv'": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.ImprovedPFR",
+     "line": 828,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "outside: only in the L825 docstring of the next theorem; B ends at L823",
+     "judge": 4
+    },
+    "exists_isUniform_of_rdist_eq_zero": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.HundredPercent",
+     "line": 162,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L815 exists_isUniform_of_rdist_eq_zero hX₁ hX₂ hdist",
+     "judge": 4
+    },
+    "hU": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Endgame",
+     "line": 157,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "local: hU bound by obtain ⟨H, U, hU, ..⟩ at L815",
+     "judge": 4
+    },
+    "hmeas2": {
+     "new": false,
+     "pilot": true,
+     "module": "PFR.Endgame",
+     "line": 80,
+     "kind": "theorem",
+     "genuine": false,
+     "note": "namesake: L817 p.hmeas2 is the field refPackage.hmeas2",
+     "judge": 4
+    },
+    "is_tau_min": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TauFunctional",
+     "line": 170,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L817 is_tau_min p htau_min p.hmeas2 p.hmeas1",
+     "judge": 4
+    },
+    "rdist_symm": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 236,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L820 := rdist_symm",
+     "judge": 4
+    },
+    "rdist_triangle": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ForMathlib.Entropy.RuzsaDist",
+     "line": 440,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L821, L822 rdist_triangle p.hmeas1 hX₁ hU",
+     "judge": 4
+    },
+    "tau": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.TauFunctional",
+     "line": 68,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L818 rw [tau, tau, hpη]; also L817 τ[..] notation",
+     "judge": 4
+    },
+    "tau_minimizer_exists_rdist_eq_zero": {
+     "new": true,
+     "pilot": true,
+     "module": "PFR.ImprovedPFR",
+     "line": 730,
+     "kind": "theorem",
+     "genuine": true,
+     "note": "direct: L814 tau_minimizer_exists_rdist_eq_zero p",
+     "judge": 4
+    }
+   },
+   "id": "B49"
+  },
+  {
+   "name": "boringEnergy",
+   "project": "LeanAPAP",
+   "module": "APAP.Prereqs.Energy",
+   "path": "LeanAPAP/APAP/Prereqs/Energy.lean",
+   "line": 33,
+   "end": 34,
+   "candidates": {
+    "energy": {
+     "new": true,
+     "pilot": true,
+     "module": "APAP.Prereqs.Energy",
+     "line": 17,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L33 energy n s trivChar",
+     "judge": 2
+    },
+    "s": {
+     "new": false,
+     "pilot": true,
+     "module": "APAP.Physics.DRC",
+     "line": 67,
+     "kind": "def",
+     "genuine": false,
+     "note": "local: L33 binder (s : Finset G)",
+     "judge": 2
+    },
+    "trivChar": {
+     "new": true,
+     "pilot": true,
+     "module": "APAP.Prereqs.Convolution.Discrete.Defs",
+     "line": 54,
+     "kind": "def",
+     "genuine": true,
+     "note": "direct: L33 trivChar (root def, Convolution/Discrete/Defs.lean)",
+     "judge": 2
+    }
+   },
+   "id": "B50"
+  }
+ ],
+ "protocol": "Pre-registered (mathgraph-ydf): test = Random(20261120).sample(sorted(P - dev), 50), dev = Random(0).sample(sorted(P), 50), P = gold declarations of the 614 anchored statements. Candidates = pilot refs | resolved refs, self excluded. Judged blind to matcher by five fresh Claude Opus 5.5 subagents (judge 1-5), 9-11 bodies each, from the source, the scope lines and each candidate's declaration; genuine = the body's own text refers to that declaration under Lean name resolution. Fields new/pilot were added after judging."
+}
