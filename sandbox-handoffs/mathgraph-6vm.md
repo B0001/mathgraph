@@ -243,3 +243,190 @@ certified.
 - **The core-only template test** caught the K5 partial-success bug fixed by
   `kalt` (deviation 8).
 - **The report path** was dry-run end to end on fake results.
+
+## Results
+
+Everything below came after the pre-registration commit (fa12002). The
+numbers are in `results/kaudit.json`, written by
+`python -m mathgraph.kaudit report`.
+
+### Verdict: KILL, on both parts of the kill test
+
+| | certified / checked | rate | 95% interval |
+|---|---|---|---|
+| (a) above τ, eval-half holdout+deletion, both systems | **8 / 394** | 2.0% | Wilson [1.0, 4.0]; the upper bound is under the 15% bar |
+| below τ | 46 / 2,608 | 1.8% | Wilson [1.3, 2.3] |
+| (b) gap, above minus below | | **+0.27 pp** | Newcombe [−0.9, +2.2]; ≤ 5 pp |
+
+- **Sensitivity.** Counting unchecked units as not certified gives 8/420
+  above and 46/2,842 below, the same verdict.
+- **Verbatim oracle.** The bead's block alone (K closures only) gives 3/394
+  (0.8%) above and 21/2,608 (0.8%) below. The deviations D1–D4 did not create
+  a gap either.
+- **By system and arm, above τ:**
+  - lexical: holdout 1/90, deletion 0/90;
+  - bge-small: holdout 4/108, deletion 3/106.
+- **Conclusion.** The in-library false matches at τ are almost all real
+  errors. Only about 2% retrieve a top-1 that proves the held-out theorem in
+  one kernel-checked step. The rate is the same where the retriever is
+  confident as where it is not, so these closures are background sibling-lemma
+  coincidences, not retrieval of real equivalents.
+- **Agreement with hctz.** This matches the provisional single-rater audit in
+  mathgraph-269 (3/60 time-arm pairs equivalent or generalising).
+
+### Relabel (secondary), eval halves
+
+| | lexical | bge-small |
+|---|---|---|
+| FMR holdout, before → after | 12.5% → 12.4% | 14.0% → 13.5% |
+| FMR deletion, before → after | 12.0% → 12.0% | 13.0% → 12.7% |
+| positive precision at τ, before → after | 8/60 → 8/60 | 0/76 → 1/76 |
+| AUROC, correct positives vs negatives | 0.546 [0.48, 0.60] → 0.561 [0.50, 0.62] | 0.380 [0.30, 0.46] → 0.539 [0.48, 0.59] |
+| AUROC, correct vs incorrect | 0.550 → 0.565 | 0.383 → 0.542 |
+
+- Both AUROC rows use a 1,000-draw stratified bootstrap.
+- bge-small's "before" AUROC is the round-2 construction artefact: positives
+  were re-embedded without their docstring, and only 32 eval-half positives
+  are correct by name.
+- The relabel lifts it to about 0.54, still near chance and under the
+  simulated 0.62 cap. Nothing here is claimed to explain the round-2 "0.48".
+
+### Breakdowns
+
+- **Closures.** 70 checked units closed and 65 were certified (62 distinct
+  pairs).
+  - Closing alternatives: K1 26, D1 25, D4 8, D3 4, K2 4, K4 2, K3 1.
+  - Five closures failed certification, all because the null closed. Among
+    closed gate-population units the null closed 5/59.
+  - No closure used H.
+- **Kernel-EQUIV vs IMPLIES.** Of the 65 certified units, 29 are EQUIV (H
+  also proves T in one step) and 36 are IMPLIES only.
+- **to_additive-map** (metadata, not kernel).
+  - 45 checked units retrieve H's to_additive twin or its source, and none of
+    them closes.
+  - 19 of those are above-τ gate units. That is a second relabel candidate,
+    larger than the kernel one.
+  - Exploratory, not pre-registered: counting the twins as correct gives
+    27/394 above τ, Wilson upper bound about 9.8%. (a) still kills.
+- **Deprecated top-1.** 26 units, 5 certified. In 6 of them T is a deprecated
+  alias whose new name is H, which the index kept.
+- **Verbatim sibling docstrings** (gate population).
+  - Duplicate rows: 11/407 certified (2.7%), 3/83 above τ.
+  - Other rows: 43/2,595 (1.7%), 5/311 above τ.
+- **Unchecked units.** 260 of the 3,262 gate-population units were not
+  checked (per-system counts are in `breakdowns.status`):
+  - a private H or T: 77 (2.4%);
+  - a name with no constant at the pin: 151 (4.6%). Of these, 89 are top-1s
+    (81 of them lexical) and 62 are H's;
+  - no top-1 at all: 32 (1.0%).
+- **Heartbeat timeouts.** 65 gate-population checks hit 200,000 heartbeats
+  and count as not closed.
+
+### Time arm, item (4): heads at the pin
+
+- **Failure rates.**
+  - autoImplicit false: **1,596/1,660 = 96.1%** [95.1, 97.0] fail to
+    elaborate.
+  - autoImplicit true: **1,537/1,660 = 92.6%** [91.2, 93.8].
+- **Strict failures by first error:**
+  - an unknown identifier, constant or namespace: 1,218;
+  - a message containing "expected", a coarse bucket that also catches
+    "function expected" and "type expected": 352;
+  - universe: 10; instance: 7; other: 9.
+- **Auto-implicit failures by first error.** Auto-implicit trades unknown
+  names (108) for unsynthesisable instances (588) and "expected" errors (658).
+- **Consequence.** Only 64 heads (123 with auto-implicit) are even
+  statable at the pin. So this oracle cannot audit the time arm. This is an
+  elaboration-failure rate, not a closure rate.
+
+### Hand check: 20 certified pairs, read for vacuity
+
+They are sampled with seed 0: the 8 above-τ gate pairs first, then from the
+other certified pairs. **0/20 are vacuous.** Each is a genuine one-step
+derivation:
+
+- **One direction of an iff T:** #1 `isTree_of_minimal_connected`,
+  #2 `LinearDisjoint.symm`, #4, #16, #20.
+- **A specialization of T:**
+  - #3 `A * ⅟B * B = A` from `mul_invOf_cancel_right` at `⅟B`, since
+    `⅟⅟B` is definitionally `B`;
+  - #6 at `e.symm`;
+  - #9 Hahn–Banach over ℝ from the `RCLike` version;
+  - #10 at `t := {x | p x}`.
+- **A definitional restatement:**
+  - #5 List from Multiset `mem_antidiagonal`;
+  - #11, the `fun` variant;
+  - #13 `mk''`/`mk`;
+  - #14 `sumAddHom`/`sumZeroHom`;
+  - #15 `isUnitSMul`/`unitsSMul`.
+- **Primed or namespaced twins:** #7, #8, #12, #17, #18, #19.
+
+They are exactly the pairs a human would call "equivalent or generalising".
+There are simply very few of them.
+
+### Run log and deviations during the run
+
+The plumbing bugs below were fixed after the pre-registration and before the
+final report. None changed an analysis definition.
+
+1. **`resolve` unpack bug.** After Lean had written `facts.jsonl`, `resolve`
+   unpacked three return values instead of four. The facts were complete
+   (11,100/11,100 names, no errors) and were reused (aa86b1f).
+2. **First elab run void.** Round-robin dealing split each head's
+   `namespace`/`end` lines across the two batch files. It was re-run with
+   one chunk per head (428d2be). The void run is in `mathgraph-data/kaudit/`
+   (`elab-void/`, gitignored).
+3. **Follow-up ids.**
+   - The `followup` stage numbered null and reverse checks in load order,
+     and `report` numbered them in gate order. That attached those results to
+     the wrong units.
+   - The first report, which I read, gave 6/394 and 48/2,608, also KILL, and
+     every unit came out IMPLIES.
+   - Ids are now canonical, with a test, and followup was re-run (1178aa1).
+     The numbers above come from that run.
+4. **Verbatim-oracle gate rates.** The pre-registration promised them, but
+   the first `report` did not compute them. They were added afterwards.
+
+Compute:
+
+- **Check stage.** 3,845 real checks in two Lean processes, 29 min wall.
+  Each check took a median of about 50 ms, p90 about 0.43 s, at most 76 s.
+  The machine was less loaded than during the probe.
+- **Follow-up.** 134 checks, about 1.5 min.
+- **Elab.** About 3.5 min.
+- **The full design** (fit halves too, a null per H) would need roughly
+  three times the check stage at this load, about 1.5 h.
+
+### Reproduce
+
+```bash
+export MATHGRAPH_DATA=/path/to/mathgraph-data   # hctz-timesplit/, mathlib4/ built at b44f89d
+uv run python -m mathgraph.kaudit resolve       # facts.jsonl (names, simp, deprecation, to_additive)
+uv run python -m mathgraph.kaudit check         # real checks, eval halves, gate first
+uv run python -m mathgraph.kaudit followup      # nulls + reverse checks for closed pairs
+uv run python -m mathgraph.kaudit elab          # time-arm heads at the pin
+uv run python -m mathgraph.kaudit report        # results/kaudit.json
+```
+
+Working files go to `./mathgraph-data/kaudit` (gitignored). Pass
+`--halves all` to include the fit halves.
+
+### Unverified / open
+
+- **The oracle is one step.** H's that follow from T only by rewriting with
+  other lemmas, by `simp` with lemmas, or in several steps are not counted.
+  So 2% is a lower bound on "real equivalents" in that sense. The gap test (b)
+  is what says the bound is not hiding a confidence signal.
+- **Fit halves are not run.**
+- **Timeouts count as failures.** The 65 heartbeat timeouts would need a
+  larger budget to rule out late closures.
+- **The two-person audit of `results/timesplit-audit.csv`** (mathgraph-269)
+  is still pending. This kernel audit does not replace it for the time arm,
+  which the oracle cannot state at the pin.
+
+## Test run
+
+`MATHGRAPH_DATA=<data dir> uv run pytest -q` printed `99 passed in 392.98s`.
+That is the 97 tests that passed before this change, plus the 2 in
+`tests/test_kaudit.py` (the parser and certification self-check, and the
+follow-up id check).

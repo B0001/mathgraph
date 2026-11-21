@@ -1,0 +1,1186 @@
+{
+  "bead": "mathgraph-6vm",
+  "protocol": "sandbox-handoffs/mathgraph-6vm.md",
+  "pin": "b44f89d15d463ede557bdf673707a8610210becf",
+  "lean": "leanprover/lean4:v4.33.0-rc1",
+  "oracle": {
+    "real": {
+      "K1": "exact {T} ..",
+      "K2": "exact ({T} ..).symm",
+      "K3": "exact ({T} ..).1",
+      "K4": "exact ({T} ..).2",
+      "K5": "simpa only [] using {T} ..",
+      "D1": "apply {T} <;> assumption",
+      "D2": "symm; apply {T} <;> assumption",
+      "D3": "apply ({T} ..).1 <;> assumption",
+      "D4": "apply ({T} ..).2 <;> assumption"
+    },
+    "null": {
+      "N1": "trivial",
+      "N2": "simp; done",
+      "N3": "positivity"
+    },
+    "max_heartbeats": 200000
+  },
+  "thresholds": {
+    "lexical": {
+      "tau": 0.21251466870307922,
+      "strict": false,
+      "fit_per_arm": 603,
+      "coverage": 0.1
+    },
+    "bge-small": {
+      "tau": 0.9128261208534241,
+      "strict": false,
+      "fit_per_arm": 603,
+      "coverage": 0.1
+    }
+  },
+  "crashed": {
+    "check": [],
+    "followup": []
+  },
+  "batches": {
+    "check": [
+      {
+        "file": "check0.lean",
+        "commands": 1923,
+        "seconds": 1729.9,
+        "completed": true,
+        "killed": null,
+        "check_ms_median_p90_max": [
+          54,
+          424,
+          76409
+        ]
+      },
+      {
+        "file": "check1.lean",
+        "commands": 1922,
+        "seconds": 1704.6,
+        "completed": true,
+        "killed": null,
+        "check_ms_median_p90_max": [
+          49,
+          451,
+          75134
+        ]
+      }
+    ],
+    "followup": [
+      {
+        "file": "followup0.lean",
+        "commands": 67,
+        "seconds": 76.8,
+        "completed": true,
+        "killed": null,
+        "check_ms_median_p90_max": [
+          29,
+          397,
+          14319
+        ]
+      },
+      {
+        "file": "followup1.lean",
+        "commands": 67,
+        "seconds": 66.4,
+        "completed": true,
+        "killed": null,
+        "check_ms_median_p90_max": [
+          26,
+          240,
+          14547
+        ]
+      }
+    ],
+    "elab": [
+      {
+        "file": "elab0.lean",
+        "commands": 830,
+        "seconds": 209.7,
+        "completed": true,
+        "killed": null,
+        "check_ms_median_p90_max": null
+      },
+      {
+        "file": "elab1.lean",
+        "commands": 830,
+        "seconds": 215.0,
+        "completed": true,
+        "killed": null,
+        "check_ms_median_p90_max": null
+      }
+    ]
+  },
+  "gate": {
+    "checked": {
+      "above_tau": {
+        "k": 8,
+        "n": 394,
+        "rate": 0.0203,
+        "wilson95": [
+          0.0103,
+          0.0395
+        ],
+        "half_width": 0.0146
+      },
+      "below_tau": {
+        "k": 46,
+        "n": 2608,
+        "rate": 0.0176,
+        "wilson95": [
+          0.0132,
+          0.0234
+        ],
+        "half_width": 0.0051
+      },
+      "a_wilson_upper": 0.0395,
+      "a_kill": true,
+      "b_gap": 0.0027,
+      "b_gap_newcombe95": [
+        -0.0089,
+        0.0224
+      ],
+      "b_kill": true,
+      "verbatim_oracle": {
+        "above_tau": {
+          "k": 3,
+          "n": 394,
+          "rate": 0.0076,
+          "wilson95": [
+            0.0026,
+            0.0221
+          ],
+          "half_width": 0.0098
+        },
+        "below_tau": {
+          "k": 21,
+          "n": 2608,
+          "rate": 0.0081,
+          "wilson95": [
+            0.0053,
+            0.0123
+          ],
+          "half_width": 0.0035
+        }
+      },
+      "closed_above_tau": 9,
+      "by_system_arm_above": {
+        "lexical/holdout": {
+          "k": 1,
+          "n": 90,
+          "rate": 0.0111,
+          "wilson95": [
+            0.002,
+            0.0603
+          ],
+          "half_width": 0.0292
+        },
+        "lexical/deletion": {
+          "k": 0,
+          "n": 90,
+          "rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.0409
+          ],
+          "half_width": 0.0205
+        },
+        "bge-small/holdout": {
+          "k": 4,
+          "n": 108,
+          "rate": 0.037,
+          "wilson95": [
+            0.0145,
+            0.0914
+          ],
+          "half_width": 0.0384
+        },
+        "bge-small/deletion": {
+          "k": 3,
+          "n": 106,
+          "rate": 0.0283,
+          "wilson95": [
+            0.0097,
+            0.0799
+          ],
+          "half_width": 0.0351
+        }
+      }
+    },
+    "all_units_unchecked_as_not_certified": {
+      "above_tau": {
+        "k": 8,
+        "n": 420,
+        "rate": 0.019,
+        "wilson95": [
+          0.0097,
+          0.0371
+        ],
+        "half_width": 0.0137
+      },
+      "below_tau": {
+        "k": 46,
+        "n": 2842,
+        "rate": 0.0162,
+        "wilson95": [
+          0.0122,
+          0.0215
+        ],
+        "half_width": 0.0047
+      },
+      "a_wilson_upper": 0.0371,
+      "a_kill": true,
+      "b_gap": 0.0029,
+      "b_gap_newcombe95": [
+        -0.0079,
+        0.0214
+      ],
+      "b_kill": true,
+      "verbatim_oracle": {
+        "above_tau": {
+          "k": 3,
+          "n": 420,
+          "rate": 0.0071,
+          "wilson95": [
+            0.0024,
+            0.0208
+          ],
+          "half_width": 0.0092
+        },
+        "below_tau": {
+          "k": 21,
+          "n": 2842,
+          "rate": 0.0074,
+          "wilson95": [
+            0.0048,
+            0.0113
+          ],
+          "half_width": 0.0032
+        }
+      },
+      "closed_above_tau": 9,
+      "by_system_arm_above": {
+        "lexical/holdout": {
+          "k": 1,
+          "n": 100,
+          "rate": 0.01,
+          "wilson95": [
+            0.0018,
+            0.0545
+          ],
+          "half_width": 0.0264
+        },
+        "lexical/deletion": {
+          "k": 0,
+          "n": 100,
+          "rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.037
+          ],
+          "half_width": 0.0185
+        },
+        "bge-small/holdout": {
+          "k": 4,
+          "n": 112,
+          "rate": 0.0357,
+          "wilson95": [
+            0.014,
+            0.0882
+          ],
+          "half_width": 0.0371
+        },
+        "bge-small/deletion": {
+          "k": 3,
+          "n": 108,
+          "rate": 0.0278,
+          "wilson95": [
+            0.0095,
+            0.0785
+          ],
+          "half_width": 0.0345
+        }
+      }
+    },
+    "verdict": "KILL"
+  },
+  "relabel": {
+    "lexical": {
+      "holdout": {
+        "fmr_before": {
+          "k": 100,
+          "n": 801,
+          "rate": 0.1248,
+          "wilson95": [
+            0.1037,
+            0.1495
+          ],
+          "half_width": 0.0229
+        },
+        "fmr_after": {
+          "k": 99,
+          "n": 801,
+          "rate": 0.1236,
+          "wilson95": [
+            0.1026,
+            0.1482
+          ],
+          "half_width": 0.0228
+        }
+      },
+      "deletion": {
+        "fmr_before": {
+          "k": 100,
+          "n": 830,
+          "rate": 0.1205,
+          "wilson95": [
+            0.1001,
+            0.1444
+          ],
+          "half_width": 0.0222
+        },
+        "fmr_after": {
+          "k": 100,
+          "n": 830,
+          "rate": 0.1205,
+          "wilson95": [
+            0.1001,
+            0.1444
+          ],
+          "half_width": 0.0222
+        }
+      },
+      "positive_precision": {
+        "before": {
+          "k": 8,
+          "n": 60,
+          "rate": 0.1333,
+          "wilson95": [
+            0.0691,
+            0.2417
+          ],
+          "half_width": 0.0863
+        },
+        "after": {
+          "k": 8,
+          "n": 60,
+          "rate": 0.1333,
+          "wilson95": [
+            0.0691,
+            0.2417
+          ],
+          "half_width": 0.0863
+        }
+      },
+      "auroc_correct_positives_vs_negatives": {
+        "before": {
+          "auroc": 0.5456,
+          "bootstrap95": [
+            0.4809,
+            0.6049
+          ],
+          "n_pos": 74,
+          "n_neg": 1631
+        },
+        "after": {
+          "auroc": 0.5607,
+          "bootstrap95": [
+            0.4989,
+            0.618
+          ],
+          "n_pos": 82,
+          "n_neg": 1623
+        }
+      },
+      "auroc_correct_vs_incorrect": {
+        "before": {
+          "auroc": 0.55,
+          "bootstrap95": [
+            0.4888,
+            0.6117
+          ],
+          "n_pos": 74,
+          "n_neg": 2160
+        },
+        "after": {
+          "auroc": 0.5652,
+          "bootstrap95": [
+            0.5066,
+            0.6206
+          ],
+          "n_pos": 82,
+          "n_neg": 2152
+        }
+      }
+    },
+    "bge-small": {
+      "holdout": {
+        "fmr_before": {
+          "k": 112,
+          "n": 801,
+          "rate": 0.1398,
+          "wilson95": [
+            0.1175,
+            0.1656
+          ],
+          "half_width": 0.024
+        },
+        "fmr_after": {
+          "k": 108,
+          "n": 801,
+          "rate": 0.1348,
+          "wilson95": [
+            0.1129,
+            0.1602
+          ],
+          "half_width": 0.0237
+        }
+      },
+      "deletion": {
+        "fmr_before": {
+          "k": 108,
+          "n": 830,
+          "rate": 0.1301,
+          "wilson95": [
+            0.1089,
+            0.1547
+          ],
+          "half_width": 0.0229
+        },
+        "fmr_after": {
+          "k": 105,
+          "n": 830,
+          "rate": 0.1265,
+          "wilson95": [
+            0.1056,
+            0.1509
+          ],
+          "half_width": 0.0226
+        }
+      },
+      "positive_precision": {
+        "before": {
+          "k": 0,
+          "n": 76,
+          "rate": 0.0,
+          "wilson95": [
+            0.0,
+            0.0481
+          ],
+          "half_width": 0.0241
+        },
+        "after": {
+          "k": 1,
+          "n": 76,
+          "rate": 0.0132,
+          "wilson95": [
+            0.0023,
+            0.0708
+          ],
+          "half_width": 0.0343
+        }
+      },
+      "auroc_correct_positives_vs_negatives": {
+        "before": {
+          "auroc": 0.38,
+          "bootstrap95": [
+            0.3038,
+            0.4575
+          ],
+          "n_pos": 32,
+          "n_neg": 1631
+        },
+        "after": {
+          "auroc": 0.5391,
+          "bootstrap95": [
+            0.4812,
+            0.594
+          ],
+          "n_pos": 89,
+          "n_neg": 1585
+        }
+      },
+      "auroc_correct_vs_incorrect": {
+        "before": {
+          "auroc": 0.3834,
+          "bootstrap95": [
+            0.3057,
+            0.465
+          ],
+          "n_pos": 32,
+          "n_neg": 2202
+        },
+        "after": {
+          "auroc": 0.5417,
+          "bootstrap95": [
+            0.4854,
+            0.5952
+          ],
+          "n_pos": 89,
+          "n_neg": 2145
+        }
+      }
+    }
+  },
+  "breakdowns": {
+    "status": {
+      "lexical/holdout": {
+        "checked": 715,
+        "H_private": 10,
+        "T_missing": 39,
+        "H_missing": 19,
+        "T_private": 4,
+        "no_top1": 14,
+        "not_planned": 801
+      },
+      "lexical/deletion": {
+        "checked": 730,
+        "H_private": 19,
+        "T_missing": 42,
+        "T_private": 9,
+        "no_top1": 18,
+        "H_missing": 12,
+        "not_planned": 830
+      },
+      "lexical/positive": {
+        "checked": 468,
+        "no_top1": 8,
+        "not_planned": 603,
+        "H_private": 13,
+        "gold": 74,
+        "T_missing": 21,
+        "T_private": 4,
+        "H_missing": 15
+      },
+      "bge-small/holdout": {
+        "checked": 764,
+        "H_private": 11,
+        "H_missing": 19,
+        "T_private": 2,
+        "T_missing": 5,
+        "not_planned": 801
+      },
+      "bge-small/deletion": {
+        "checked": 793,
+        "H_private": 19,
+        "H_missing": 12,
+        "T_missing": 3,
+        "T_private": 3,
+        "not_planned": 830
+      },
+      "bge-small/positive": {
+        "checked": 532,
+        "gold": 32,
+        "not_planned": 603,
+        "H_private": 11,
+        "T_missing": 10,
+        "H_missing": 16,
+        "T_private": 2
+      }
+    },
+    "closing_alternative": {
+      "K1": 26,
+      "D4": 8,
+      "D1": 25,
+      "D3": 4,
+      "K2": 4,
+      "K4": 2,
+      "K3": 1
+    },
+    "heartbeat_timeouts": {
+      "gate_population": 65,
+      "all_checked": 88
+    },
+    "certified_by_alternative": {
+      "K1": 21,
+      "D4": 8,
+      "D1": 25,
+      "D3": 4,
+      "K2": 4,
+      "K4": 2,
+      "K3": 1
+    },
+    "closed_but_not_certified": {
+      "null closes": 5
+    },
+    "null_closes_among_closed": {
+      "gate_population": {
+        "k": 5,
+        "n": 59,
+        "rate": 0.0847,
+        "wilson95": [
+          0.0367,
+          0.1835
+        ],
+        "half_width": 0.0734
+      },
+      "all_checked": {
+        "k": 5,
+        "n": 70,
+        "rate": 0.0714,
+        "wilson95": [
+          0.0309,
+          0.1566
+        ],
+        "half_width": 0.0628
+      }
+    },
+    "kernel_equiv_vs_implies": {
+      "EQUIV": 29,
+      "IMPLIES": 36
+    },
+    "to_additive_map": {
+      "metadata_only": "a to_additive twin is not a kernel proof",
+      "units": 45,
+      "closed": 0,
+      "certified": 0,
+      "above_tau_eval_neg": {
+        "units": 19,
+        "closed": 0,
+        "certified": 0
+      }
+    },
+    "deprecated_top1": {
+      "units": 26,
+      "closed": 5,
+      "certified": 5,
+      "alias_of_H": 6
+    },
+    "verbatim_sibling_docstring": {
+      "dup": {
+        "units": 407,
+        "closed": 11,
+        "certified": 11
+      },
+      "not_dup": {
+        "units": 2595,
+        "closed": 48,
+        "certified": 43
+      },
+      "dup_above_tau": {
+        "units": 83,
+        "closed": 3,
+        "certified": 3
+      },
+      "not_dup_above_tau": {
+        "units": 311,
+        "closed": 6,
+        "certified": 5
+      }
+    }
+  },
+  "time_arm_elaboration": {
+    "strict": {
+      "failed": {
+        "k": 1596,
+        "n": 1660,
+        "rate": 0.9614,
+        "wilson95": [
+          0.9511,
+          0.9697
+        ],
+        "half_width": 0.0093
+      },
+      "by_error": {
+        "unknown name": 1218,
+        "syntax": 352,
+        "instance": 7,
+        "other": 9,
+        "universe": 10
+      }
+    },
+    "auto": {
+      "failed": {
+        "k": 1537,
+        "n": 1660,
+        "rate": 0.9259,
+        "wilson95": [
+          0.9123,
+          0.9375
+        ],
+        "half_width": 0.0126
+      },
+      "by_error": {
+        "syntax": 658,
+        "instance": 588,
+        "other": 177,
+        "unknown name": 108,
+        "universe": 6
+      }
+    },
+    "completed": true
+  },
+  "certified_pairs": [
+    [
+      "AlgebraicGeometry.Spec.fromSpecStalk_eq'",
+      "AlgebraicGeometry.Scheme.Spec_fromSpecStalk'"
+    ],
+    [
+      "AlgebraicGeometry.isLocallyNoetherian_of_affine_cover",
+      "AlgebraicGeometry.isLocallyNoetherian_iff_of_iSup_eq_top"
+    ],
+    [
+      "AlternatingMap.norm_map_coord_zero",
+      "MultilinearMap.norm_map_coord_zero"
+    ],
+    [
+      "AnalyticOnNhd.eq_zero_or_eq_zero_of_mul_eq_zero",
+      "AnalyticOnNhd.eq_zero_or_eq_zero_of_smul_eq_zero"
+    ],
+    [
+      "AnalyticOnNhd.isClopen_setOfPred_analyticOrderAt_eq_top",
+      "AnalyticOnNhd.isClopen_setOf_analyticOrderAt_eq_top"
+    ],
+    [
+      "ArithmeticFunction.LSeries_positive",
+      "LSeries.positive"
+    ],
+    [
+      "CategoryTheory.GrothendieckTopology.uliftYonedaEquiv_naturality",
+      "CategoryTheory.GrothendieckTopology.uliftYonedaEquiv_naturality'"
+    ],
+    [
+      "CategoryTheory.Iso.isoFunctorOfIsoInverse_isoInverseOfIsoFunctor",
+      "CategoryTheory.Iso.isoInverseOfIsoFunctor_isoFunctorOfIsoInverse"
+    ],
+    [
+      "CategoryTheory.Sheaf.isIso_of_coversTop",
+      "CategoryTheory.Sheaf.isIso_iff_of_coversTop"
+    ],
+    [
+      "CategoryTheory.congr_arg",
+      "CategoryTheory.ConcreteCategory.congr_arg"
+    ],
+    [
+      "ContinuousAlternatingMap.cons_add",
+      "ContinuousAlternatingMap.vecCons_add"
+    ],
+    [
+      "ContinuousMap.dist_le",
+      "BoundedContinuousFunction.dist_le"
+    ],
+    [
+      "Convex.locallyPathConnectedSpace",
+      "Convex.locPathConnectedSpace"
+    ],
+    [
+      "DFinsupp.sumAddHom_apply",
+      "DFinsupp.sumZeroHom_apply"
+    ],
+    [
+      "EuclideanGeometry.oangle_eq_neg_of_angle_eq_of_sign_eq_neg",
+      "Orientation.oangle_eq_neg_of_angle_eq_of_sign_eq_neg"
+    ],
+    [
+      "EuclideanGeometry.oangle_eq_of_angle_eq_of_sign_eq",
+      "Orientation.oangle_eq_of_angle_eq_of_sign_eq"
+    ],
+    [
+      "EuclideanGeometry.two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq",
+      "EuclideanGeometry.dist_orthogonalProjection_line_eq_iff_two_zsmul_oangle_eq"
+    ],
+    [
+      "Field.exists_primitive_element_of_finite_top",
+      "Field.exists_primitive_element"
+    ],
+    [
+      "FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq",
+      "FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq"
+    ],
+    [
+      "Finset.map_symm_subset",
+      "Finset.subset_map_symm"
+    ],
+    [
+      "Finset.property_of_mem_map_subtype",
+      "Finset.map_subtype_subset"
+    ],
+    [
+      "Finset.sup'_prodMap",
+      "Finset.prodMk_sup'_sup'"
+    ],
+    [
+      "FractionalIdeal.isFractional_adjoin_integral",
+      "FractionalIdeal.adjoinIntegral"
+    ],
+    [
+      "Function.update_comp_eq_of_injective",
+      "Function.update_comp_eq_of_injective'"
+    ],
+    [
+      "Group.isNilpotent_of_product_of_sylow_group",
+      "isNilpotent_of_product_of_sylow_group"
+    ],
+    [
+      "Int.isGreatest_coe_greatestOfBdd",
+      "Int.greatestOfBdd"
+    ],
+    [
+      "IsPrimitiveRoot.zeta_sub_one_prime_of_two_pow",
+      "IsPrimitiveRoot.zeta_sub_one_prime"
+    ],
+    [
+      "LinearMap.IsRightQuasiInverse.comp",
+      "LinearMap.IsLeftQuasiInverse.comp"
+    ],
+    [
+      "LinearMap.eqOn_span'",
+      "LinearMap.eqOn_span"
+    ],
+    [
+      "List.Nat.mem_antidiagonal",
+      "Multiset.Nat.mem_antidiagonal"
+    ],
+    [
+      "List.getLast_flatten_eq_getLast_getLast",
+      "List.getLast_getLast_eq_getLast_flatten"
+    ],
+    [
+      "Matrix.SpecialLinearGroup.continuous_toGL",
+      "Matrix.SpecialLinearGroup.continuous_mapGL"
+    ],
+    [
+      "Matrix.invOf_mul_cancel_right",
+      "Matrix.mul_invOf_cancel_right"
+    ],
+    [
+      "MeasurableSpace.cardinal_generateMeasurable_le",
+      "MeasurableSpace.cardinal_measurableSet_le"
+    ],
+    [
+      "MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add",
+      "MeromorphicAt.meromorphicTrailingCoeffAt_fun_add_eq_add"
+    ],
+    [
+      "MeromorphicOn.divisor_fun_smul",
+      "MeromorphicOn.divisor_smul"
+    ],
+    [
+      "Module.Basis.toMatrix_isUnitSMul",
+      "Module.Basis.toMatrix_unitsSMul"
+    ],
+    [
+      "Monotone.map_liminf_of_continuousAt",
+      "Monotone.map_limsInf_of_continuousAt"
+    ],
+    [
+      "Multipliable.congr",
+      "multipliable_congr"
+    ],
+    [
+      "MvPowerSeries.WithPiTopology.summable_prod_of_tendsto_order_atTop_nhds_top",
+      "MvPowerSeries.WithPiTopology.summable_prod_of_tendsto_weightedOrder_atTop_nhds_top"
+    ],
+    [
+      "Nat.toDigits_length",
+      "Nat.toDigitsCore_length"
+    ],
+    [
+      "ProbabilityTheory.cdf_le_one",
+      "ProbabilityTheory.condCDF_le_one"
+    ],
+    [
+      "Quotient.mk''_surjective",
+      "Quotient.mk_surjective"
+    ],
+    [
+      "Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational",
+      "Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational"
+    ],
+    [
+      "RingHom.Smooth.locally_isStandardSmooth",
+      "RingHom.smooth_iff_locally_isStandardSmooth"
+    ],
+    [
+      "RingHomInvPair.of_ringEquiv_symm",
+      "RingHomInvPair.of_ringEquiv"
+    ],
+    [
+      "Seminorm.bound_of_shell_smul",
+      "Seminorm.bound_of_shell"
+    ],
+    [
+      "SeqContinuous.continuous",
+      "continuous_iff_seqContinuous"
+    ],
+    [
+      "Set.sdiff_union_sdiff_cancel'",
+      "sdiff_sup_sdiff_cancel'"
+    ],
+    [
+      "Setoid.sup_def",
+      "Setoid.sup_eq_eqvGen"
+    ],
+    [
+      "SimpleGraph.isTree_of_minimal_connected",
+      "SimpleGraph.isTree_iff_minimal_connected"
+    ],
+    [
+      "Submodule.LinearDisjoint.symm",
+      "Submodule.linearDisjoint_comm"
+    ],
+    [
+      "Submodule.orthogonal_closure",
+      "ClosedSubmodule.orthogonal_closure"
+    ],
+    [
+      "Subtype.range_val",
+      "Subtype.range_coe_subtype"
+    ],
+    [
+      "Valuation.isClopen_closedBall",
+      "IsValuativeTopology.isClopen_closedBall"
+    ],
+    [
+      "Valuation.isClosed_valuationSubring",
+      "Valuation.isClopen_valuationSubring"
+    ],
+    [
+      "Valuation.isOpen_valuationSubring",
+      "Valuation.isClopen_valuationSubring"
+    ],
+    [
+      "VectorField.mlieBracket_zero_right",
+      "VectorField.mlieBracketWithin_zero_right"
+    ],
+    [
+      "geometric_hahn_banach_of_nonempty_interior_point",
+      "RCLike.geometric_hahn_banach_of_nonempty_interior_point"
+    ],
+    [
+      "real_linearMap_map_smul_complex",
+      "LinearMap.complexOfReal"
+    ],
+    [
+      "spanPoints_nonempty",
+      "affineSpan_nonempty"
+    ],
+    [
+      "sum_four_sq_mul_sum_four_sq",
+      "euler_four_squares"
+    ]
+  ],
+  "hand_check": [
+    {
+      "H": "SimpleGraph.isTree_of_minimal_connected",
+      "T": "SimpleGraph.isTree_iff_minimal_connected",
+      "system": "lexical",
+      "arm": "holdout",
+      "above": true,
+      "tag": "D4",
+      "equiv": false,
+      "H_type": "∀ {V : Type u_1} {G : SimpleGraph V}, Minimal SimpleGraph.Connected G → G.IsTree",
+      "T_type": "∀ {V : Type u_1} {G : SimpleGraph V}, G.IsTree ↔ Minimal SimpleGraph.Connected G"
+    },
+    {
+      "H": "Submodule.LinearDisjoint.symm",
+      "T": "Submodule.linearDisjoint_comm",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": true,
+      "tag": "D3",
+      "equiv": false,
+      "H_type": "∀ {R : Type u} {S : Type v} [inst : CommSemiring R] [inst_1 : CommSemiring S] [inst_2 : Algebra R S]   {M N : Submodule R S}, M.LinearDisjoint N → N.LinearDisjoint M",
+      "T_type": "∀ {R : Type u} {S : Type v} [inst : CommSemiring R] [inst_1 : CommSemiring S] [inst_2 : Algebra R S]   {M N : Submodule R S}, M.LinearDisjoint N ↔ N.LinearDisjoint M"
+    },
+    {
+      "H": "Matrix.invOf_mul_cancel_right",
+      "T": "Matrix.mul_invOf_cancel_right",
+      "system": "bge-small",
+      "arm": "holdout",
+      "above": true,
+      "tag": "K1",
+      "equiv": false,
+      "H_type": "∀ {m : Type u_1} {n : Type u_2} {α : Type u_3} [inst : Fintype n] [inst_1 : DecidableEq n] [inst_2 : Semiring α]   (A : Matrix m n α) (B : Matrix n n α) [inst_3 : Invertible B], A * ⅟B * B = A",
+      "T_type": "∀ {m : Type u_1} {n : Type u_2} {α : Type u_3} [inst : Fintype n] [inst_1 : DecidableEq n] [inst_2 : Semiring α]   (A : Matrix m n α) (B : Matrix n n α) [inst_3 : Invertible B], A * B * ⅟B = A"
+    },
+    {
+      "H": "FiniteDimensional.nonempty_continuousLinearEquiv_of_finrank_eq",
+      "T": "FiniteDimensional.nonempty_continuousLinearEquiv_iff_finrank_eq",
+      "system": "bge-small",
+      "arm": "holdout",
+      "above": true,
+      "tag": "D4",
+      "equiv": false,
+      "H_type": "∀ {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [inst : AddCommGroup E] [inst_1 : _root_.Module 𝕜 E]   [inst_2 : TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [inst_5 : AddCommGroup F]   [inst_6 : _root_.Module 𝕜 F] [inst_7 : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]   [CompleteSpace 𝕜] [T2Space E] [T2Space F] [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F],   Module.finrank 𝕜 E = Module.finrank 𝕜 F → Nonempty (E ≃L[𝕜] F)",
+      "T_type": "∀ {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [inst : AddCommGroup E] [inst_1 : _root_.Module 𝕜 E]   [inst_2 : TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [inst_5 : AddCommGroup F]   [inst_6 : _root_.Module 𝕜 F] [inst_7 : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]   [CompleteSpace 𝕜] [T2Space E] [T2Space F] [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F],   Nonempty (E ≃L[𝕜] F) ↔ Module.finrank 𝕜 E = Module.finrank 𝕜 F"
+    },
+    {
+      "H": "List.Nat.mem_antidiagonal",
+      "T": "Multiset.Nat.mem_antidiagonal",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": true,
+      "tag": "K1",
+      "equiv": true,
+      "H_type": "∀ {n : ℕ} {x : ℕ × ℕ}, x ∈ List.Nat.antidiagonal n ↔ x.1 + x.2 = n",
+      "T_type": "∀ {n : ℕ} {x : ℕ × ℕ}, x ∈ Multiset.Nat.antidiagonal n ↔ x.1 + x.2 = n"
+    },
+    {
+      "H": "RingHomInvPair.of_ringEquiv_symm",
+      "T": "RingHomInvPair.of_ringEquiv",
+      "system": "bge-small",
+      "arm": "holdout",
+      "above": true,
+      "tag": "K1",
+      "equiv": true,
+      "H_type": "∀ {R₁ : Type u_1} {R₂ : Type u_2} [inst : Semiring R₁] [inst_1 : Semiring R₂] (e : R₁ ≃+* R₂), RingHomInvPair ↑e.symm ↑e",
+      "T_type": "∀ {R₁ : Type u_1} {R₂ : Type u_2} [inst : Semiring R₁] [inst_1 : Semiring R₂] (e : R₁ ≃+* R₂), RingHomInvPair ↑e ↑e.symm"
+    },
+    {
+      "H": "LinearMap.eqOn_span'",
+      "T": "LinearMap.eqOn_span",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": true,
+      "tag": "D1",
+      "equiv": true,
+      "H_type": "∀ {R : Type u_1} {R₂ : Type u_2} {M : Type u_4} {M₂ : Type u_5} [inst : Semiring R] [inst_1 : AddCommMonoid M]   [inst_2 : _root_.Module R M] [inst_3 : Semiring R₂] [inst_4 : AddCommMonoid M₂] [inst_5 : _root_.Module R₂ M₂]   {σ₁₂ : R →+* R₂} {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂}, Set.EqOn (⇑f) (⇑g) s → Set.EqOn ⇑f ⇑g ↑(Submodule.span R s)",
+      "T_type": "∀ {R : Type u_1} {R₂ : Type u_2} {M : Type u_4} {M₂ : Type u_5} [inst : Semiring R] [inst_1 : AddCommMonoid M]   [inst_2 : _root_.Module R M] [inst_3 : Semiring R₂] [inst_4 : AddCommMonoid M₂] [inst_5 : _root_.Module R₂ M₂]   {σ₁₂ : R →+* R₂} {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂},   Set.EqOn (⇑f) (⇑g) s → ∀ ⦃x : M⦄, x ∈ Submodule.span R s → f x = g x"
+    },
+    {
+      "H": "Monotone.map_liminf_of_continuousAt",
+      "T": "Monotone.map_limsInf_of_continuousAt",
+      "system": "bge-small",
+      "arm": "holdout",
+      "above": true,
+      "tag": "D1",
+      "equiv": true,
+      "H_type": "∀ {ι : Type u_1} {R : Type u_4} {S : Type u_5} {F : Filter ι} [F.NeBot] [inst : ConditionallyCompleteLinearOrder R]   [inst_1 : TopologicalSpace R] [OrderTopology R] [inst_3 : ConditionallyCompleteLinearOrder S]   [inst_4 : TopologicalSpace S] [OrderTopology S] {f : R → S},   Monotone f →     ∀ (a : ι → R),       ContinuousAt f (Filter.liminf a F) →         autoParam (Filter.IsCoboundedUnder (fun x1 x2 => x1 ≥ x2) F a) Monotone.map_liminf_of_continuousAt._auto_1 →           autoParam (Filter.IsBoundedUnder (fun x1 x2 => x1 ≥ x2) F a) Monotone.map_liminf_of_continuousAt._auto_3 →             f (Filter.liminf a F) = Filter.liminf (f ∘ a) F",
+      "T_type": "∀ {R : Type u_4} {S : Type u_5} [inst : ConditionallyCompleteLinearOrder R] [inst_1 : TopologicalSpace R]   [OrderTopology R] [inst_3 : ConditionallyCompleteLinearOrder S] [inst_4 : TopologicalSpace S] [OrderTopology S]   {F : Filter R} [F.NeBot] {f : R → S},   Monotone f →     ContinuousAt f F.limsInf →       autoParam (Filter.IsCobounded (fun x1 x2 => x1 ≥ x2) F) Monotone.map_limsInf_of_continuousAt._auto_1 →         autoParam (Filter.IsBounded (fun x1 x2 => x1 ≥ x2) F) Monotone.map_limsInf_of_continuousAt._auto_3 →           f F.limsInf = Filter.liminf f F"
+    },
+    {
+      "H": "geometric_hahn_banach_of_nonempty_interior_point",
+      "T": "RCLike.geometric_hahn_banach_of_nonempty_interior_point",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "D1",
+      "equiv": false,
+      "H_type": "∀ {E : Type u_2} [inst : TopologicalSpace E] [inst_1 : AddCommGroup E] [inst_2 : _root_.Module ℝ E] {x : E}   [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] {A : Set E},   Convex ℝ A → x ∉ interior A → (interior A).Nonempty → ∃ f, f ≠ 0 ∧ ∀ a ∈ A, f a ≤ f x",
+      "T_type": "∀ {𝕜 : Type u_1} {E : Type u_2} [inst : TopologicalSpace E] [inst_1 : AddCommGroup E] [inst_2 : _root_.Module ℝ E]   {x : E} [inst_3 : RCLike 𝕜] [inst_4 : _root_.Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]   [ContinuousSMul 𝕜 E] {A : Set E},   Convex ℝ A → x ∉ interior A → (interior A).Nonempty → ∃ f, f ≠ 0 ∧ ∀ a ∈ A, RCLike.re (f a) ≤ RCLike.re (f x)"
+    },
+    {
+      "H": "Finset.property_of_mem_map_subtype",
+      "T": "Finset.map_subtype_subset",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "D1",
+      "equiv": true,
+      "H_type": "∀ {α : Type u_1} {p : α → Prop} (s : Finset { x // p x }) {a : α},   a ∈ Finset.map (Function.Embedding.subtype fun x => p x) s → p a",
+      "T_type": "∀ {α : Type u_1} {t : Set α} (s : Finset ↑t), ↑(Finset.map (Function.Embedding.subtype fun x => x ∈ t) s) ⊆ t"
+    },
+    {
+      "H": "MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add",
+      "T": "MeromorphicAt.meromorphicTrailingCoeffAt_fun_add_eq_add",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "D1",
+      "equiv": true,
+      "H_type": "∀ {𝕜 : Type u_1} [inst : NontriviallyNormedField 𝕜] {E : Type u_2} [inst_1 : NormedAddCommGroup E]   [inst_2 : NormedSpace 𝕜 E] {x : 𝕜} {f₁ f₂ : 𝕜 → E},   MeromorphicAt f₁ x →     MeromorphicAt f₂ x →       meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x →         meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0 →           meromorphicTrailingCoeffAt (f₁ + f₂) x = meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x",
+      "T_type": "∀ {𝕜 : Type u_1} [inst : NontriviallyNormedField 𝕜] {E : Type u_2} [inst_1 : NormedAddCommGroup E]   [inst_2 : NormedSpace 𝕜 E] {x : 𝕜} {f₁ f₂ : 𝕜 → E},   MeromorphicAt f₁ x →     MeromorphicAt f₂ x →       meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x →         meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0 →           meromorphicTrailingCoeffAt (fun z => f₁ z + f₂ z) x =             meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x"
+    },
+    {
+      "H": "Function.update_comp_eq_of_injective",
+      "T": "Function.update_comp_eq_of_injective'",
+      "system": "bge-small",
+      "arm": "positive",
+      "above": false,
+      "tag": "D1",
+      "equiv": false,
+      "H_type": "∀ {α : Sort u} {α' : Sort w} [inst : DecidableEq α] [inst_1 : DecidableEq α'] {β : Sort u_1} (g : α' → β) {f : α → α'},   Function.Injective f → ∀ (i : α) (a : β), Function.update g (f i) a ∘ f = Function.update (g ∘ f) i a",
+      "T_type": "∀ {α : Sort u} {β : α → Sort v} {α' : Sort w} [inst : DecidableEq α] [inst_1 : DecidableEq α'] (g : (a : α) → β a)   {f : α' → α},   Function.Injective f →     ∀ (i : α') (a : β (f i)), (fun j => Function.update g (f i) a (f j)) = Function.update (fun i => g (f i)) i a"
+    },
+    {
+      "H": "Quotient.mk''_surjective",
+      "T": "Quotient.mk_surjective",
+      "system": "bge-small",
+      "arm": "positive",
+      "above": false,
+      "tag": "D1",
+      "equiv": true,
+      "H_type": "∀ {α : Sort u_1} {s₁ : Setoid α}, Function.Surjective Quotient.mk''",
+      "T_type": "∀ {α : Sort u_1} {s : Setoid α}, Function.Surjective (Quotient.mk s)"
+    },
+    {
+      "H": "DFinsupp.sumAddHom_apply",
+      "T": "DFinsupp.sumZeroHom_apply",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "K1",
+      "equiv": false,
+      "H_type": "∀ {ι : Type u} {γ : Type w} {β : ι → Type v} [inst : DecidableEq ι] [inst_1 : (i : ι) → AddZeroClass (β i)]   [inst_2 : (i : ι) → (x : β i) → Decidable (x ≠ 0)] [inst_3 : AddCommMonoid γ] (φ : (i : ι) → β i →+ γ)   (f : Π₀ (i : ι), β i), (DFinsupp.sumAddHom φ) f = f.sum fun x => ⇑(φ x)",
+      "T_type": "∀ {ι : Type u} {γ : Type w} {β : ι → Type v} [inst : DecidableEq ι] [inst_1 : (i : ι) → AddZeroClass (β i)]   [inst_2 : (i : ι) → (x : β i) → Decidable (x ≠ 0)] [inst_3 : AddCommMonoid γ] (φ : (i : ι) → ZeroHom (β i) γ)   (f : Π₀ (i : ι), β i), (DFinsupp.sumZeroHom φ) f = f.sum fun x => ⇑(φ x)"
+    },
+    {
+      "H": "Module.Basis.toMatrix_isUnitSMul",
+      "T": "Module.Basis.toMatrix_unitsSMul",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "K1",
+      "equiv": false,
+      "H_type": "∀ {ι : Type u_1} {R₂ : Type u_7} {M₂ : Type u_8} [inst : CommRing R₂] [inst_1 : AddCommGroup M₂]   [inst_2 : _root_.Module R₂ M₂] [inst_3 : DecidableEq ι] (e : Module.Basis ι R₂ M₂) {w : ι → R₂}   (hw : ∀ (i : ι), IsUnit (w i)), e.toMatrix ⇑(e.isUnitSMul hw) = Matrix.diagonal w",
+      "T_type": "∀ {ι : Type u_1} {R₂ : Type u_7} {M₂ : Type u_8} [inst : CommRing R₂] [inst_1 : AddCommGroup M₂]   [inst_2 : _root_.Module R₂ M₂] [inst_3 : DecidableEq ι] (e : Module.Basis ι R₂ M₂) (w : ι → R₂ˣ),   e.toMatrix ⇑(e.unitsSMul w) = Matrix.diagonal (Units.val ∘ w)"
+    },
+    {
+      "H": "CategoryTheory.Sheaf.isIso_of_coversTop",
+      "T": "CategoryTheory.Sheaf.isIso_iff_of_coversTop",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "D4",
+      "equiv": false,
+      "H_type": "∀ {C : Type u_1} [inst : CategoryTheory.Category.{v_1, u_1} C] {K : CategoryTheory.GrothendieckTopology C}   {A : Type u_2} [inst_1 : CategoryTheory.Category.{v_2, u_2} A] {ι : Type u_3} {X : ι → C},   K.CoversTop X →     ∀ {F G : CategoryTheory.Sheaf K A} {f : F ⟶ G},       (∀ (i : ι), CategoryTheory.IsIso ((K.overPullback A (X i)).map f)) → CategoryTheory.IsIso f",
+      "T_type": "∀ {C : Type u_1} [inst : CategoryTheory.Category.{v_1, u_1} C] {K : CategoryTheory.GrothendieckTopology C}   {A : Type u_2} [inst_1 : CategoryTheory.Category.{v_2, u_2} A] {ι : Type u_3} {X : ι → C},   K.CoversTop X →     ∀ {F G : CategoryTheory.Sheaf K A} (f : F ⟶ G),       CategoryTheory.IsIso f ↔ ∀ (i : ι), CategoryTheory.IsIso ((K.overPullback A (X i)).map f)"
+    },
+    {
+      "H": "Finset.map_symm_subset",
+      "T": "Finset.subset_map_symm",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "K2",
+      "equiv": true,
+      "H_type": "∀ {α : Type u_1} {β : Type u_2} {s : Finset α} {t : Finset β} {f : α ≃ β},   Finset.map f.symm.toEmbedding t ⊆ s ↔ t ⊆ Finset.map f.toEmbedding s",
+      "T_type": "∀ {α : Type u_1} {β : Type u_2} {s : Finset α} {t : Finset β} {f : α ≃ β},   s ⊆ Finset.map f.symm.toEmbedding t ↔ Finset.map f.toEmbedding s ⊆ t"
+    },
+    {
+      "H": "Valuation.isClopen_closedBall",
+      "T": "IsValuativeTopology.isClopen_closedBall",
+      "system": "lexical",
+      "arm": "holdout",
+      "above": false,
+      "tag": "D1",
+      "equiv": true,
+      "H_type": "∀ {R : Type u_1} [inst : Ring R] [inst_1 : ValuativeRel R] {Γ₀ : Type u_3} [inst_2 : LinearOrderedCommGroupWithZero Γ₀]   [_t : TopologicalSpace R] [IsValuativeTopology R] {v : Valuation R Γ₀} [v.Compatible]   {r : (MonoidWithZeroHom.ofClass v).ValueGroup₀}, r ≠ 0 → IsClopen {x | v.restrict x ≤ r}",
+      "T_type": "∀ {R : Type u_1} [inst : Ring R] [inst_1 : ValuativeRel R] {Γ₀ : Type u_3} [inst_2 : LinearOrderedCommGroupWithZero Γ₀]   [_t : TopologicalSpace R] [IsValuativeTopology R] {v : Valuation R Γ₀} [v.Compatible]   {r : (MonoidWithZeroHom.ofClass v).ValueGroup₀}, r ≠ 0 → IsClopen {x | v.restrict x ≤ r}"
+    },
+    {
+      "H": "CategoryTheory.GrothendieckTopology.uliftYonedaEquiv_naturality",
+      "T": "CategoryTheory.GrothendieckTopology.uliftYonedaEquiv_naturality'",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "K1",
+      "equiv": true,
+      "H_type": "∀ {C : Type u} [inst : CategoryTheory.Category.{v, u} C] (J : CategoryTheory.GrothendieckTopology C)   [inst_1 : J.Subcanonical] {X Y : C} {F : CategoryTheory.Sheaf J (Type (max v v'))}   (f : (CategoryTheory.GrothendieckTopology.uliftYoneda.{v', v, u} J).obj X ⟶ F) (g : Y ⟶ X),   (CategoryTheory.ConcreteCategory.hom (F.obj.map g.op)) (J.uliftYonedaEquiv f) =     J.uliftYonedaEquiv       (CategoryTheory.CategoryStruct.comp ((CategoryTheory.GrothendieckTopology.uliftYoneda.{v', v, u} J).map g) f)",
+      "T_type": "∀ {C : Type u} [inst : CategoryTheory.Category.{v, u} C] (J : CategoryTheory.GrothendieckTopology C)   [inst_1 : J.Subcanonical] {X Y : Cᵒᵖ} {F : CategoryTheory.Sheaf J (Type (max v v'))}   (f : (CategoryTheory.GrothendieckTopology.uliftYoneda.{v', v, u} J).obj (Opposite.unop X) ⟶ F) (g : X ⟶ Y),   (CategoryTheory.ConcreteCategory.hom (F.obj.map g)) (J.uliftYonedaEquiv f) =     J.uliftYonedaEquiv       (CategoryTheory.CategoryStruct.comp ((CategoryTheory.GrothendieckTopology.uliftYoneda.{v', v, u} J).map g.unop) f)"
+    },
+    {
+      "H": "RingHom.Smooth.locally_isStandardSmooth",
+      "T": "RingHom.smooth_iff_locally_isStandardSmooth",
+      "system": "bge-small",
+      "arm": "deletion",
+      "above": false,
+      "tag": "D3",
+      "equiv": false,
+      "H_type": "∀ {R S : Type u} [inst : CommRing R] [inst_1 : CommRing S] {f : R →+* S},   f.Smooth → RingHom.Locally (fun {R S} [CommRing R] [CommRing S] => RingHom.IsStandardSmooth) f",
+      "T_type": "∀ {R S : Type u} [inst : CommRing R] [inst_1 : CommRing S] {f : R →+* S},   f.Smooth ↔ RingHom.Locally (fun {R S} [CommRing R] [CommRing S] => RingHom.IsStandardSmooth) f"
+    }
+  ]
+}

@@ -444,6 +444,13 @@ def gate(units: list[dict]) -> dict:
             "a_wilson_upper": round(ua, 4), "a_kill": ua < 0.15,
             "b_gap": round(gap, 4), "b_gap_newcombe95": [round(lo, 4), round(hi, 4)],
             "b_kill": gap <= 0.05,
+            # the bead's block alone: closures that a K alternative found
+            "verbatim_oracle": {
+                "above_tau": _rate(sum(u["certified"] and (u["tag"] or "")[:1] == "K"
+                                       for u in above), len(above)),
+                "below_tau": _rate(sum(u["certified"] and (u["tag"] or "")[:1] == "K"
+                                       for u in below), len(below))},
+            "closed_above_tau": sum(bool(u.get("closed")) for u in above),
             "by_system_arm_above": {f"{s}/{a}": _certified_rate(
                 [u for u in above if u["system"] == s and u["arm"] == a])
                 for s, _ in SYSTEMS for a in NEG}}
