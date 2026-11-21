@@ -90,7 +90,10 @@ A calibrated verdict on a `:unvalidated` additive name is not evidence the
 name exists.
 
 **Extract a paper's dependency graph.** Exact, no inference: `\label`,
-`\ref`, and `\uses` are authored edges.
+`\ref`, and `\uses` are authored edges. Pass every file of the paper, preamble
+included: a `\newtheorem` in any of them applies to all, each node records its
+`file` and `line`, and the summary's `duplicate_ids` names any `\label` used
+twice (DOT and any reader by id would merge those nodes).
 
 ```bash
 uv run mathgraph graph paper/*.tex --json g.json --dot g.dot

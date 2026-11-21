@@ -47,6 +47,7 @@ class Block:
     uses: list = field(default_factory=list)
     declared_lean: list = field(default_factory=list)
     lean_ok: bool = False
+    file: str = ""                # set by read_project; `line` is within it
 
     def to_json(self) -> dict:
         return asdict(self)
@@ -109,10 +110,12 @@ def _clean(text: str) -> str:
     return text.strip()
 
 
-def parse(src: str) -> list[Block]:
+def parse(src: str, envs: dict | None = None, start: int = 0) -> list[Block]:
+    """Blocks of one source. `envs` adds \\newtheorem environments declared in
+    another file of the same paper; unlabelled ids count on from `start`."""
     src = _strip_comments(src)
 
-    envs = dict(THEOREM_LIKE and {})
+    envs = dict(envs or {})
     for m in NEWTHM_RE.finditer(src):
         envs[m.group("env").strip()] = m.group("title").strip()
     known = set(envs) | THEOREM_LIKE | {"proof"}
@@ -139,7 +142,7 @@ def parse(src: str) -> list[Block]:
 
     blocks: list[Block] = []
     pat = re.compile(r"\\begin\{(" + "|".join(sorted(map(re.escape, known), key=len, reverse=True)) + r")\*?\}")
-    n = 0
+    n = start
     last_theorem: str | None = None
 
     for m in pat.finditer(src):
@@ -198,10 +201,21 @@ def parse(src: str) -> list[Block]:
 
 
 def read_project(paths: list[str]) -> list[Block]:
-    """Concatenate a multi-file paper in the order given (arXiv sources are
-    usually a main file plus \\input sections)."""
-    out: list[Block] = []
+    """A multi-file paper in the order given (arXiv sources are usually a main
+    file plus \\input sections). A \\newtheorem in any file applies in all of
+    them, and unlabelled ids count across files, so `proof:5` names one proof.
+    Each file is still parsed on its own: the order given is usually a shell
+    glob, not the \\input order, so no section, open proof or unclosed
+    environment may run on into the next file."""
+    srcs = []
     for p in paths:
         with open(p, "r", encoding="utf-8", errors="replace") as fh:
-            out.extend(parse(fh.read()))
+            srcs.append((p, fh.read()))
+    envs = {m.group("env").strip(): m.group("title").strip()
+            for _, s in srcs for m in NEWTHM_RE.finditer(_strip_comments(s))}
+    out: list[Block] = []
+    for p, s in srcs:
+        for b in parse(s, envs, start=len(out)):
+            b.file = p
+            out.append(b)
     return out

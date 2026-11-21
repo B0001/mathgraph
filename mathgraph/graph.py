@@ -34,6 +34,7 @@ def build_graph(blocks: list[Block], aligner: Aligner | None = None,
             "env": b.env,
             "title": b.title,
             "section": b.section,
+            "file": b.file,
             "line": b.line,
             "text": b.text,
             "authored_lean": b.declared_lean,
@@ -69,6 +70,9 @@ def summarize(nodes, edges, dangling) -> dict:
         "proofs": sum(1 for n in nodes if n["kind"] == "proof"),
         "internal_edges": len(edges),
         "dangling_refs": len(dangling),
+        # a \label used twice: kept as two nodes, but DOT and any reader by id
+        # merge them, so they are named here rather than collapsed silently
+        "duplicate_ids": sorted(i for i, c in Counter(n["id"] for n in nodes).items() if c > 1),
         "alignment_status": dict(st),
         "authored_lean_annotations": sum(1 for n in nodes if n["authored_lean"]),
     }

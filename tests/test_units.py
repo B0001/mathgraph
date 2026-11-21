@@ -21,7 +21,7 @@ from mathgraph.align import Aligner, MARGIN_TAIL
 from mathgraph.graph import build_graph
 from mathgraph.index import (STOP, GroundTruth, doc_words, expand_to_additive,
                              stem, type_tokens)
-from mathgraph.latex import extract_math, parse
+from mathgraph.latex import extract_math, parse, read_project
 from mathgraph.names import (additive_tokens, explicit_additive_name,
                              parse_to_additive_attr, split_name,
                              to_additive_name)
@@ -352,6 +352,49 @@ class Graph(unittest.TestCase):
         self.assertTrue(all("alignment" not in n for n in self.g["nodes"]))
         self.assertEqual(self.g["summary"]["alignment_status"],
                          {"not_attempted": 1})
+
+
+class Project(unittest.TestCase):
+    """mathgraph-cxh.1: the files given to `graph` are one paper."""
+    FILES = {
+        "preamble.tex": "\\newtheorem{metatheorem}{Metatheorem}\n",
+        "a.tex": "\\section{A}\n\\begin{lemma}\\label{a} x \\end{lemma}\n"
+                 "\\begin{proof} y \\end{proof}\n",
+        "b.tex": "\\begin{proof} orphan \\end{proof}\n"
+                 "\\begin{metatheorem} z \\end{metatheorem}\n\\begin{proof} w \\end{proof}\n",
+    }
+
+    def setUp(self):
+        with tempfile.TemporaryDirectory() as d:
+            paths = [os.path.join(d, f) for f in self.FILES]
+            for p, src in zip(paths, self.FILES.values()):
+                with open(p, "w") as fh:
+                    fh.write(src)
+            self.g = build_graph(read_project(paths))
+            self.twice = build_graph(read_project(paths[1:2] * 2))
+        self.proofs = [n for n in self.g["nodes"] if n["kind"] == "proof"]
+
+    def test_proof_ids_are_unique_across_files(self):
+        """Each file used to restart the counter, so both files had a
+        `proof:2` and a reader by id merged them."""
+        self.assertEqual(len({n["id"] for n in self.proofs}), 3)
+        self.assertEqual(self.g["summary"]["duplicate_ids"], [])
+
+    def test_a_preamble_newtheorem_applies_to_every_file(self):
+        (meta,) = [n for n in self.g["nodes"] if n["env"] == "metatheorem"]
+        self.assertEqual(meta["kind"], "theorem")
+        self.assertIn({"src": self.proofs[-1]["id"], "dst": meta["id"], "type": "proves"},
+                      self.g["edges"])
+
+    def test_no_file_inherits_the_last_ones_section_or_statement(self):
+        """Files usually arrive in glob order, not \\input order."""
+        orphan = self.proofs[1]
+        self.assertEqual((os.path.basename(orphan["file"]), orphan["line"], orphan["section"]),
+                         ("b.tex", 1, ""))
+        self.assertNotIn(orphan["id"], {e["src"] for e in self.g["edges"]})
+
+    def test_a_label_used_twice_is_reported(self):
+        self.assertEqual(self.twice["summary"]["duplicate_ids"], ["a"])
 
 
 class ExplicitAdditiveName(unittest.TestCase):
