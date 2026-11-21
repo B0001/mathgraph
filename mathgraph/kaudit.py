@@ -308,7 +308,8 @@ def plan_followup(units: list[dict], facts: dict, real: dict) -> list[tuple[str,
     (does H prove T?) for every pair whose real check closed. Only these need
     them, since a pair that does not close cannot be certified."""
     nulls, revs = {}, {}
-    for u in units:
+    # canonical order: the ids must not depend on how the caller sorted units
+    for u in sorted(units, key=lambda u: (u["H"], u["T"] or "", u["system"], u["arm"])):
         if u.get("status") == "checked" and real.get(u["cid"], {}).get("closed"):
             H, T = u["H"], u["T"]
             key = (H, T if facts[T]["simp"] else None)
