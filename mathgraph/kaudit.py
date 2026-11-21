@@ -255,7 +255,7 @@ def resolve(units: list[dict], mods: dict, work: str, mathlib: str) -> dict:
         for n in sorted(names):
             fh.write(f"{n}\t{mods.get(n, '')}\n")
     text, _ = batch_text([("resolve", f'#kresolve "{tsv}" "{facts}"')], kdump=False)
-    log, _, secs = run_lean(text, os.path.join(work, "resolve.lean"), mathlib, 3 * 3600)
+    log, _, secs, _ = run_lean(text, os.path.join(work, "resolve.lean"), mathlib, 3 * 3600)
     errors = [m for m in messages(log, os.path.join(work, "resolve.lean")) if m[1] == "error"]
     if errors:
         raise RuntimeError(f"#kresolve failed: {errors[:3]}")
