@@ -17,7 +17,7 @@ class ParseAndCertify(unittest.TestCase):
                 ("n1", check_cmd("n1", "Foo.h", "", ["Foo.h"], NULL)),
                 ("c2", check_cmd("c2", "Bar.h", "Bar.t", []))]
         text, at = batch_text(cmds)
-        line = {cid: n for n, cid in at.items()}
+        line = {cid: n for n, (cid, k) in at.items() if k == 0}
         lines = text.splitlines()
         self.assertTrue(lines[line["c1"] - 1].startswith(
             "attribute [-simp] Foo.h in theorem kaudit.c1 : type_of% @Foo.h := by intros; first"

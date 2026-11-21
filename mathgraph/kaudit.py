@@ -80,18 +80,20 @@ def check_cmd(cid: str, H: str, T: str, erase: list[str], alts=REAL) -> str:
 
 
 def batch_text(cmds: list[tuple[str, str]], kdump: bool = True) -> tuple[str, dict]:
-    """The template plus one command per line (each check followed by its
-    `#kdump` line), and {line number: id}. A sentinel at the end shows the
-    file was elaborated to the end."""
+    """The template plus the commands (each check followed by its `#kdump`
+    line), and {line number: (id, line within the command)}. A sentinel at
+    the end shows the file was elaborated to the end."""
     with open(TEMPLATE, encoding="utf-8") as fh:
         head = fh.read().rstrip("\n") + f"\n\nset_option maxHeartbeats {HEARTBEATS}\n"
-    n = head.count("\n")
-    body, at = [], {}
+    line, body, at = head.count("\n") + 1, [], {}
     for cid, cmd in cmds:
-        at[n + len(body) + 1] = cid
+        for k in range(cmd.count("\n") + 1):
+            at[line + k] = (cid, k)
+        line += cmd.count("\n") + 1
         body.append(cmd)
         if kdump:
             body.append(f"#kdump kaudit.{cid}")
+            line += 1
     body += ["theorem kaudit.end : True := trivial", "#kdump kaudit.end"]
     return head + "\n".join(body) + "\n", at
 
@@ -166,7 +168,10 @@ def parse_checks(log: str, path: str, at: dict, dump: list[str]) -> dict:
             r["tag"], tag = tag, None
     for line, sev, msg in messages(log, path):
         if sev == "error" and line in at:
-            res.setdefault(at[line], {}).setdefault("error", msg[:300])
+            cid, k = at[line]
+            r = res.setdefault(cid, {})
+            r.setdefault("error", msg[:300])
+            r.setdefault("errors", {}).setdefault(k, msg[:300])
     return res
 
 
@@ -197,7 +202,7 @@ def run_batches(cmds: list[tuple[str, str]], work: str, stem: str, mathlib: str,
                 out.update(res)
                 t = [r["ms"] for r in res.values() if "ms" in r]     # in dump order
                 ms = sorted(b - a for a, b in zip(t, t[1:]))
-                info.append({"file": os.path.basename(path), "commands": len(at),
+                info.append({"file": os.path.basename(path), "commands": len(part),
                              "seconds": round(secs, 1), "completed": done, "killed": killed,
                              "check_ms_median_p90_max": [ms[len(ms) // 2], ms[9 * len(ms) // 10],
                                                          ms[-1]] if ms else None})
@@ -329,7 +334,8 @@ def certify(units: list[dict], facts: dict, real: dict, follow: dict | None = No
             continue
         H, T = facts[u["H"]]["const"], facts[u["T"]]["const"]
         u.update(closed=r["closed"], tag=r.get("tag"), uses_T=T in r["used"],
-                 uses_H=H in r["used"], null_closed=None)
+                 uses_H=H in r["used"], null_closed=None,
+                 timeout="maximum number of heartbeats" in (r.get("error") or ""))
         if not r["closed"]:
             continue
         n = follow.get(u.get("nid"), {})
@@ -350,19 +356,17 @@ def elab_cmds(rows: list[dict]) -> tuple[list[tuple[str, str]], dict]:
     """Each time-arm head as `example <statement> := sorry` in the declaration's
     namespace, once with autoImplicit off (mathlib's setting) and once on (a
     crude stand-in for the `variable` lines a head cannot carry)."""
-    cmds, ids = [], {}
+    cmds = []
     for i, r in enumerate(rows):
         ns = r["name"].rpartition(".")[0]
         stmt = re.sub(r"\s+where$", "", statement(r["head"]))
-        if ns:
-            cmds.append((f"ns{i}", f"namespace {ns}"))
-        for v, opt in (("strict", "autoImplicit false"),
-                       ("auto", "autoImplicit true in set_option relaxedAutoImplicit true")):
-            cmds.append((f"e{i}{v[0]}", f"set_option {opt} in example {stmt} := sorry"))
-            ids[f"e{i}{v[0]}"] = (r["name"], v)
-        if ns:
-            cmds.append((f"end{i}", f"end {ns}"))
-    return cmds, ids
+        cmds.append((f"e{i}", "\n".join([
+            f"namespace {ns}" if ns else "section",
+            f"set_option autoImplicit false in example {stmt} := sorry",
+            "set_option autoImplicit true in set_option relaxedAutoImplicit true in "
+            f"example {stmt} := sorry",
+            f"end {ns}" if ns else "end"])))
+    return cmds, {f"e{i}": r["name"] for i, r in enumerate(rows)}
 
 
 def error_kind(msg: str) -> str:
@@ -496,6 +500,8 @@ def breakdowns(units: list[dict], facts: dict, dup: set) -> dict:
                                             if u["system"] == s and u["arm"] == a))
                    for s, _ in SYSTEMS for a in QUERY_ARMS},
         "closing_alternative": dict(Counter(u["tag"] for u in chk if u["closed"])),
+        "heartbeat_timeouts": {"gate_population": sum(u["timeout"] for u in gate_pop),
+                               "all_checked": sum(u["timeout"] for u in chk)},
         "certified_by_alternative": dict(Counter(u["tag"] for u in cert)),
         "closed_but_not_certified": dict(Counter(
             "null closes" if u["null_closed"] else "uses H" if u["uses_H"] else "no T"
@@ -597,12 +603,15 @@ def main(argv=None) -> None:
     elif a.stage == "elab":
         rows = [r for r in _jsonl(os.path.join(a.src, "arms.jsonl")) if r["arm"] == "time"]
         cmds, ids = elab_cmds(rows)
-        out = run_batches(cmds, a.work, "elab", a.mathlib, a.jobs, kdump=False)
-        # an example adds no constant, so the batch's own results only carry
-        # errors; an id with no error elaborated, if its batch completed
+        out = run_batches(cmds, a.work, "elab", a.mathlib, a.jobs, timeout=3 * 3600,
+                          kdump=False)
+        # An example adds no constant, so only errors are recorded. A variant
+        # with no error on its line (1 strict, 2 auto) elaborated, provided its
+        # batch completed.
         done = all(b["completed"] for b in out["batches"])
-        res = {i: {"name": n, "variant": v,
-                   "error": out["results"].get(i, {}).get("error")} for i, (n, v) in ids.items()}
+        res = {f"{i}{v[0]}": {"name": n, "variant": v,
+                              "error": out["results"].get(i, {}).get("errors", {}).get(k)}
+               for i, n in ids.items() for k, v in ((1, "strict"), (2, "auto"))}
         _save(a.work, "elab.json", {"completed": done, "batches": out["batches"],
                                     "results": res})
     else:
