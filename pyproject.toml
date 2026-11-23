@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
 dependencies = [
+    "networkx>=3.4.2",
     "numpy>=1.24",
 ]
 
@@ -37,3 +38,8 @@ package = true
 # genuinely differs per repo is here; see that package's README for every key.
 [tool.sandbox.env]
 MATHGRAPH_DATA = "/workspace/mathgraph-data"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
