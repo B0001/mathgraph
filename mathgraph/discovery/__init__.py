@@ -8,6 +8,12 @@ from .ablation_harness import (
     compute_recall_at_2n,
 )
 from .gap_detector import GapDetector, detect_missing_prerequisite_bridges
+from .hypothesis_verifier import (
+    HypothesisVerifier,
+    verify_hypotheses,
+    VerificationResult,
+    TrivialCounterexampleChecker,
+)
 
 __all__ = [
     'HypothesisCandidate',
@@ -18,4 +24,8 @@ __all__ = [
     'compute_recall_at_2n',
     'GapDetector',
     'detect_missing_prerequisite_bridges',
+    'HypothesisVerifier',
+    'verify_hypotheses',
+    'VerificationResult',
+    'TrivialCounterexampleChecker',
 ]

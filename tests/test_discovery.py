@@ -8,6 +8,8 @@ from mathgraph.discovery import (
     compute_recall_at_2n,
     GapDetector,
     detect_missing_prerequisite_bridges,
+    HypothesisVerifier,
+    verify_hypotheses,
 )
 
 
@@ -30,10 +32,15 @@ def test_hypothesis_candidate_roundtrip():
     assert loaded_candidate.metadata['reason'] == 'topological hole'
 
 
-def test_discovery_ablation_harness_integration():
+def test_discovery_pipeline_gap_detection_and_verification():
     harness = AblationHarness(dag_name='judson', n=20, seed=42)
     assert len(harness.masked_edges) == 20
     candidates = detect_missing_prerequisite_bridges(harness.ablated_dag)
     assert len(candidates) > 0
     recall = harness.evaluate_recall_at_2n(candidates)
     assert recall >= 0.60
+
+    # Verification pipeline
+    verified = verify_hypotheses(candidates, harness.ablated_dag)
+    assert len(verified) > 0
+    assert all(c.metadata.get('verified') is True for c in verified)
