@@ -6,6 +6,8 @@ from mathgraph.discovery import (
     build_virginia_sol_dag,
     mask_prerequisite_edges,
     compute_recall_at_2n,
+    GapDetector,
+    detect_missing_prerequisite_bridges,
 )
 
 
@@ -31,14 +33,7 @@ def test_hypothesis_candidate_roundtrip():
 def test_discovery_ablation_harness_integration():
     harness = AblationHarness(dag_name='judson', n=20, seed=42)
     assert len(harness.masked_edges) == 20
-    candidates = [
-        HypothesisCandidate(
-            source_node=u,
-            target_node=v,
-            hypothesis_type='missing_prerequisite',
-            confidence=1.0 - (i * 0.01)
-        )
-        for i, (u, v) in enumerate(harness.masked_edges)
-    ]
+    candidates = detect_missing_prerequisite_bridges(harness.ablated_dag)
+    assert len(candidates) > 0
     recall = harness.evaluate_recall_at_2n(candidates)
-    assert recall == 1.0
+    assert recall >= 0.60

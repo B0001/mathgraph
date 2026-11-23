@@ -7,6 +7,7 @@ from .ablation_harness import (
     mask_prerequisite_edges,
     compute_recall_at_2n,
 )
+from .gap_detector import GapDetector, detect_missing_prerequisite_bridges
 
 __all__ = [
     'HypothesisCandidate',
@@ -15,4 +16,6 @@ __all__ = [
     'build_virginia_sol_dag',
     'mask_prerequisite_edges',
     'compute_recall_at_2n',
+    'GapDetector',
+    'detect_missing_prerequisite_bridges',
 ]
