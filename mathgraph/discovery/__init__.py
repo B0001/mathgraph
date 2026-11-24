@@ -16,6 +16,7 @@ from .hypothesis_verifier import (
 )
 from .homology_holes import HomologyVoidDetector, detect_topological_voids
 from .analogy_mapper import AnalogyMapper, map_structural_analogies
+from .publish_hypotheses import publish_hypotheses, run_discovery_pipeline
 
 __all__ = [
     'HypothesisCandidate',
@@ -34,4 +35,6 @@ __all__ = [
     'detect_topological_voids',
     'AnalogyMapper',
     'map_structural_analogies',
+    'publish_hypotheses',
+    'run_discovery_pipeline',
 ]

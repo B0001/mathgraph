@@ -1,4 +1,8 @@
+import json
+from pathlib import Path
 import pytest
+import networkx as nx
+
 from mathgraph.discovery.schema import HypothesisCandidate
 from mathgraph.discovery import (
     AblationHarness,
@@ -14,6 +18,8 @@ from mathgraph.discovery import (
     detect_topological_voids,
     AnalogyMapper,
     map_structural_analogies,
+    publish_hypotheses,
+    run_discovery_pipeline,
 )
 
 
@@ -62,3 +68,14 @@ def test_discovery_structural_analogy_mapping():
     analogies = map_structural_analogies(judson, top_k=5)
     assert len(analogies) == 5
     assert all(a.hypothesis_type == 'structural_analogy' for a in analogies)
+
+
+def test_discovery_publish_hypotheses_full_pipeline(tmp_path):
+    out_file = tmp_path / 'published_hypotheses.json'
+    results = publish_hypotheses(out_path=str(out_file), top_k=30)
+    assert len(results) > 0
+    assert out_file.exists()
+
+    types = {r['hypothesis_type'] for r in results}
+    # Should include multiple hypothesis discovery types
+    assert len(types) >= 2
