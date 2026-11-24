@@ -14,6 +14,7 @@ from .hypothesis_verifier import (
     VerificationResult,
     TrivialCounterexampleChecker,
 )
+from .homology_holes import HomologyVoidDetector, detect_topological_voids
 
 __all__ = [
     'HypothesisCandidate',
@@ -28,4 +29,6 @@ __all__ = [
     'verify_hypotheses',
     'VerificationResult',
     'TrivialCounterexampleChecker',
+    'HomologyVoidDetector',
+    'detect_topological_voids',
 ]

@@ -10,6 +10,8 @@ from mathgraph.discovery import (
     detect_missing_prerequisite_bridges,
     HypothesisVerifier,
     verify_hypotheses,
+    HomologyVoidDetector,
+    detect_topological_voids,
 )
 
 
@@ -40,7 +42,14 @@ def test_discovery_pipeline_gap_detection_and_verification():
     recall = harness.evaluate_recall_at_2n(candidates)
     assert recall >= 0.60
 
-    # Verification pipeline
     verified = verify_hypotheses(candidates, harness.ablated_dag)
     assert len(verified) > 0
     assert all(c.metadata.get('verified') is True for c in verified)
+
+
+def test_discovery_topological_voids_detection():
+    judson = build_judson_dag()
+    voids = detect_topological_voids(judson)
+    assert len(voids) > 0
+    assert all(v.hypothesis_type == 'topological_void' for v in voids)
+    assert all('supporting_paths' in v.metadata for v in voids)
