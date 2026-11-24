@@ -12,6 +12,8 @@ from mathgraph.discovery import (
     verify_hypotheses,
     HomologyVoidDetector,
     detect_topological_voids,
+    AnalogyMapper,
+    map_structural_analogies,
 )
 
 
@@ -53,3 +55,10 @@ def test_discovery_topological_voids_detection():
     assert len(voids) > 0
     assert all(v.hypothesis_type == 'topological_void' for v in voids)
     assert all('supporting_paths' in v.metadata for v in voids)
+
+
+def test_discovery_structural_analogy_mapping():
+    judson = build_judson_dag()
+    analogies = map_structural_analogies(judson, top_k=5)
+    assert len(analogies) == 5
+    assert all(a.hypothesis_type == 'structural_analogy' for a in analogies)

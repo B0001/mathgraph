@@ -15,6 +15,7 @@ from .hypothesis_verifier import (
     TrivialCounterexampleChecker,
 )
 from .homology_holes import HomologyVoidDetector, detect_topological_voids
+from .analogy_mapper import AnalogyMapper, map_structural_analogies
 
 __all__ = [
     'HypothesisCandidate',
@@ -31,4 +32,6 @@ __all__ = [
     'TrivialCounterexampleChecker',
     'HomologyVoidDetector',
     'detect_topological_voids',
+    'AnalogyMapper',
+    'map_structural_analogies',
 ]
